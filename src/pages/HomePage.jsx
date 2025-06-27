@@ -19,6 +19,12 @@ function HomePage() {
   const [showRegisterModal, setShowRegisterModal] = useState(false);
   const [filterVisible, setFilterVisible] = useState(false);
   const [reviewFilterVisible, setReviewFilterVisible] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [category, setCategory] = useState("All Categories");
+  const [priceRange, setPriceRange] = useState("All Prices");
+  const [cpu, setCpu] = useState("All CPUs");
+  const [gpu, setGpu] = useState("All GPUs");
+  const [sortBy, setSortBy] = useState("Featured");
   const navigate = useNavigate();
 
   const scrollToSection = (sectionId) => {
@@ -283,7 +289,7 @@ function HomePage() {
                 GearSphere was founded in 2020 by a group of passionate PC enthusiasts who wanted to make custom PC building accessible to everyone. What started as a small operation has grown into a trusted platform connecting customers with expert PC builders nationwide.
               </p>
               <p>
-                Our mission is to democratize custom PC building by providing a platform where customers can easily find qualified builders and quality components for their dream machines.
+                At <strong>GearSphere</strong>, our mission is to make custom PC building easy, affordable, and accessible for everyone — whether you're a beginner with no technical background or an experienced user looking for high-performance builds. We aim to bridge the gap between customers and skilled PC technicians by creating a trusted platform where both can connect easily. Our goal is to simplify the building process with guided tools that help users select compatible parts, compare options, and receive suggestions based on budget and purpose. We focus on quality and transparency by working only with verified technicians and sellers, offering clear pricing and honest reviews. GearSphere also supports long-term value by providing lifetime technical support, upgrade options, and reliable repair services. In addition, we empower technicians and sellers by giving them an online presence and tools to grow their business. Through this, GearSphere aims to become the most trusted and complete platform for custom PC building.
               </p>
             </Col>
             <Col md={6}>
@@ -562,6 +568,8 @@ function HomePage() {
                 <Form.Control
                   placeholder="Search products..."
                   aria-label="Search products"
+                  value={searchQuery}
+                  onChange={e => setSearchQuery(e.target.value)}
                 />
                 <Button variant="outline-secondary">
                   <Search />
@@ -576,11 +584,11 @@ function HomePage() {
               >
                 <Filter className="me-1" /> Filters
               </Button>
-              <Form.Select style={{maxWidth: "200px"}}>
-                <option>Sort by: Featured</option>
-                <option>Price: Low to High</option>
-                <option>Price: High to Low</option>
-                <option>Name: A to Z</option>
+              <Form.Select style={{maxWidth: "200px"}} value={sortBy} onChange={e => setSortBy(e.target.value)}>
+                <option value="Featured">Sort by: Featured</option>
+                <option value="PriceLowHigh">Price: Low to High</option>
+                <option value="PriceHighLow">Price: High to Low</option>
+                <option value="NameAZ">Name: A to Z</option>
               </Form.Select>
             </Col>
           </Row>
@@ -593,7 +601,7 @@ function HomePage() {
                     <Col md={3}>
                       <Form.Group className="mb-3">
                         <Form.Label>Category</Form.Label>
-                        <Form.Select>
+                        <Form.Select value={category} onChange={e => setCategory(e.target.value)}>
                           <option>All Categories</option>
                           <option>Gaming</option>
                           <option>Workstation</option>
@@ -606,7 +614,7 @@ function HomePage() {
                     <Col md={3}>
                       <Form.Group className="mb-3">
                         <Form.Label>Price Range</Form.Label>
-                        <Form.Select>
+                        <Form.Select value={priceRange} onChange={e => setPriceRange(e.target.value)}>
                           <option>All Prices</option>
                           <option>Under $1,000</option>
                           <option>$1,000 - $2,000</option>
@@ -618,7 +626,7 @@ function HomePage() {
                     <Col md={3}>
                       <Form.Group className="mb-3">
                         <Form.Label>CPU</Form.Label>
-                        <Form.Select>
+                        <Form.Select value={cpu} onChange={e => setCpu(e.target.value)}>
                           <option>All CPUs</option>
                           <option>Intel Core i9</option>
                           <option>Intel Core i7</option>
@@ -632,7 +640,7 @@ function HomePage() {
                     <Col md={3}>
                       <Form.Group className="mb-3">
                         <Form.Label>GPU</Form.Label>
-                        <Form.Select>
+                        <Form.Select value={gpu} onChange={e => setGpu(e.target.value)}>
                           <option>All GPUs</option>
                           <option>NVIDIA RTX 4090</option>
                           <option>NVIDIA RTX 4080</option>
@@ -645,34 +653,72 @@ function HomePage() {
                     </Col>
                   </Row>
                   <div className="d-flex justify-content-end">
-                    <Button variant="secondary" className="me-2">Reset</Button>
-                    <Button variant="primary">Apply Filters</Button>
+                    <Button variant="secondary" className="me-2" onClick={() => {
+                      setCategory("All Categories");
+                      setPriceRange("All Prices");
+                      setCpu("All CPUs");
+                      setGpu("All GPUs");
+                      setSearchQuery("");
+                    }}>Reset</Button>
+                    <Button variant="primary" onClick={() => setFilterVisible(false)}>Apply Filters</Button>
                   </div>
                 </Card>
               </Col>
             </Row>
           )}
           
-          <Row>
-            {products.map(product => (
-              <Col key={product.id} md={4} className="mb-4">
-                <Card className="h-100 shadow-sm">
-                  <Card.Img variant="top" src={product.image} />
-                  <Card.Body>
-                    <Card.Title>{product.name}</Card.Title>
-                    <div className="mb-2">
-                      <span className="badge bg-secondary">{product.category}</span>
-                    </div>
-                    <Card.Text className="text-muted small">{product.specs}</Card.Text>
-                    <div className="d-flex justify-content-between align-items-center mt-3">
-                      <span className="fw-bold text-primary">${product.price}</span>
-                      <Button variant="outline-primary" size="sm">View Details</Button>
-                    </div>
-                  </Card.Body>
-                </Card>
-              </Col>
-            ))}
-          </Row>
+          {/* Filtering and sorting logic */}
+          {(() => {
+            let filtered = products.filter(product => {
+              // Search
+              if (searchQuery && !product.name.toLowerCase().includes(searchQuery.toLowerCase())) return false;
+              // Category
+              if (category !== "All Categories" && product.category !== category) return false;
+              // Price
+              if (priceRange !== "All Prices") {
+                if (priceRange === "Under $1,000" && product.price >= 1000) return false;
+                if (priceRange === "$1,000 - $2,000" && (product.price < 1000 || product.price > 2000)) return false;
+                if (priceRange === "$2,000 - $3,000" && (product.price < 2000 || product.price > 3000)) return false;
+                if (priceRange === "Over $3,000" && product.price <= 3000) return false;
+              }
+              // CPU
+              if (cpu !== "All CPUs" && (!product.specs || !product.specs.includes(cpu))) return false;
+              // GPU
+              if (gpu !== "All GPUs" && (!product.specs || !product.specs.includes(gpu))) return false;
+              return true;
+            });
+            // Sort
+            if (sortBy === "PriceLowHigh") filtered.sort((a, b) => a.price - b.price);
+            else if (sortBy === "PriceHighLow") filtered.sort((a, b) => b.price - a.price);
+            else if (sortBy === "NameAZ") filtered.sort((a, b) => a.name.localeCompare(b.name));
+            // else Featured: no sort or custom logic
+            return (
+              <Row>
+                {filtered.length === 0 ? (
+                  <Col><div className="text-center text-muted py-5">No products found.</div></Col>
+                ) : (
+                  filtered.map(product => (
+                    <Col key={product.id} md={4} className="mb-4">
+                      <Card className="h-100 shadow-sm">
+                        <Card.Img variant="top" src={product.image} />
+                        <Card.Body>
+                          <Card.Title>{product.name}</Card.Title>
+                          <div className="mb-2">
+                            <span className="badge bg-secondary">{product.category}</span>
+                          </div>
+                          <Card.Text className="text-muted small">{product.specs}</Card.Text>
+                          <div className="d-flex justify-content-between align-items-center mt-3">
+                            <span className="fw-bold text-primary">${product.price}</span>
+                            <Button variant="outline-primary" size="sm">View Details</Button>
+                          </div>
+                        </Card.Body>
+                      </Card>
+                    </Col>
+                  ))
+                )}
+              </Row>
+            );
+          })()}
         </Container>
       </section>
 
@@ -693,68 +739,7 @@ function HomePage() {
                 </div>
               </div>
             </Col>
-            <Col md={6} className="d-flex justify-content-md-end">
-              <Button 
-                variant="outline-primary" 
-                onClick={() => setReviewFilterVisible(!reviewFilterVisible)}
-              >
-                <Filter className="me-1" /> Filter Reviews
-              </Button>
-            </Col>
           </Row>
-          
-          {reviewFilterVisible && (
-            <Row className="mb-4">
-              <Col md={12}>
-                <Card className="p-3">
-                  <Row>
-                    <Col md={4}>
-                      <Form.Group className="mb-3">
-                        <Form.Label>Filter by Rating</Form.Label>
-                        <Form.Select>
-                          <option>All Ratings</option>
-                          <option>5 Stars</option>
-                          <option>4 Stars</option>
-                          <option>3 Stars</option>
-                          <option>2 Stars</option>
-                          <option>1 Star</option>
-                        </Form.Select>
-                      </Form.Group>
-                    </Col>
-                    <Col md={4}>
-                      <Form.Group className="mb-3">
-                        <Form.Label>Filter by Product</Form.Label>
-                        <Form.Select>
-                          <option>All Products</option>
-                          <option>Titan X Gaming PC</option>
-                          <option>Creator Pro Workstation</option>
-                          <option>Stealth Mini ITX</option>
-                          <option>Budget Gaming Rig</option>
-                          <option>Ultimate Streaming PC</option>
-                          <option>Office Productivity PC</option>
-                        </Form.Select>
-                      </Form.Group>
-                    </Col>
-                    <Col md={4}>
-                      <Form.Group className="mb-3">
-                        <Form.Label>Sort by</Form.Label>
-                        <Form.Select>
-                          <option>Most Recent</option>
-                          <option>Highest Rated</option>
-                          <option>Lowest Rated</option>
-                          <option>Most Helpful</option>
-                        </Form.Select>
-                      </Form.Group>
-                    </Col>
-                  </Row>
-                  <div className="d-flex justify-content-end">
-                    <Button variant="secondary" className="me-2">Reset</Button>
-                    <Button variant="primary">Apply Filters</Button>
-                  </div>
-                </Card>
-              </Col>
-            </Row>
-          )}
           
           <Row>
             {reviews.map(review => (

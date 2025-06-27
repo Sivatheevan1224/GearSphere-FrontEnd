@@ -11,9 +11,7 @@ const SellerOrders = () => {
   const [statusFilter, setStatusFilter] = useState('all');
   const [dateFilter, setDateFilter] = useState('all');
   const ordersPerPage = 10;
-
-  // Mock data - replace with actual API calls
-  const orders = [
+  const [orders, setOrders] = useState([
     {
       id: 'ORD001',
       customer: {
@@ -23,7 +21,7 @@ const SellerOrders = () => {
       },
       date: '2024-02-15',
       total: 1299.99,
-      status: 'Processing',
+      status: 'In Process',
       items: [
         {
           id: 'P001',
@@ -58,7 +56,7 @@ const SellerOrders = () => {
       },
       date: '2024-02-14',
       total: 799.99,
-      status: 'Shipped',
+      status: 'Ready to Deliver',
       items: [
         {
           id: 'P003',
@@ -78,22 +76,22 @@ const SellerOrders = () => {
       trackingNumber: 'TRK987654321',
       notes: 'Express shipping'
     }
-  ];
+  ]);
+  const [updateStatus, setUpdateStatus] = useState('');
 
   const getStatusBadge = (status) => {
     const variants = {
-      'Pending': 'warning',
-      'Processing': 'info',
-      'Shipped': 'primary',
-      'Delivered': 'success',
-      'Cancelled': 'danger'
+      'In Process': 'primary',
+      'Ready to Deliver': 'info',
+      'Delivered': 'success'
     };
     return <Badge bg={variants[status] || 'secondary'}>{status}</Badge>;
   };
 
   const handleUpdateStatus = (orderId, newStatus) => {
-    // TODO: Implement API call to update order status
-    console.log('Updating order status:', { orderId, newStatus });
+    setOrders(prev => prev.map(order =>
+      order.id === orderId ? { ...order, status: newStatus } : order
+    ));
     setShowUpdateModal(false);
   };
 
@@ -159,11 +157,9 @@ const SellerOrders = () => {
                 onChange={(e) => setStatusFilter(e.target.value)}
               >
                 <option value="all">All Status</option>
-                <option value="Pending">Pending</option>
-                <option value="Processing">Processing</option>
-                <option value="Shipped">Shipped</option>
+                <option value="In Process">In Process</option>
+                <option value="Ready to Deliver">Ready to Deliver</option>
                 <option value="Delivered">Delivered</option>
-                <option value="Cancelled">Cancelled</option>
               </Form.Select>
               <Form.Control
                 type="date"
@@ -222,6 +218,7 @@ const SellerOrders = () => {
                       size="sm"
                       onClick={() => {
                         setSelectedOrder(order);
+                        setUpdateStatus(order.status);
                         setShowUpdateModal(true);
                       }}
                     >
@@ -353,12 +350,13 @@ const SellerOrders = () => {
               </Form.Group>
               <Form.Group className="mb-3">
                 <Form.Label>New Status</Form.Label>
-                <Form.Select>
-                  <option value="Pending">Pending</option>
-                  <option value="Processing">Processing</option>
-                  <option value="Shipped">Shipped</option>
+                <Form.Select
+                  value={updateStatus}
+                  onChange={e => setUpdateStatus(e.target.value)}
+                >
+                  <option value="In Process">In Process</option>
+                  <option value="Ready to Deliver">Ready to Deliver</option>
                   <option value="Delivered">Delivered</option>
-                  <option value="Cancelled">Cancelled</option>
                 </Form.Select>
               </Form.Group>
               <Form.Group className="mb-3">
@@ -385,7 +383,7 @@ const SellerOrders = () => {
           </Button>
           <Button
             variant="primary"
-            onClick={() => handleUpdateStatus(selectedOrder?.id, selectedOrder?.status)}
+            onClick={() => handleUpdateStatus(selectedOrder?.id, updateStatus)}
           >
             Update Status
           </Button>

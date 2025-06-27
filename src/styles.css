@@ -409,6 +409,7 @@ section {
     margin: 0.5rem 0;
     width: 100%;
   }
+
 }
 
 /* Role Selection Buttons */
@@ -562,3 +563,15 @@ section {
   height: 500px;
   object-fit: cover;
 }
+  
+  /* Custom: Make 'Activate' button green on hover in admin user management */
+  .btn-outline-secondary.activate-btn {
+    color: #198754;
+    border-color: #198754;
+  }
+  .btn-outline-secondary.activate-btn:hover, .btn-outline-secondary.activate-btn:focus {
+    background-color: #198754;
+    color: #fff;
+    border-color: #198754;
+  }
+  

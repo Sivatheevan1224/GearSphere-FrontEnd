@@ -1,9 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Container, Card, Button, Table } from 'react-bootstrap';
 
 function SellerVerification() {
   // Only one seller for the website
-  const seller = {
+  const [seller, setSeller] = useState({
     name: 'Main Seller',
     email: 'seller@gmail.com',
     joinDate: 'Jan 1, 2024',
@@ -13,6 +13,13 @@ function SellerVerification() {
     business: 'Tech Solutions Inc.',
     address: '123 Tech Street, New York, NY',
     phone: '+1 234-567-8900',
+  });
+
+  const handleSuspend = () => {
+    setSeller(prev => ({
+      ...prev,
+      status: prev.status === 'Active' ? 'Suspended' : 'Active'
+    }));
   };
 
   return (
@@ -56,14 +63,15 @@ function SellerVerification() {
                 <td>{seller.phone}</td>
                 <td>{seller.joinDate}</td>
                 <td>
-                  <span className="badge bg-success">{seller.status}</span>
+                  <span className={`badge ${seller.status === 'Active' ? 'bg-success' : 'bg-danger'}`}>{seller.status}</span>
                 </td>
                 <td>
-                  <Button variant="outline-primary" size="sm" className="me-2">
-                    Edit
-                  </Button>
-                  <Button variant="outline-danger" size="sm">
-                    Suspend
+                  <Button 
+                    variant={seller.status === 'Active' ? 'outline-danger' : 'outline-success'} 
+                    size="sm"
+                    onClick={handleSuspend}
+                  >
+                    {seller.status === 'Active' ? 'Suspend' : 'Activate'}
                   </Button>
                 </td>
               </tr>

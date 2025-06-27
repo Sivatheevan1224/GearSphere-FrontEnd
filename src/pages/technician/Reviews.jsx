@@ -8,64 +8,53 @@ const TechnicianReviews = () => {
   const reviewsPerPage = 5;
 
   // Mock data - replace with actual API calls
-  const reviewsData = {
-    overallRating: 4.8,
-    totalReviews: 48,
-    ratingBreakdown: {
-      5: 35,
-      4: 8,
-      3: 3,
-      2: 1,
-      1: 1
+  const [reviews, setReviews] = useState([
+    {
+      id: 1,
+      customerName: 'John Smith',
+      date: '2024-03-15',
+      rating: 5,
+      service: 'PC Build',
+      comment: 'Excellent work! The PC was built exactly to my specifications and runs perfectly. Very professional and knowledgeable.',
+      response: 'Thank you for your kind words! I\'m glad you\'re happy with your new PC.'
     },
-    reviews: [
-      {
-        id: 1,
-        customerName: 'John Smith',
-        date: '2024-03-15',
-        rating: 5,
-        service: 'PC Build',
-        comment: 'Excellent work! The PC was built exactly to my specifications and runs perfectly. Very professional and knowledgeable.',
-        response: 'Thank you for your kind words! I\'m glad you\'re happy with your new PC.'
-      },
-      {
-        id: 2,
-        customerName: 'Sarah Johnson',
-        date: '2024-03-14',
-        rating: 4,
-        service: 'Hardware Repair',
-        comment: 'Quick and efficient service. Fixed my laptop issues in no time. Would recommend!',
-        response: null
-      },
-      {
-        id: 3,
-        customerName: 'Mike Brown',
-        date: '2024-03-13',
-        rating: 5,
-        service: 'Software Installation',
-        comment: 'Very helpful and patient with my questions. Great service!',
-        response: 'Thank you for choosing our service!'
-      },
-      {
-        id: 4,
-        customerName: 'Emily Davis',
-        date: '2024-03-12',
-        rating: 5,
-        service: 'PC Build',
-        comment: 'Amazing attention to detail. The cable management is perfect!',
-        response: null
-      },
-      {
-        id: 5,
-        customerName: 'David Wilson',
-        date: '2024-03-11',
-        rating: 3,
-        service: 'Hardware Repair',
-        comment: 'Service was good, but took longer than expected.',
-        response: 'I apologize for the delay. Thank you for your patience.'
-      }
-    ]
-  };
+    {
+      id: 2,
+      customerName: 'Sarah Johnson',
+      date: '2024-03-14',
+      rating: 4,
+      service: 'Hardware Repair',
+      comment: 'Quick and efficient service. Fixed my laptop issues in no time. Would recommend!',
+      response: null
+    },
+    {
+      id: 3,
+      customerName: 'Mike Brown',
+      date: '2024-03-13',
+      rating: 5,
+      service: 'Software Installation',
+      comment: 'Very helpful and patient with my questions. Great service!',
+      response: 'Thank you for choosing our service!'
+    },
+    {
+      id: 4,
+      customerName: 'Emily Davis',
+      date: '2024-03-12',
+      rating: 5,
+      service: 'PC Build',
+      comment: 'Amazing attention to detail. The cable management is perfect!',
+      response: null
+    },
+    {
+      id: 5,
+      customerName: 'David Wilson',
+      date: '2024-03-11',
+      rating: 3,
+      service: 'Hardware Repair',
+      comment: 'Service was good, but took longer than expected.',
+      response: 'I apologize for the delay. Thank you for your patience.'
+    }
+  ]);
 
   const [responseText, setResponseText] = useState({});
 
@@ -77,8 +66,10 @@ const TechnicianReviews = () => {
   };
 
   const handleSubmitResponse = (reviewId) => {
-    // TODO: Implement response submission logic
-    console.log('Submitting response for review:', reviewId, responseText[reviewId]);
+    setReviews(prev => prev.map(review =>
+      review.id === reviewId ? { ...review, response: responseText[reviewId] } : review
+    ));
+    setResponseText(prev => ({ ...prev, [reviewId]: '' }));
   };
 
   const renderStars = (rating) => {
@@ -92,10 +83,10 @@ const TechnicianReviews = () => {
   };
 
   const getRatingPercentage = (rating) => {
-    return (reviewsData.ratingBreakdown[rating] / reviewsData.totalReviews) * 100;
+    return (reviews.length / reviews.length) * 100;
   };
 
-  const filteredReviews = reviewsData.reviews.filter(review => {
+  const filteredReviews = reviews.filter(review => {
     if (activeFilter === 'all') return true;
     if (activeFilter === 'responded') return review.response !== null;
     if (activeFilter === 'unresponded') return review.response === null;
@@ -117,12 +108,12 @@ const TechnicianReviews = () => {
           <Card className="shadow-sm h-100">
             <Card.Body>
               <div className="text-center mb-4">
-                <h2 className="mb-0">{reviewsData.overallRating}</h2>
+                <h2 className="mb-0">{reviews.length > 0 ? reviews[0].rating : 0}</h2>
                 <div className="mb-2">
-                  {renderStars(Math.round(reviewsData.overallRating))}
+                  {renderStars(Math.round(reviews.length > 0 ? reviews[0].rating : 0))}
                 </div>
                 <p className="text-muted mb-0">
-                  Based on {reviewsData.totalReviews} reviews
+                  Based on {reviews.length} reviews
                 </p>
               </div>
 
@@ -142,7 +133,7 @@ const TechnicianReviews = () => {
                       </div>
                     </div>
                     <div className="ms-2" style={{ width: '40px' }}>
-                      {reviewsData.ratingBreakdown[rating]}
+                      {reviews.filter(r => r.rating === rating).length}
                     </div>
                   </div>
                 ))}

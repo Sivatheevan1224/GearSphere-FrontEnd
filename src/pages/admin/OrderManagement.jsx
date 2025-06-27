@@ -9,9 +9,7 @@ const OrderManagement = () => {
   const [statusFilter, setStatusFilter] = useState('all');
   const [typeFilter, setTypeFilter] = useState('all');
   const ordersPerPage = 10;
-
-  // Mock data - replace with actual API calls
-  const orders = [
+  const [orders, setOrders] = useState([
     {
       id: 'ORD001',
       type: 'PC Build',
@@ -25,7 +23,7 @@ const OrderManagement = () => {
         id: 'T001',
         name: 'Mike Brown'
       },
-      status: 'In Progress',
+      status: 'In Process',
       date: '2024-03-15',
       total: 2500,
       items: [
@@ -42,7 +40,7 @@ const OrderManagement = () => {
         email: 'sarah.j@example.com',
         phone: '+1 (555) 234-5678'
       },
-      status: 'Delivered',
+      status: 'Ready to Deliver',
       date: '2024-03-14',
       total: 800,
       items: [
@@ -64,7 +62,7 @@ const OrderManagement = () => {
         id: 'T002',
         name: 'Emily Davis'
       },
-      status: 'Scheduled',
+      status: 'Delivered',
       date: '2024-03-20',
       total: 150,
       items: [
@@ -72,15 +70,14 @@ const OrderManagement = () => {
       ],
       notes: 'Screen replacement and thermal paste application'
     }
-  ];
+  ]);
 
   const getStatusBadge = (status) => {
     const variants = {
       'Pending': 'warning',
       'Confirmed': 'info',
-      'In Progress': 'primary',
-      'Scheduled': 'info',
-      'Shipped': 'primary',
+      'In Process': 'primary',
+      'Ready to Deliver': 'info',
       'Delivered': 'success',
       'Cancelled': 'danger',
       'Refunded': 'secondary'
@@ -103,8 +100,12 @@ const OrderManagement = () => {
   };
 
   const handleStatusChange = (orderId, newStatus) => {
-    // TODO: Implement status update logic
-    console.log('Updating status for order:', orderId, 'to:', newStatus);
+    setOrders(prev => prev.map(order =>
+      order.id === orderId ? { ...order, status: newStatus } : order
+    ));
+    if (selectedOrder && selectedOrder.id === orderId) {
+      setSelectedOrder(order => order ? { ...order, status: newStatus } : order);
+    }
   };
 
   const filteredOrders = orders.filter(order =>
@@ -144,14 +145,9 @@ const OrderManagement = () => {
                 onChange={(e) => setStatusFilter(e.target.value)}
               >
                 <option value="all">All Status</option>
-                <option value="Pending">Pending</option>
-                <option value="Confirmed">Confirmed</option>
-                <option value="In Progress">In Progress</option>
-                <option value="Scheduled">Scheduled</option>
-                <option value="Shipped">Shipped</option>
+                <option value="In Process">In Process</option>
+                <option value="Ready to Deliver">Ready to Deliver</option>
                 <option value="Delivered">Delivered</option>
-                <option value="Cancelled">Cancelled</option>
-                <option value="Refunded">Refunded</option>
               </Form.Select>
             </div>
             <Form.Control
@@ -204,9 +200,8 @@ const OrderManagement = () => {
                     >
                       <option value="Pending">Pending</option>
                       <option value="Confirmed">Confirmed</option>
-                      <option value="In Progress">In Progress</option>
-                      <option value="Scheduled">Scheduled</option>
-                      <option value="Shipped">Shipped</option>
+                      <option value="In Process">In Process</option>
+                      <option value="Ready to Deliver">Ready to Deliver</option>
                       <option value="Delivered">Delivered</option>
                       <option value="Cancelled">Cancelled</option>
                       <option value="Refunded">Refunded</option>

@@ -28,12 +28,10 @@ function AdminNavbar({ fixed = "top" }) {
           <Navbar.Collapse id="admin-navbar-nav">
             <Nav className="me-auto">
               <Nav.Link as={Link} to="/admin/users">User Management</Nav.Link>
-              <Nav.Link as={Link} to="/admin/technician-verification">Technician Verification</Nav.Link>
               <Nav.Link as={Link} to="/admin/seller-verification">Seller Verification</Nav.Link>
               <Nav.Link as={Link} to="/admin/orders">Order Management</Nav.Link>
               <Nav.Link as={Link} to="/admin/analytics">Analytics</Nav.Link>
               <Nav.Link as={Link} to="/admin/reports">Reports</Nav.Link>
-              <Nav.Link as={Link} to="/admin/settings">Settings</Nav.Link>
               <Nav.Link as={Link} to="/admin/system-settings">System Settings</Nav.Link>
             </Nav>
             <Button variant="outline-danger" onClick={() => setShowLogoutModal(true)}>
