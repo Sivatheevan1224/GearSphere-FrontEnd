@@ -318,7 +318,7 @@ function HomePage() {
             <Col md={12}>
               <h2 className="text-center mb-4">Meet Our Team</h2>
               <Row>
-                <Col md={4} className="mb-4">
+                <Col md={3} className="mb-4">
                   <div className="text-center">
                     <img 
                       src="/placeholder.svg?height=150&width=150" 
@@ -327,11 +327,11 @@ function HomePage() {
                       width="150"
                       height="150"
                     />
-                    <h4>John Doe</h4>
+                    <h4>Sivatheevan</h4>
                     <p className="text-muted">Founder & CEO</p>
                   </div>
                 </Col>
-                <Col md={4} className="mb-4">
+                <Col md={3} className="mb-4">
                   <div className="text-center">
                     <img 
                       src="/placeholder.svg?height=150&width=150" 
@@ -340,11 +340,11 @@ function HomePage() {
                       width="150"
                       height="150"
                     />
-                    <h4>Jane Smith</h4>
+                    <h4>Makinthan</h4>
                     <p className="text-muted">Head of Operations</p>
                   </div>
                 </Col>
-                <Col md={4} className="mb-4">
+                <Col md={3} className="mb-4">
                   <div className="text-center">
                     <img 
                       src="/placeholder.svg?height=150&width=150" 
@@ -353,8 +353,21 @@ function HomePage() {
                       width="150"
                       height="150"
                     />
-                    <h4>Mike Johnson</h4>
+                    <h4>Pukaliny</h4>
                     <p className="text-muted">Lead PC Builder</p>
+                  </div>
+                </Col>
+                <Col md={3} className="mb-4">
+                  <div className="text-center">
+                    <img 
+                      src="/placeholder.svg?height=150&width=150" 
+                      alt="Team Member" 
+                      className="rounded-circle mb-3"
+                      width="150"
+                      height="150"
+                    />
+                    <h4>Kowsika</h4>
+                    <p className="text-muted">Customer Support</p>
                   </div>
                 </Col>
               </Row>
