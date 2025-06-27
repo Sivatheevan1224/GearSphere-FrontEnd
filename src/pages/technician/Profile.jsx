@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Container, Row, Col, Card, Form, Button, Nav, Tab, Badge } from 'react-bootstrap';
+import { Container, Row, Col, Card, Form, Button, Nav, Tab, Badge, Modal } from 'react-bootstrap';
 
 const TechnicianProfile = () => {
   const [activeTab, setActiveTab] = useState('personal');
@@ -43,6 +43,9 @@ const TechnicianProfile = () => {
     systemUpdates: false
   });
 
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [successMessage, setSuccessMessage] = useState('');
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({
@@ -70,13 +73,17 @@ const TechnicianProfile = () => {
   const handleProfileUpdate = (e) => {
     e.preventDefault();
     // TODO: Implement profile update logic
-    console.log('Profile update:', formData);
+    setSuccessMessage('Profile updated successfully!');
+    setShowSuccess(true);
+    setTimeout(() => setShowSuccess(false), 2000);
   };
 
   const handlePasswordUpdate = (e) => {
     e.preventDefault();
     // TODO: Implement password update logic
-    console.log('Password update:', passwordData);
+    setSuccessMessage('Password updated successfully!');
+    setShowSuccess(true);
+    setTimeout(() => setShowSuccess(false), 2000);
   };
 
   const handleAvailabilityChange = (day, field, value) => {
@@ -92,8 +99,30 @@ const TechnicianProfile = () => {
     }));
   };
 
+  const handleAvailabilitySave = (e) => {
+    e.preventDefault();
+    // TODO: Implement availability update logic
+    setSuccessMessage('Availability updated successfully!');
+    setShowSuccess(true);
+    setTimeout(() => setShowSuccess(false), 2000);
+  };
+
+  const handlePreferencesSave = (e) => {
+    e.preventDefault();
+    // TODO: Implement preferences update logic
+    setSuccessMessage('Preferences updated successfully!');
+    setShowSuccess(true);
+    setTimeout(() => setShowSuccess(false), 2000);
+  };
+
   return (
     <Container className="py-5">
+      <Modal show={showSuccess} onHide={() => setShowSuccess(false)} centered backdrop="static" keyboard={false}>
+        <Modal.Body className="text-center">
+          <h5 className="mb-0">{successMessage}</h5>
+        </Modal.Body>
+      </Modal>
+
       <h1 className="text-center mb-5">Technician Profile</h1>
 
       <Row>
@@ -300,7 +329,7 @@ const TechnicianProfile = () => {
                 {/* Availability Tab */}
                 <Tab.Pane active={activeTab === 'availability'}>
                   <h4 className="mb-4">Working Hours</h4>
-                  <Form>
+                  <Form onSubmit={handleAvailabilitySave}>
                     {Object.entries(formData.availability).map(([day, hours]) => (
                       <Row key={day} className="mb-3">
                         <Col md={3}>
@@ -374,7 +403,7 @@ const TechnicianProfile = () => {
                 {/* Notifications Tab */}
                 <Tab.Pane active={activeTab === 'notifications'}>
                   <h4 className="mb-4">Notification Preferences</h4>
-                  <Form>
+                  <Form onSubmit={handlePreferencesSave}>
                     <Form.Group className="mb-3">
                       <Form.Check
                         type="switch"

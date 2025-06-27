@@ -7,13 +7,12 @@ const ProductManagement = () => {
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
+  const [editProduct, setEditProduct] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('all');
   const [statusFilter, setStatusFilter] = useState('all');
   const productsPerPage = 10;
-
-  // Mock data - replace with actual API calls
-  const products = [
+  const [products, setProducts] = useState([
     {
       id: 'P001',
       name: 'RTX 4070',
@@ -47,7 +46,7 @@ const ProductManagement = () => {
       sales: 35,
       image: 'https://example.com/nvme.jpg'
     }
-  ];
+  ]);
 
   const categories = [
     'Graphics Card',
@@ -59,6 +58,17 @@ const ProductManagement = () => {
     'Case',
     'Cooling'
   ];
+
+  const [addProduct, setAddProduct] = useState({
+    name: '',
+    category: categories[0],
+    price: '',
+    stock: '',
+    status: 'Active',
+    image: '',
+    rating: 0,
+    sales: 0
+  });
 
   const getStatusBadge = (status) => {
     const variants = {
@@ -77,14 +87,12 @@ const ProductManagement = () => {
   };
 
   const handleEditProduct = (productData) => {
-    // TODO: Implement API call to update product
-    console.log('Updating product:', productData);
+    setProducts(prev => prev.map(p => p.id === productData.id ? productData : p));
     setShowEditModal(false);
   };
 
   const handleDeleteProduct = (productId) => {
-    // TODO: Implement API call to delete product
-    console.log('Deleting product:', productId);
+    setProducts(prev => prev.filter(p => p.id !== productId));
     setShowDeleteModal(false);
   };
 
@@ -192,6 +200,7 @@ const ProductManagement = () => {
                       className="me-2"
                       onClick={() => {
                         setSelectedProduct(product);
+                        setEditProduct({ ...product });
                         setShowEditModal(true);
                       }}
                     >
@@ -250,13 +259,23 @@ const ProductManagement = () => {
               <Col md={6}>
                 <Form.Group className="mb-3">
                   <Form.Label>Product Name</Form.Label>
-                  <Form.Control type="text" placeholder="Enter product name" />
+                  <Form.Control
+                    type="text"
+                    name="name"
+                    value={addProduct.name}
+                    onChange={e => setAddProduct({ ...addProduct, name: e.target.value })}
+                    placeholder="Enter product name"
+                  />
                 </Form.Group>
               </Col>
               <Col md={6}>
                 <Form.Group className="mb-3">
                   <Form.Label>Category</Form.Label>
-                  <Form.Select>
+                  <Form.Select
+                    name="category"
+                    value={addProduct.category}
+                    onChange={e => setAddProduct({ ...addProduct, category: e.target.value })}
+                  >
                     {categories.map(category => (
                       <option key={category} value={category}>{category}</option>
                     ))}
@@ -268,31 +287,73 @@ const ProductManagement = () => {
               <Col md={6}>
                 <Form.Group className="mb-3">
                   <Form.Label>Price</Form.Label>
-                  <Form.Control type="number" placeholder="Enter price" />
+                  <Form.Control
+                    type="number"
+                    name="price"
+                    value={addProduct.price}
+                    onChange={e => setAddProduct({ ...addProduct, price: Number(e.target.value) })}
+                    placeholder="Enter price"
+                  />
                 </Form.Group>
               </Col>
               <Col md={6}>
                 <Form.Group className="mb-3">
                   <Form.Label>Stock</Form.Label>
-                  <Form.Control type="number" placeholder="Enter stock quantity" />
+                  <Form.Control
+                    type="number"
+                    name="stock"
+                    value={addProduct.stock}
+                    onChange={e => setAddProduct({ ...addProduct, stock: Number(e.target.value) })}
+                    placeholder="Enter stock quantity"
+                  />
                 </Form.Group>
               </Col>
             </Row>
             <Form.Group className="mb-3">
-              <Form.Label>Product Image</Form.Label>
-              <Form.Control type="file" accept="image/*" />
+              <Form.Label>Status</Form.Label>
+              <Form.Select
+                name="status"
+                value={addProduct.status}
+                onChange={e => setAddProduct({ ...addProduct, status: e.target.value })}
+              >
+                <option value="Active">Active</option>
+                <option value="Inactive">Inactive</option>
+                <option value="Out of Stock">Out of Stock</option>
+                <option value="Discontinued">Discontinued</option>
+              </Form.Select>
             </Form.Group>
-            <Form.Group className="mb-3">
-              <Form.Label>Description</Form.Label>
-              <Form.Control as="textarea" rows={3} placeholder="Enter product description" />
-            </Form.Group>
+            {/* You can add more fields here as needed */}
           </Form>
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={() => setShowAddModal(false)}>
             Cancel
           </Button>
-          <Button variant="primary" onClick={() => handleAddProduct({})}>
+          <Button variant="primary" onClick={() => {
+            setProducts(prev => [
+              ...prev,
+              {
+                ...addProduct,
+                id: 'P' + (Math.floor(Math.random() * 100000)),
+                price: Number(addProduct.price),
+                stock: Number(addProduct.stock),
+                image: '',
+                rating: 0,
+                sales: 0
+              }
+            ]);
+            setAddProduct({
+              name: '',
+              category: categories[0],
+              price: '',
+              stock: '',
+              status: 'Active',
+              image: '',
+              rating: 0,
+              sales: 0
+            });
+            setShowAddModal(false);
+          }}>
             Add Product
           </Button>
         </Modal.Footer>
@@ -304,7 +365,7 @@ const ProductManagement = () => {
           <Modal.Title>Edit Product</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          {selectedProduct && (
+          {editProduct && (
             <Form>
               <Row>
                 <Col md={6}>
@@ -312,14 +373,20 @@ const ProductManagement = () => {
                     <Form.Label>Product Name</Form.Label>
                     <Form.Control
                       type="text"
-                      defaultValue={selectedProduct.name}
+                      name="name"
+                      value={editProduct.name}
+                      onChange={e => setEditProduct({ ...editProduct, name: e.target.value })}
                     />
                   </Form.Group>
                 </Col>
                 <Col md={6}>
                   <Form.Group className="mb-3">
                     <Form.Label>Category</Form.Label>
-                    <Form.Select defaultValue={selectedProduct.category}>
+                    <Form.Select
+                      name="category"
+                      value={editProduct.category}
+                      onChange={e => setEditProduct({ ...editProduct, category: e.target.value })}
+                    >
                       {categories.map(category => (
                         <option key={category} value={category}>{category}</option>
                       ))}
@@ -333,7 +400,9 @@ const ProductManagement = () => {
                     <Form.Label>Price</Form.Label>
                     <Form.Control
                       type="number"
-                      defaultValue={selectedProduct.price}
+                      name="price"
+                      value={editProduct.price}
+                      onChange={e => setEditProduct({ ...editProduct, price: Number(e.target.value) })}
                     />
                   </Form.Group>
                 </Col>
@@ -342,14 +411,20 @@ const ProductManagement = () => {
                     <Form.Label>Stock</Form.Label>
                     <Form.Control
                       type="number"
-                      defaultValue={selectedProduct.stock}
+                      name="stock"
+                      value={editProduct.stock}
+                      onChange={e => setEditProduct({ ...editProduct, stock: Number(e.target.value) })}
                     />
                   </Form.Group>
                 </Col>
               </Row>
               <Form.Group className="mb-3">
                 <Form.Label>Status</Form.Label>
-                <Form.Select defaultValue={selectedProduct.status}>
+                <Form.Select
+                  name="status"
+                  value={editProduct.status}
+                  onChange={e => setEditProduct({ ...editProduct, status: e.target.value })}
+                >
                   <option value="Active">Active</option>
                   <option value="Inactive">Inactive</option>
                   <option value="Out of Stock">Out of Stock</option>
@@ -371,7 +446,7 @@ const ProductManagement = () => {
           <Button variant="secondary" onClick={() => setShowEditModal(false)}>
             Cancel
           </Button>
-          <Button variant="primary" onClick={() => handleEditProduct(selectedProduct)}>
+          <Button variant="primary" onClick={() => handleEditProduct(editProduct)}>
             Save Changes
           </Button>
         </Modal.Footer>

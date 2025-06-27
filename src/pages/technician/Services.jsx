@@ -12,9 +12,7 @@ const TechnicianServices = () => {
     duration: '',
     category: ''
   });
-
-  // Mock data - replace with actual API call
-  const services = [
+  const [services, setServices] = useState([
     {
       id: 1,
       name: 'PC Building Service',
@@ -37,8 +35,7 @@ const TechnicianServices = () => {
       completedJobs: 32,
       rating: 4.9
     },
-    // Add more mock services here
-  ];
+  ]);
 
   const categories = [
     'Assembly',
@@ -51,8 +48,18 @@ const TechnicianServices = () => {
 
   const handleAddService = (e) => {
     e.preventDefault();
-    // TODO: Implement add service logic
-    console.log('Adding service:', newService);
+    const newId = services.length > 0 ? Math.max(...services.map(s => s.id)) + 1 : 1;
+    setServices(prev => [
+      ...prev,
+      {
+        ...newService,
+        id: newId,
+        price: Number(newService.price),
+        status: 'Active',
+        completedJobs: 0,
+        rating: 0
+      }
+    ]);
     setShowAddServiceModal(false);
     setNewService({
       name: '',
@@ -65,19 +72,22 @@ const TechnicianServices = () => {
 
   const handleEditService = (e) => {
     e.preventDefault();
-    // TODO: Implement edit service logic
-    console.log('Editing service:', selectedService);
+    setServices(prev => prev.map(service =>
+      service.id === selectedService.id ? { ...selectedService, price: Number(selectedService.price) } : service
+    ));
     setShowEditServiceModal(false);
   };
 
   const handleDeleteService = (serviceId) => {
-    // TODO: Implement delete service logic
-    console.log('Deleting service:', serviceId);
+    setServices(prev => prev.filter(service => service.id !== serviceId));
   };
 
   const handleToggleStatus = (serviceId) => {
-    // TODO: Implement status toggle logic
-    console.log('Toggling status for service:', serviceId);
+    setServices(prev => prev.map(service =>
+      service.id === serviceId
+        ? { ...service, status: service.status === 'Active' ? 'Inactive' : 'Active' }
+        : service
+    ));
   };
 
   return (
@@ -146,8 +156,9 @@ const TechnicianServices = () => {
                       Delete
                     </Button>
                     <Button
-                      variant="outline-secondary"
+                      variant={service.status === 'Active' ? 'outline-secondary' : 'outline-success'}
                       size="sm"
+                      className={service.status !== 'Active' ? 'activate-btn me-2' : 'me-2'}
                       onClick={() => handleToggleStatus(service.id)}
                     >
                       {service.status === 'Active' ? 'Deactivate' : 'Activate'}

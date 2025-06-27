@@ -530,3 +530,14 @@ body {
     background-color: var(--bs-primary) !important;
   }
   
+  /* Custom: Make 'Activate' button green on hover in admin user management */
+  .btn-outline-secondary.activate-btn {
+    color: #198754;
+    border-color: #198754;
+  }
+  .btn-outline-secondary.activate-btn:hover, .btn-outline-secondary.activate-btn:focus {
+    background-color: #198754;
+    color: #fff;
+    border-color: #198754;
+  }
+  

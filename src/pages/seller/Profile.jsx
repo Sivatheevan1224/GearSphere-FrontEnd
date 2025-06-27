@@ -1,11 +1,10 @@
 import React, { useState } from 'react';
-import { Container, Row, Col, Card, Form, Button, Tab, Nav, Alert } from 'react-bootstrap';
+import { Container, Row, Col, Card, Form, Button, Tab, Nav, Alert, Modal } from 'react-bootstrap';
 
 const SellerProfile = () => {
   const [activeTab, setActiveTab] = useState('profile');
-  const [showAlert, setShowAlert] = useState(false);
-  const [alertMessage, setAlertMessage] = useState('');
-  const [alertVariant, setAlertVariant] = useState('success');
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [successMessage, setSuccessMessage] = useState('');
 
   // Mock data - replace with actual API calls
   const profileData = {
@@ -54,33 +53,28 @@ const SellerProfile = () => {
   const handleSaveProfile = (e) => {
     e.preventDefault();
     // TODO: Implement API call to update profile
-    setAlertMessage('Profile updated successfully!');
-    setAlertVariant('success');
-    setShowAlert(true);
+    setSuccessMessage('Profile updated successfully!');
+    setShowSuccess(true);
+    setTimeout(() => setShowSuccess(false), 3000);
   };
 
   const handleSavePreferences = (e) => {
     e.preventDefault();
     // TODO: Implement API call to update preferences
-    setAlertMessage('Preferences updated successfully!');
-    setAlertVariant('success');
-    setShowAlert(true);
+    setSuccessMessage('Preferences updated successfully!');
+    setShowSuccess(true);
+    setTimeout(() => setShowSuccess(false), 3000);
   };
 
   return (
     <Container className="py-5">
       <h1 className="text-center mb-5">Store Profile</h1>
 
-      {showAlert && (
-        <Alert
-          variant={alertVariant}
-          onClose={() => setShowAlert(false)}
-          dismissible
-          className="mb-4"
-        >
-          {alertMessage}
-        </Alert>
-      )}
+      <Modal show={showSuccess} onHide={() => setShowSuccess(false)} centered backdrop="static" keyboard={false}>
+        <Modal.Body className="text-center">
+          <h5 className="mb-0">{successMessage}</h5>
+        </Modal.Body>
+      </Modal>
 
       <Row>
         <Col md={3}>

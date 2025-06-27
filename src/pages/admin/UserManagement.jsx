@@ -7,9 +7,10 @@ function UserManagement() {
   const [showAddModal, setShowAddModal] = useState(false);
   const [showVerifyModal, setShowVerifyModal] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
+  const [showDetailsModal, setShowDetailsModal] = useState(false);
 
   // Sample data - replace with actual API data
-  const customers = [
+  const [customers, setCustomers] = useState([
     {
       id: 1,
       name: 'John Silva',
@@ -30,9 +31,9 @@ function UserManagement() {
       joinDate: '2024-02-01',
       lastLogin: '2024-03-09'
     }
-  ];
+  ]);
 
-  const technicians = [
+  const [technicians, setTechnicians] = useState([
     {
       id: 1,
       name: 'Nimal Fernando',
@@ -59,7 +60,7 @@ function UserManagement() {
       rating: 0,
       completedJobs: 0
     }
-  ];
+  ]);
 
   const handleAddTechnician = (userData) => {
     // TODO: Implement technician addition
@@ -68,14 +69,29 @@ function UserManagement() {
   };
 
   const handleVerifyTechnician = (technicianId) => {
-    // TODO: Implement technician verification
-    console.log('Verifying technician:', technicianId);
+    setTechnicians(prevTechs => prevTechs.map(tech =>
+      tech.id === technicianId ? { ...tech, status: 'verified' } : tech
+    ));
     setShowVerifyModal(false);
   };
 
   const handleBlockUser = (userId, userType) => {
-    // TODO: Implement user blocking
-    console.log('Blocking user:', userId, userType);
+    if (userType === 'customer') {
+      setCustomers(prev => prev.map(c =>
+        c.id === userId
+          ? { ...c, status: c.status === 'active' ? 'blocked' : 'active' }
+          : c
+      ));
+    } else if (userType === 'technician') {
+      setTechnicians(prev => prev.map(t => {
+        if (t.id !== userId) return t;
+        // If currently verified, block; if blocked, restore to verified; if pending, block; if blocked from pending, restore to pending
+        if (t.status === 'verified') return { ...t, status: 'blocked' };
+        if (t.status === 'blocked') return { ...t, status: t.rating > 0 || t.completedJobs > 0 ? 'verified' : 'pending' };
+        if (t.status === 'pending') return { ...t, status: 'blocked' };
+        return t;
+      }));
+    }
   };
 
   return (
@@ -168,7 +184,7 @@ function UserManagement() {
                     <td>{customer.district}</td>
                     <td>
                       <Badge bg={customer.status === 'active' ? 'success' : 'danger'}>
-                        {customer.status}
+                        {customer.status === 'active' ? 'active' : 'blocked'}
                       </Badge>
                     </td>
                     <td>{customer.joinDate}</td>
@@ -178,15 +194,20 @@ function UserManagement() {
                         variant="outline-primary" 
                         size="sm" 
                         className="me-2"
+                        onClick={() => {
+                          setSelectedUser(customer);
+                          setShowDetailsModal(true);
+                        }}
                       >
                         View Details
                       </Button>
                       <Button 
-                        variant="outline-danger" 
+                        variant={customer.status === 'active' ? 'outline-danger' : 'outline-secondary'}
                         size="sm"
                         onClick={() => handleBlockUser(customer.id, 'customer')}
+                        className={customer.status === 'active' ? '' : 'activate-btn'}
                       >
-                        {customer.status === 'active' ? 'Block' : 'Unblock'}
+                        {customer.status === 'active' ? 'Block' : 'Activate'}
                       </Button>
                     </td>
                   </tr>
@@ -222,7 +243,8 @@ function UserManagement() {
                     <td>
                       <Badge bg={
                         technician.status === 'verified' ? 'success' :
-                        technician.status === 'pending' ? 'warning' : 'danger'
+                        technician.status === 'pending' ? 'warning' :
+                        technician.status === 'blocked' ? 'danger' : 'secondary'
                       }>
                         {technician.status}
                       </Badge>
@@ -259,15 +281,20 @@ function UserManagement() {
                             variant="outline-primary" 
                             size="sm" 
                             className="me-2"
+                            onClick={() => {
+                              setSelectedUser(technician);
+                              setShowDetailsModal(true);
+                            }}
                           >
                             View Details
                           </Button>
                           <Button 
-                            variant="outline-danger" 
+                            variant={technician.status === 'blocked' ? 'outline-secondary' : 'outline-danger'}
                             size="sm"
                             onClick={() => handleBlockUser(technician.id, 'technician')}
+                            className={technician.status === 'blocked' ? 'activate-btn' : ''}
                           >
-                            {technician.status === 'verified' ? 'Block' : 'Unblock'}
+                            {technician.status === 'blocked' ? (technician.rating > 0 || technician.completedJobs > 0 ? 'Activate' : 'Pending') : 'Block'}
                           </Button>
                         </>
                       )}
@@ -373,6 +400,34 @@ function UserManagement() {
           >
             <ShieldCheck className="me-2" />
             Verify Technician
+          </Button>
+        </Modal.Footer>
+      </Modal>
+
+      {/* User Details Modal */}
+      <Modal show={showDetailsModal} onHide={() => setShowDetailsModal(false)} centered>
+        <Modal.Header closeButton>
+          <Modal.Title>User Details</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          {selectedUser && (
+            <>
+              <h5 className="mb-3">{selectedUser.name}</h5>
+              <p><strong>Email:</strong> {selectedUser.email}</p>
+              <p><strong>Phone:</strong> {selectedUser.phone}</p>
+              {selectedUser.district && <p><strong>District:</strong> {selectedUser.district}</p>}
+              {selectedUser.specialization && <p><strong>Specialization:</strong> {selectedUser.specialization}</p>}
+              {selectedUser.status && <p><strong>Status:</strong> {selectedUser.status}</p>}
+              {selectedUser.joinDate && <p><strong>Join Date:</strong> {selectedUser.joinDate}</p>}
+              {selectedUser.lastLogin && <p><strong>Last Login:</strong> {selectedUser.lastLogin}</p>}
+              {selectedUser.rating !== undefined && <p><strong>Rating:</strong> {selectedUser.rating}</p>}
+              {selectedUser.completedJobs !== undefined && <p><strong>Completed Jobs:</strong> {selectedUser.completedJobs}</p>}
+            </>
+          )}
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setShowDetailsModal(false)}>
+            Close
           </Button>
         </Modal.Footer>
       </Modal>

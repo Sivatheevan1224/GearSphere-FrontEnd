@@ -1,7 +1,9 @@
 import React from 'react';
 import { Container, Row, Col, Card, Button } from 'react-bootstrap';
+import { useNavigate } from 'react-router-dom';
 
 function Marketplace() {
+  const navigate = useNavigate();
   return (
     <Container className="py-5">
       <h1 className="mb-4">Marketplace</h1>
@@ -14,7 +16,7 @@ function Marketplace() {
               <Card.Text>
                 Browse our selection of high-performance gaming components.
               </Card.Text>
-              <Button variant="primary">View Products</Button>
+              <Button variant="primary" onClick={() => navigate('/marketplace/gaming')}>View Products</Button>
             </Card.Body>
           </Card>
         </Col>
@@ -26,7 +28,7 @@ function Marketplace() {
               <Card.Text>
                 Professional-grade components for content creators and professionals.
               </Card.Text>
-              <Button variant="primary">View Products</Button>
+              <Button variant="primary" onClick={() => navigate('/marketplace/workstation')}>View Products</Button>
             </Card.Body>
           </Card>
         </Col>
@@ -38,7 +40,7 @@ function Marketplace() {
               <Card.Text>
                 Essential accessories and peripherals for your setup.
               </Card.Text>
-              <Button variant="primary">View Products</Button>
+              <Button variant="primary" onClick={() => navigate('/marketplace/accessories')}>View Products</Button>
             </Card.Body>
           </Card>
         </Col>
