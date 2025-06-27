@@ -8,6 +8,10 @@ import RegisterModal from "../components/RegisterModal";
 import Footer from "../components/Footer";
 import pcGif from '../images/pc_video.gif';
 import { Link, useNavigate } from "react-router-dom";
+import sivatheevanImg from '../images/sivatheevan.png';
+import makinthanImg from '../images/makinthan.png';
+import pugazhImg from '../images/pugazh.png';
+import kowsiImg from '../images/kowsi.png';
 
 function HomePage() {
   const [showLoginModal, setShowLoginModal] = useState(false);
@@ -321,11 +325,11 @@ function HomePage() {
                 <Col md={3} className="mb-4">
                   <div className="text-center">
                     <img 
-                      src="/placeholder.svg?height=150&width=150" 
+                      src={sivatheevanImg}
                       alt="Team Member" 
                       className="rounded-circle mb-3"
                       width="150"
-                      height="150"
+                      height="155"
                     />
                     <h4>Sivatheevan</h4>
                     <p className="text-muted">Founder & CEO</p>
@@ -334,11 +338,11 @@ function HomePage() {
                 <Col md={3} className="mb-4">
                   <div className="text-center">
                     <img 
-                      src="/placeholder.svg?height=150&width=150" 
+                      src={makinthanImg} 
                       alt="Team Member" 
                       className="rounded-circle mb-3"
                       width="150"
-                      height="150"
+                      height="155"
                     />
                     <h4>Makinthan</h4>
                     <p className="text-muted">Head of Operations</p>
@@ -347,11 +351,11 @@ function HomePage() {
                 <Col md={3} className="mb-4">
                   <div className="text-center">
                     <img 
-                      src="/placeholder.svg?height=150&width=150" 
+                      src={pugazhImg}
                       alt="Team Member" 
                       className="rounded-circle mb-3"
                       width="150"
-                      height="150"
+                      height="155"
                     />
                     <h4>Pukaliny</h4>
                     <p className="text-muted">Lead PC Builder</p>
@@ -360,11 +364,11 @@ function HomePage() {
                 <Col md={3} className="mb-4">
                   <div className="text-center">
                     <img 
-                      src="/placeholder.svg?height=150&width=150" 
+                      src={kowsiImg}
                       alt="Team Member" 
                       className="rounded-circle mb-3"
                       width="150"
-                      height="150"
+                      height="155"
                     />
                     <h4>Kowsika</h4>
                     <p className="text-muted">Customer Support</p>
