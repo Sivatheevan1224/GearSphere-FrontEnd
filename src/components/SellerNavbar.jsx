@@ -20,7 +20,7 @@ function SellerNavbar({ fixed = "top" }) {
             <img
               src="/src/images/logo.PNG"
               alt="GearSphere Logo"
-              style={{ height: "40px", width: "50px", marginRight: 8 }}
+              style={{ height: "70px", width: "80px", marginRight: 8 }}
             />
             <span className="fw-bold">GearSphere</span>
           </Navbar.Brand>

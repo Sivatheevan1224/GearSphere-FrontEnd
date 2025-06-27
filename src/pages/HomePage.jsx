@@ -12,6 +12,7 @@ import sivatheevanImg from '../images/sivatheevan.png';
 import makinthanImg from '../images/makinthan.png';
 import pugazhImg from '../images/pugazh.png';
 import kowsiImg from '../images/kowsi.png';
+import gif1 from '../images/download.jpg';
 
 function HomePage() {
   const [showLoginModal, setShowLoginModal] = useState(false);
@@ -233,7 +234,7 @@ function HomePage() {
         <div
           className="position-absolute top-0 start-0 w-100 h-100"
           style={{
-            background: "radial-gradient(circle at 30% 50%, rgba(67, 97, 238, 0.3), rgba(0, 0, 0, 0) 70%)",
+            background: "radial-gradient(circle at 30% 50%, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0) 70%)",
             zIndex: 0,
           }}
         ></div>
@@ -264,12 +265,14 @@ function HomePage() {
                 </Button>
               </div>
             </Col>
-            <Col lg={6}>
-              <img
-                src={pcGif}
-                alt="PC Building Animation"
-                className="img-fluid rounded shadow-lg bg-dark"
-              />
+            <Col lg={6} className="text-lg-end">
+              <div className="pc-gif-bg d-inline-block rounded shadow-lg">
+                <img
+                  src={pcGif}
+                  alt="PC Building Animation"
+                  className="img-fluid rounded pc-gif-img"
+                />
+              </div>
             </Col>
           </Row>
         </Container>
@@ -291,9 +294,9 @@ function HomePage() {
             </Col>
             <Col md={6}>
               <img 
-                src="/placeholder.svg?height=300&width=500" 
+                src={gif1} 
                 alt="GearSphere Team" 
-                className="img-fluid rounded shadow"
+                className="img-fluid rounded shadow about-gif-img"
               />
             </Col>
           </Row>

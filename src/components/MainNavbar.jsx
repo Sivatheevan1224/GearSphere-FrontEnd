@@ -83,7 +83,7 @@ function MainNavbar() {
               src="/src/images/logo.PNG" 
               alt="GearSphere Logo" 
               className="me-2" 
-              style={{ height: '40px', width: '50px' }}
+              style={{ height: '70px', width: '80px' }}
             />
             <span className="fw-bold">GearSphere</span>
           </Navbar.Brand>
