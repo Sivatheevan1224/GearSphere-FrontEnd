@@ -14,7 +14,7 @@ function TechnicianNavbar({ fixed = "top" }) {
     <>
       <Navbar bg="light" expand="lg" className="mb-4" fixed={fixed}>
         <Container>
-          <Navbar.Brand as={Link} to="/">
+          <Navbar.Brand as={Link} to="/technician/dashboard">
             <img
               src="/src/images/logo.PNG"
               alt="GearSphere Logo"
