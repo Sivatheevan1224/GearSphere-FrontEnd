@@ -16,7 +16,7 @@ function AdminNavbar({ fixed = "top" }) {
     <>
       <Navbar bg="light" expand="lg" className="mb-4" fixed={fixed}>
         <Container>
-          <Navbar.Brand as={Link} to="/admin/dashboard">
+          <Navbar.Brand as={Link} to="/admin">
             <img
               src="/src/images/logo.PNG"
               alt="GearSphere Logo"
@@ -27,7 +27,7 @@ function AdminNavbar({ fixed = "top" }) {
           <Navbar.Toggle aria-controls="admin-navbar-nav" />
           <Navbar.Collapse id="admin-navbar-nav">
             <Nav className="me-auto">
-              <Nav.Link as={Link} to="/admin/dashboard">Dashboard</Nav.Link>
+              <Nav.Link as={Link} to="/admin">Dashboard</Nav.Link>
               <Nav.Link as={Link} to="/admin/users">User Management</Nav.Link>
               <Nav.Link as={Link} to="/admin/seller-verification">Seller Verification</Nav.Link>
               <Nav.Link as={Link} to="/admin/orders">Order Management</Nav.Link>
