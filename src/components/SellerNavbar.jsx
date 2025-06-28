@@ -16,7 +16,7 @@ function SellerNavbar({ fixed = "top" }) {
     <>
       <Navbar bg="light" expand="lg" className="mb-4" fixed={fixed}>
         <Container>
-          <Navbar.Brand as={Link} to="/">
+          <Navbar.Brand as={Link} to="/seller/dashboard">
             <img
               src="/src/images/logo.PNG"
               alt="GearSphere Logo"
@@ -27,6 +27,7 @@ function SellerNavbar({ fixed = "top" }) {
           <Navbar.Toggle aria-controls="seller-navbar-nav" />
           <Navbar.Collapse id="seller-navbar-nav">
             <Nav className="me-auto">
+              <Nav.Link as={Link} to="/seller/dashboard">Dashboard</Nav.Link>
               <Nav.Link as={Link} to="/seller/products">Products</Nav.Link>
               <Nav.Link as={Link} to="/seller/inventory">Inventory</Nav.Link>
               <Nav.Link as={Link} to="/seller/orders">Orders</Nav.Link>

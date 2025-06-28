@@ -3,8 +3,6 @@ import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-route
 import { AuthProvider } from './context/AuthContext';
 import MainNavbar from './components/MainNavbar';
 import HomePage from './pages/HomePage';
-import Login from './components/auth/Login';
-import Register from './components/auth/Register';
 
 // Customer Pages
 import Marketplace from './pages/customer/Marketplace';
@@ -57,8 +55,7 @@ function AppContent() {
       <Routes>
         {/* Public Routes */}
         <Route path="/" element={<HomePage />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
+        
         {/* Customer Layout for all customer pages */}
         <Route element={<CustomerLayout />}>
           <Route path="/customer" element={<CustomerMain />} />
