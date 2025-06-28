@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Container, Row, Col, Card, Form, Button, Nav, Tab } from 'react-bootstrap';
+import { Container, Row, Col, Card, Form, Button, Nav, Tab, Alert, Modal } from 'react-bootstrap';
 
 const CustomerProfile = () => {
   const [formData, setFormData] = useState({
@@ -26,6 +26,8 @@ const CustomerProfile = () => {
     newsletter: true,
     serviceAlerts: true
   });
+
+  const [showSuccess, setShowSuccess] = useState(false);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -55,6 +57,8 @@ const CustomerProfile = () => {
     e.preventDefault();
     // TODO: Implement profile update logic
     console.log('Profile update:', formData);
+    setShowSuccess(true);
+    setTimeout(() => setShowSuccess(false), 3000);
   };
 
   const handlePasswordUpdate = (e) => {
@@ -65,6 +69,11 @@ const CustomerProfile = () => {
 
   return (
     <Container className="py-5">
+      <Modal show={showSuccess} onHide={() => setShowSuccess(false)} centered backdrop="static" keyboard={false}>
+        <Modal.Body className="text-center">
+          <h5 className="mb-0">Profile updated successfully!</h5>
+        </Modal.Body>
+      </Modal>
       <h1 className="text-center mb-5">My Profile</h1>
       <Tab.Container defaultActiveKey="personal">
         <Row>

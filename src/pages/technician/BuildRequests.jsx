@@ -10,9 +10,7 @@ const BuildRequests = () => {
     estimatedTime: '',
     notes: ''
   });
-
-  // Mock data - replace with actual API call
-  const buildRequests = [
+  const [buildRequests, setBuildRequests] = useState([
     {
       id: 'BR001',
       customer: {
@@ -37,7 +35,7 @@ const BuildRequests = () => {
       timeline: 'Within 2 weeks'
     },
     // Add more mock requests here
-  ];
+  ]);
 
   const getStatusBadge = (status) => {
     const variants = {
@@ -45,7 +43,8 @@ const BuildRequests = () => {
       'In Progress': 'primary',
       'Completed': 'success',
       'Cancelled': 'danger',
-      'Rejected': 'secondary'
+      'Rejected': 'secondary',
+      'Accepted': 'success',
     };
     return <Badge bg={variants[status] || 'secondary'}>{status}</Badge>;
   };
@@ -70,6 +69,18 @@ const BuildRequests = () => {
       estimatedTime: '',
       notes: ''
     });
+  };
+
+  const handleAcceptRequest = (requestId) => {
+    setBuildRequests(prev => prev.map(req =>
+      req.id === requestId ? { ...req, status: 'Accepted' } : req
+    ));
+  };
+
+  const handleRejectRequest = (requestId) => {
+    setBuildRequests(prev => prev.map(req =>
+      req.id === requestId ? { ...req, status: 'Rejected' } : req
+    ));
   };
 
   return (
@@ -116,14 +127,32 @@ const BuildRequests = () => {
                       View Details
                     </Button>
                     {request.status === 'Pending' && (
-                      <Button
-                        variant="outline-success"
-                        size="sm"
-                        onClick={() => handleRespond(request)}
-                      >
-                        Respond
-                      </Button>
+                      <>
+                        <Button
+                          variant="outline-success"
+                          size="sm"
+                          className="me-2"
+                          onClick={() => handleAcceptRequest(request.id)}
+                        >
+                          Accept
+                        </Button>
+                        <Button
+                          variant="outline-danger"
+                          size="sm"
+                          className="me-2"
+                          onClick={() => handleRejectRequest(request.id)}
+                        >
+                          Reject
+                        </Button>
+                      </>
                     )}
+                    <Button
+                      variant="outline-secondary"
+                      size="sm"
+                      onClick={() => handleRespond(request)}
+                    >
+                      Respond
+                    </Button>
                   </td>
                 </tr>
               ))}

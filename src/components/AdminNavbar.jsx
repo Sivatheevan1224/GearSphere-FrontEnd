@@ -20,7 +20,7 @@ function AdminNavbar({ fixed = "top" }) {
             <img
               src="/src/images/logo.PNG"
               alt="GearSphere Logo"
-              style={{ height: "40px", width: "50px", marginRight: 8 }}
+              style={{ height: "70px", width: "80px", marginRight: 8 }}
             />
             <span className="fw-bold">GearSphere</span>
           </Navbar.Brand>
@@ -28,12 +28,10 @@ function AdminNavbar({ fixed = "top" }) {
           <Navbar.Collapse id="admin-navbar-nav">
             <Nav className="me-auto">
               <Nav.Link as={Link} to="/admin/users">User Management</Nav.Link>
-              <Nav.Link as={Link} to="/admin/technician-verification">Technician Verification</Nav.Link>
               <Nav.Link as={Link} to="/admin/seller-verification">Seller Verification</Nav.Link>
               <Nav.Link as={Link} to="/admin/orders">Order Management</Nav.Link>
               <Nav.Link as={Link} to="/admin/analytics">Analytics</Nav.Link>
               <Nav.Link as={Link} to="/admin/reports">Reports</Nav.Link>
-              <Nav.Link as={Link} to="/admin/settings">Settings</Nav.Link>
               <Nav.Link as={Link} to="/admin/system-settings">System Settings</Nav.Link>
             </Nav>
             <Button variant="outline-danger" onClick={() => setShowLogoutModal(true)}>

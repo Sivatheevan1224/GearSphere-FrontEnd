@@ -26,7 +26,6 @@ import TechnicianMain from './pages/technician/TechnicianMain';
 
 // Admin Pages
 import UserManagement from './pages/admin/UserManagement';
-import TechnicianVerification from './pages/admin/TechnicianVerification';
 import OrderManagement from './pages/admin/OrderManagement';
 import Analytics from './pages/admin/Analytics';
 import SystemSettings from './pages/admin/SystemSettings';
@@ -84,13 +83,11 @@ function AppContent() {
         <Route element={<AdminLayout />}>
           <Route path="/admin" element={<AdminMain />} />
           <Route path="/admin/users" element={<UserManagement />} />
-          <Route path="/admin/technician-verification" element={<TechnicianVerification />} />
           <Route path="/admin/seller-verification" element={<SellerVerification />} />
           <Route path="/admin/orders" element={<OrderManagement />} />
           <Route path="/admin/order-management" element={<OrderManagement />} />
           <Route path="/admin/analytics" element={<Analytics />} />
           <Route path="/admin/reports" element={<Reports />} />
-          <Route path="/admin/settings" element={<SystemSettings />} />
           <Route path="/admin/system-settings" element={<SystemSettings />} />
         </Route>
         {/* Seller Layout for all seller pages */}
