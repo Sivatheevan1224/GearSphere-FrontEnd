@@ -84,8 +84,8 @@ function RegisterModal({ show, onHide, switchToLogin }) {
     toast.error("Incorrect OTP.");
     return;
   }
-  const fullName = ${firstName} ${lastName};
-  const fullAddress = ${city} | ${district} | ${postalCode};
+  const fullName = `${firstName} ${lastName}`;
+  const fullAddress = `${city} | ${district} | ${postalCode}`;
   // Prepare form data for registration
   const formData = new FormData();
   formData.append("name", fullName);
@@ -124,7 +124,7 @@ function RegisterModal({ show, onHide, switchToLogin }) {
   if (err.response) {
     // Server responded with a status other than 2xx
     console.error("Server responded with error:", err.response.data);
-    toast.error(Server Error: ${err.response.data.message || "Check PHP error log"});
+    toast.error(`Server Error: ${err.response.data.message || "Check PHP error log"}`);
   } else if (err.request) {
     // Request was made but no response
     console.error("No response received:", err.request);
@@ -154,13 +154,13 @@ function RegisterModal({ show, onHide, switchToLogin }) {
               <Form.Label>Register as</Form.Label>
               <Row>
                 <Col>
-                  <div onClick={() => setUserType("customer")} className={p-3 border rounded text-center ${userType === 'customer' ? 'border-primary bg-light' : ''}} style={{ cursor: "pointer" }}>
+                  <div onClick={() => setUserType("customer")} className={`p-3 border rounded text-center ${userType === 'customer' ? 'border-primary bg-light' : ''}} style={{ cursor: "pointer" }`}>
                     <Person size={24} className="mb-2" />
                     <div>Customer</div>
                   </div>
                 </Col>
                 <Col>
-                  <div onClick={() => setUserType("builder")} className={p-3 border rounded text-center ${userType === 'builder' ? 'border-primary bg-light' : ''}} style={{ cursor: "pointer" }}>
+                  <div onClick={() => setUserType("builder")} className={`p-3 border rounded text-center ${userType === 'builder' ? 'border-primary bg-light' : ''}} style={{ cursor: "pointer" }`}>
                     <Tools size={24} className="mb-2" />
                     <div>PC Builder</div>
                   </div>
@@ -238,7 +238,7 @@ function RegisterModal({ show, onHide, switchToLogin }) {
                 </Form.Group> 
                 <Form.Group className="mb-4">
                   <Form.Label>Upload CV</Form.Label>
-                  <div className={p-3 border rounded text-center ${dragActive ? 'border-primary bg-light' : ''}} onDragEnter={handleDrag} onDragOver={handleDrag} onDragLeave={handleDrag} onDrop={handleDrop}>
+                  <div className={`p-3 border rounded text-center ${dragActive ? 'border-primary bg-light' : ''}`} onDragEnter={handleDrag} onDragOver={handleDrag} onDragLeave={handleDrag} onDrop={handleDrop}>
                     {file ? (
                       <div>
                         <p>Uploaded: {file.name}</p>
