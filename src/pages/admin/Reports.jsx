@@ -51,7 +51,7 @@ function Reports() {
           <Card className="text-center">
             <Card.Body>
               <h6>Revenue</h6>
-              <h3>$45,678</h3>
+              <h3>LKR 45,678</h3>
               <small className="text-success">+15% from last month</small>
             </Card.Body>
           </Card>

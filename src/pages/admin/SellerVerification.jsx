@@ -11,8 +11,8 @@ function SellerVerification() {
     username: '@seller',
     avatar: '/placeholder.svg?height=40&width=40',
     business: 'Tech Solutions Inc.',
-    address: '123 Tech Street, New York, NY',
-    phone: '+1 234-567-8900',
+    address: '123 Galle Road, Colombo, Western',
+    phone: '077 123 4567',
   });
 
   const handleSuspend = () => {

@@ -1,6 +1,8 @@
 import React from 'react';
 import { Container, Row, Col, Card } from 'react-bootstrap';
 
+const formatLKR = (amount) => 'LKR ' + Number(amount).toLocaleString('en-LK');
+
 const SalesAnalytics = () => {
   return (
     <Container className="py-4">
@@ -10,7 +12,7 @@ const SalesAnalytics = () => {
           <Card className="mb-4">
             <Card.Body>
               <Card.Title>Total Sales</Card.Title>
-              <h3>$0.00</h3>
+              <h3>{formatLKR(0)}</h3>
             </Card.Body>
           </Card>
         </Col>
@@ -18,7 +20,7 @@ const SalesAnalytics = () => {
           <Card className="mb-4">
             <Card.Body>
               <Card.Title>This Month</Card.Title>
-              <h3>$0.00</h3>
+              <h3>{formatLKR(0)}</h3>
             </Card.Body>
           </Card>
         </Col>

@@ -3,6 +3,8 @@ import { Container, Row, Col, Card, Button } from 'react-bootstrap';
 import { Shop, Box, CurrencyDollar, Star, People, ArrowUp } from 'react-bootstrap-icons';
 
 function SellerDashboard() {
+  const formatLKR = (amount) => 'LKR ' + Number(amount).toLocaleString('en-LK');
+
   return (
     <Container className="py-5">
       <h1 className="mb-4">Seller Dashboard</h1>
@@ -31,7 +33,7 @@ function SellerDashboard() {
           <Card className="text-center">
             <Card.Body>
               <CurrencyDollar size={24} className="mb-3 text-warning" />
-              <h3>$12,450</h3>
+              <h3>{formatLKR(12450)}</h3>
               <p className="text-muted mb-0">Revenue This Month</p>
             </Card.Body>
           </Card>
@@ -73,7 +75,7 @@ function SellerDashboard() {
                         <td>#ORD{item.toString().padStart(6, '0')}</td>
                         <td>John Doe</td>
                         <td>{item} items</td>
-                        <td>${item}50</td>
+                        <td>{formatLKR(item * 50)}</td>
                         <td>
                           <span className="badge bg-success">Delivered</span>
                         </td>
@@ -112,7 +114,7 @@ function SellerDashboard() {
                       </div>
                     </div>
                     <div className="text-end">
-                      <h6 className="mb-0">${item}50</h6>
+                      <h6 className="mb-0">{formatLKR(item * 50)}</h6>
                       <small className="text-muted">{item * 10} sales</small>
                     </div>
                   </div>

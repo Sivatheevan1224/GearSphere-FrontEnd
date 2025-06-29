@@ -17,7 +17,7 @@ const SellerOrders = () => {
       customer: {
         name: 'John Doe',
         email: 'john@example.com',
-        phone: '+1 234-567-8901'
+        phone: '077 123 4567'
       },
       date: '2024-02-15',
       total: 1299.99,
@@ -37,11 +37,11 @@ const SellerOrders = () => {
         }
       ],
       shippingAddress: {
-        street: '123 Main St',
-        city: 'New York',
-        state: 'NY',
-        zip: '10001',
-        country: 'USA'
+        street: 'No. 10, Temple Road',
+        city: 'Kandy',
+        district: 'Central',
+        postal: '20000',
+        country: 'Sri Lanka'
       },
       paymentMethod: 'Credit Card',
       trackingNumber: 'TRK123456789',
@@ -52,7 +52,7 @@ const SellerOrders = () => {
       customer: {
         name: 'Jane Smith',
         email: 'jane@example.com',
-        phone: '+1 234-567-8902'
+        phone: '071 234 5678'
       },
       date: '2024-02-14',
       total: 799.99,
@@ -66,11 +66,11 @@ const SellerOrders = () => {
         }
       ],
       shippingAddress: {
-        street: '456 Oak Ave',
-        city: 'Los Angeles',
-        state: 'CA',
-        zip: '90001',
-        country: 'USA'
+        street: 'No. 22, Galle Road',
+        city: 'Colombo',
+        district: 'Western',
+        postal: '00300',
+        country: 'Sri Lanka'
       },
       paymentMethod: 'PayPal',
       trackingNumber: 'TRK987654321',
@@ -108,6 +108,8 @@ const SellerOrders = () => {
   const currentOrders = filteredOrders.slice(indexOfFirstOrder, indexOfLastOrder);
   const totalPages = Math.ceil(filteredOrders.length / ordersPerPage);
 
+  const formatLKR = (amount) => 'LKR ' + Number(amount).toLocaleString('en-LK');
+
   return (
     <Container className="py-5">
       <h1 className="text-center mb-5">Order Management</h1>
@@ -141,7 +143,7 @@ const SellerOrders = () => {
           <Card className="shadow-sm h-100">
             <Card.Body>
               <h6 className="text-muted mb-2">Total Revenue</h6>
-              <h3>${orders.reduce((sum, order) => sum + order.total, 0).toFixed(2)}</h3>
+              <h3>{formatLKR(orders.reduce((sum, order) => sum + order.total, 0))}</h3>
             </Card.Body>
           </Card>
         </Col>
@@ -198,7 +200,7 @@ const SellerOrders = () => {
                     <small className="text-muted">{order.customer.email}</small>
                   </td>
                   <td>{order.date}</td>
-                  <td>${order.total}</td>
+                  <td>{formatLKR(order.total)}</td>
                   <td>{getStatusBadge(order.status)}</td>
                   <td>{order.paymentMethod}</td>
                   <td>
@@ -270,7 +272,7 @@ const SellerOrders = () => {
                   <p><strong>Order ID:</strong> {selectedOrder.id}</p>
                   <p><strong>Date:</strong> {selectedOrder.date}</p>
                   <p><strong>Status:</strong> {getStatusBadge(selectedOrder.status)}</p>
-                  <p><strong>Total:</strong> ${selectedOrder.total}</p>
+                  <p><strong>Total:</strong> {formatLKR(selectedOrder.total)}</p>
                   <p><strong>Payment Method:</strong> {selectedOrder.paymentMethod}</p>
                   <p><strong>Tracking Number:</strong> {selectedOrder.trackingNumber}</p>
                 </Col>
@@ -282,7 +284,7 @@ const SellerOrders = () => {
                   <h5 className="mt-3">Shipping Address</h5>
                   <p>
                     {selectedOrder.shippingAddress.street}<br />
-                    {selectedOrder.shippingAddress.city}, {selectedOrder.shippingAddress.state} {selectedOrder.shippingAddress.zip}<br />
+                    {selectedOrder.shippingAddress.city}, {selectedOrder.shippingAddress.district} {selectedOrder.shippingAddress.postal}<br />
                     {selectedOrder.shippingAddress.country}
                   </p>
                 </Col>
@@ -302,8 +304,8 @@ const SellerOrders = () => {
                     <tr key={item.id}>
                       <td>{item.name}</td>
                       <td>{item.quantity}</td>
-                      <td>${item.price}</td>
-                      <td>${(item.quantity * item.price).toFixed(2)}</td>
+                      <td>{formatLKR(item.price)}</td>
+                      <td>{formatLKR(item.quantity * item.price)}</td>
                     </tr>
                   ))}
                 </tbody>

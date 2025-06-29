@@ -156,6 +156,9 @@ const CustomerProfile = () => {
                               name="phone"
                               value={formData.phone}
                               onChange={handleInputChange}
+                              placeholder="07X XXX XXXX"
+                              pattern="0[0-9]{2} [0-9]{3} [0-9]{4}"
+                              title="Enter a valid Sri Lankan phone number (e.g., 077 123 4567)"
                             />
                           </Form.Group>
                         </Col>
@@ -167,6 +170,7 @@ const CustomerProfile = () => {
                           name="address"
                           value={formData.address}
                           onChange={handleInputChange}
+                          placeholder="Street Address"
                         />
                       </Form.Group>
                       <Row>
@@ -178,41 +182,23 @@ const CustomerProfile = () => {
                               name="city"
                               value={formData.city}
                               onChange={handleInputChange}
+                              placeholder="City (e.g., Colombo)"
                             />
                           </Form.Group>
                         </Col>
-                        <Col md={3}>
+                        <Col md={6}>
                           <Form.Group className="mb-3">
-                            <Form.Label>State</Form.Label>
+                            <Form.Label>District</Form.Label>
                             <Form.Control
                               type="text"
-                              name="state"
-                              value={formData.state}
+                              name="district"
+                              value={formData.district || ''}
                               onChange={handleInputChange}
-                            />
-                          </Form.Group>
-                        </Col>
-                        <Col md={3}>
-                          <Form.Group className="mb-3">
-                            <Form.Label>ZIP Code</Form.Label>
-                            <Form.Control
-                              type="text"
-                              name="zipCode"
-                              value={formData.zipCode}
-                              onChange={handleInputChange}
+                              placeholder="District (e.g., Colombo)"
                             />
                           </Form.Group>
                         </Col>
                       </Row>
-                      <Form.Group className="mb-3">
-                        <Form.Label>Country</Form.Label>
-                        <Form.Control
-                          type="text"
-                          name="country"
-                          value={formData.country}
-                          onChange={handleInputChange}
-                        />
-                      </Form.Group>
                       <Button variant="primary" type="submit">
                         Update Profile
                       </Button>

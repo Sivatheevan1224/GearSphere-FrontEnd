@@ -152,10 +152,7 @@ const Analytics = () => {
   };
 
   const formatCurrency = (amount) => {
-    return new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency: "USD",
-    }).format(amount);
+    return 'LKR ' + amount.toLocaleString('en-LK');
   };
 
   const formatPercentage = (value) => {

@@ -14,13 +14,13 @@ const SellerProfile = () => {
       logo: '/src/images/store-logo.png',
       banner: '/src/images/store-banner.jpg',
       email: 'contact@techparts.com',
-      phone: '+1 234-567-8900',
+      phone: '077 123 4567',
       address: {
-        street: '123 Tech Street',
-        city: 'San Francisco',
-        state: 'CA',
-        zip: '94105',
-        country: 'USA'
+        street: 'No. 10, Temple Road',
+        city: 'Kandy',
+        district: 'Central',
+        postal: '20000',
+        country: 'Sri Lanka'
       },
       socialMedia: {
         facebook: 'techparts',
@@ -31,7 +31,7 @@ const SellerProfile = () => {
     account: {
       name: 'John Smith',
       email: 'john@techparts.com',
-      phone: '+1 234-567-8901',
+      phone: '071 234 5678',
       role: 'Store Owner',
       joinDate: '2023-01-15'
     },
@@ -43,8 +43,8 @@ const SellerProfile = () => {
         marketingUpdates: false
       },
       display: {
-        currency: 'USD',
-        timezone: 'America/Los_Angeles',
+        currency: 'LKR',
+        timezone: 'Asia/Colombo',
         language: 'English'
       }
     }
@@ -68,7 +68,7 @@ const SellerProfile = () => {
 
   return (
     <Container className="py-5">
-      <h1 className="text-center mb-5">Store Profile</h1>
+      <h1 className="text-center mb-5">Seller Profile</h1>
 
       <Modal show={showSuccess} onHide={() => setShowSuccess(false)} centered backdrop="static" keyboard={false}>
         <Modal.Body className="text-center">
@@ -96,7 +96,7 @@ const SellerProfile = () => {
                     active={activeTab === 'profile'}
                     onClick={() => setActiveTab('profile')}
                   >
-                    Store Profile
+                    Seller Profile
                   </Nav.Link>
                 </Nav.Item>
                 <Nav.Item>
@@ -124,9 +124,9 @@ const SellerProfile = () => {
           <Card className="shadow-sm">
             <Card.Body>
               <Tab.Content>
-                {/* Store Profile Tab */}
+                {/* Seller Profile Tab */}
                 <Tab.Pane active={activeTab === 'profile'}>
-                  <h4 className="mb-4">Store Profile</h4>
+                  <h4 className="mb-4">Seller Profile</h4>
                   <Form onSubmit={handleSaveProfile}>
                     <Row>
                       <Col md={6}>
@@ -165,6 +165,9 @@ const SellerProfile = () => {
                           <Form.Control
                             type="tel"
                             defaultValue={profileData.store.phone}
+                            placeholder="07X XXX XXXX"
+                            pattern="0[0-9]{2} [0-9]{3} [0-9]{4}"
+                            title="Enter a valid Sri Lankan phone number (e.g., 077 123 4567)"
                           />
                         </Form.Group>
                       </Col>
@@ -184,6 +187,7 @@ const SellerProfile = () => {
                           <Form.Control
                             type="text"
                             defaultValue={profileData.store.address.street}
+                            placeholder="Street Address"
                           />
                         </Form.Group>
                       </Col>
@@ -195,24 +199,29 @@ const SellerProfile = () => {
                           <Form.Control
                             type="text"
                             defaultValue={profileData.store.address.city}
+                            placeholder="City (e.g., Colombo)"
                           />
                         </Form.Group>
                       </Col>
-                      <Col md={3}>
+                      <Col md={6}>
                         <Form.Group className="mb-3">
-                          <Form.Label>State</Form.Label>
+                          <Form.Label>District</Form.Label>
                           <Form.Control
                             type="text"
-                            defaultValue={profileData.store.address.state}
+                            defaultValue={profileData.store.address.district || ''}
+                            placeholder="District (e.g., Colombo)"
                           />
                         </Form.Group>
                       </Col>
-                      <Col md={3}>
+                    </Row>
+                    <Row>
+                      <Col md={6}>
                         <Form.Group className="mb-3">
-                          <Form.Label>ZIP Code</Form.Label>
+                          <Form.Label>Postal Code</Form.Label>
                           <Form.Control
                             type="text"
-                            defaultValue={profileData.store.address.zip}
+                            defaultValue={profileData.store.address.postal || ''}
+                            placeholder="Postal Code (e.g., 20000)"
                           />
                         </Form.Group>
                       </Col>
@@ -289,6 +298,9 @@ const SellerProfile = () => {
                           <Form.Control
                             type="tel"
                             defaultValue={profileData.account.phone}
+                            placeholder="07X XXX XXXX"
+                            pattern="0[0-9]{2} [0-9]{3} [0-9]{4}"
+                            title="Enter a valid Sri Lankan phone number (e.g., 077 123 4567)"
                           />
                         </Form.Group>
                       </Col>
@@ -378,9 +390,7 @@ const SellerProfile = () => {
                         <Form.Group className="mb-3">
                           <Form.Label>Currency</Form.Label>
                           <Form.Select defaultValue={profileData.preferences.display.currency}>
-                            <option value="USD">USD ($)</option>
-                            <option value="EUR">EUR (€)</option>
-                            <option value="GBP">GBP (£)</option>
+                            <option value="LKR">LKR (රු)</option>
                           </Form.Select>
                         </Form.Group>
                       </Col>
@@ -388,9 +398,7 @@ const SellerProfile = () => {
                         <Form.Group className="mb-3">
                           <Form.Label>Timezone</Form.Label>
                           <Form.Select defaultValue={profileData.preferences.display.timezone}>
-                            <option value="America/Los_Angeles">Pacific Time</option>
-                            <option value="America/New_York">Eastern Time</option>
-                            <option value="Europe/London">London Time</option>
+                            <option value="Asia/Colombo">Sri Lanka Time</option>
                           </Form.Select>
                         </Form.Group>
                       </Col>
@@ -399,8 +407,6 @@ const SellerProfile = () => {
                           <Form.Label>Language</Form.Label>
                           <Form.Select defaultValue={profileData.preferences.display.language}>
                             <option value="English">English</option>
-                            <option value="Spanish">Spanish</option>
-                            <option value="French">French</option>
                           </Form.Select>
                         </Form.Group>
                       </Col>

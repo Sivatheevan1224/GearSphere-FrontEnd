@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Row, Col, Card } from 'react-bootstrap';
+import { Link } from 'react-router-dom';
 import { Award, Star, Cart, Heart, Person, Headset } from 'react-bootstrap-icons';
 
 function CustomerDashboard() {
@@ -94,21 +95,21 @@ function CustomerDashboard() {
             <Card.Body>
               <h4>Quick Actions</h4>
               <div className="d-flex gap-3 mt-3">
-                <a href="/orders" className="btn btn-primary">
+                <Link to="/orders" className="btn btn-primary">
                   <Cart className="me-2" /> My Orders
-                </a>
-                <a href="/marketplace" className="btn btn-success">
+                </Link>
+                <Link to="/marketplace" className="btn btn-success">
                   <Heart className="me-2" /> Wishlist
-                </a>
-                <a href="/profile" className="btn btn-info text-white">
+                </Link>
+                <Link to="/profile" className="btn btn-info text-white">
                   <Person className="me-2" /> My Profile
-                </a>
-                <a href="/support" className="btn btn-warning">
+                </Link>
+                <Link to="/support" className="btn btn-warning">
                   <Headset className="me-2" /> Support
-                </a>
-                <a href="/reviews" className="btn btn-secondary">
+                </Link>
+                <Link to="/reviews" className="btn btn-secondary">
                   <Star className="me-2" /> My Reviews
-                </a>
+                </Link>
               </div>
             </Card.Body>
           </Card>

@@ -99,6 +99,8 @@ const Inventory = () => {
 
   const lowStockItems = inventory.filter(item => item.status === 'Low Stock' || item.status === 'Out of Stock');
 
+  const formatLKR = (amount) => 'LKR ' + Number(amount).toLocaleString('en-LK');
+
   return (
     <Container className="py-5">
       <h1 className="text-center mb-5">Inventory Management</h1>
@@ -148,7 +150,7 @@ const Inventory = () => {
           <Card className="shadow-sm h-100">
             <Card.Body>
               <h6 className="text-muted mb-2">Total Value</h6>
-              <h3>${inventory.reduce((sum, item) => sum + item.value, 0).toFixed(2)}</h3>
+              <h3>{formatLKR(inventory.reduce((sum, item) => sum + item.value, 0))}</h3>
             </Card.Body>
           </Card>
         </Col>

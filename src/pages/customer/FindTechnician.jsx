@@ -1,10 +1,14 @@
 import React, { useState } from 'react';
-import { Container, Row, Col, Card, Button, Form } from 'react-bootstrap';
+import { Container, Row, Col, Card, Button, Form, Modal } from 'react-bootstrap';
 import { Star, StarFill, GeoAlt } from 'react-bootstrap-icons';
 
 function FindTechnician() {
   const [selectedDistrict, setSelectedDistrict] = useState('');
   const [selectedService, setSelectedService] = useState('');
+  const [showTechnicianModal, setShowTechnicianModal] = useState(false);
+  const [selectedTechnician, setSelectedTechnician] = useState(null);
+  const [instructions, setInstructions] = useState('');
+  const [showAssignmentSuccess, setShowAssignmentSuccess] = useState(false);
 
   // Sri Lankan districts
   const districts = [
@@ -69,6 +73,24 @@ function FindTechnician() {
     const matchesService = !selectedService || tech.services.includes(selectedService);
     return matchesDistrict && matchesService;
   });
+
+  const handleAssignTechnician = () => {
+    // Here you would typically send the assignment data to your backend
+    console.log('Assigning technician:', selectedTechnician);
+    console.log('Instructions:', instructions);
+    
+    setShowTechnicianModal(false);
+    setShowAssignmentSuccess(true);
+    setInstructions('');
+  };
+
+  const renderStars = (rating) => {
+    return Array(5).fill(0).map((_, i) => (
+      i < Math.floor(rating) ? 
+      <StarFill key={i} className="text-warning" /> : 
+      <Star key={i} className="text-warning" />
+    ));
+  };
 
   return (
     <Container className="py-5">
@@ -140,11 +162,7 @@ function FindTechnician() {
                     </p>
                     <div className="d-flex align-items-center">
                       <div className="me-2">
-                        {Array(5).fill(0).map((_, i) => (
-                          i < Math.floor(tech.rating) ? 
-                          <StarFill key={i} className="text-warning" /> : 
-                          <Star key={i} className="text-warning" />
-                        ))}
+                        {renderStars(tech.rating)}
                       </div>
                       <span>{tech.rating} ({tech.reviews} reviews)</span>
                     </div>
@@ -164,13 +182,131 @@ function FindTechnician() {
                     <h5 className="mb-0">Rs. {tech.rate}/hr</h5>
                     <small className="text-muted">{tech.experience} experience</small>
                   </div>
-                  <Button variant="primary">Contact</Button>
+                  <Button variant="primary" onClick={() => {
+                    setSelectedTechnician(tech);
+                    setShowTechnicianModal(true);
+                  }}>Assign</Button>
                 </div>
               </Card.Body>
             </Card>
           </Col>
         ))}
       </Row>
+
+      {/* Technician Details Modal */}
+      {showTechnicianModal && selectedTechnician && (
+        <Modal show={showTechnicianModal} onHide={() => setShowTechnicianModal(false)} size="lg">
+          <Modal.Header closeButton>
+            <Modal.Title>Assign Technician - {selectedTechnician.name}</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <Row>
+              <Col md={4}>
+                <div className="text-center mb-3">
+                  <img
+                    src="/placeholder.svg?height=120&width=120"
+                    alt={selectedTechnician.name}
+                    className="rounded-circle mb-3"
+                    width="120"
+                    height="120"
+                  />
+                  <h4>{selectedTechnician.name}</h4>
+                  <p className="text-muted mb-2">
+                    <GeoAlt className="me-1" /> {selectedTechnician.district} District
+                  </p>
+                  <div className="d-flex justify-content-center align-items-center mb-2">
+                    {renderStars(selectedTechnician.rating)}
+                    <span className="ms-2">{selectedTechnician.rating} ({selectedTechnician.reviews} reviews)</span>
+                  </div>
+                  <div className="mb-3">
+                    <h5 className="text-primary">Rs. {selectedTechnician.rate}/hr</h5>
+                    <small className="text-muted">{selectedTechnician.experience} experience</small>
+                  </div>
+                </div>
+              </Col>
+              <Col md={8}>
+                <h5>Technician Details</h5>
+                <p className="mb-3">{selectedTechnician.description}</p>
+                
+                <div className="mb-3">
+                  <strong>Services Offered:</strong>
+                  <div className="mt-2">
+                    {selectedTechnician.services.map((service, index) => (
+                      <span key={index} className="badge bg-primary me-1 mb-1">{service}</span>
+                    ))}
+                  </div>
+                </div>
+
+                <hr />
+
+                <h5>Assignment Instructions</h5>
+                <p className="text-muted small mb-3">
+                  Provide specific instructions for the technician about your PC build requirements.
+                </p>
+                
+                <Form.Group className="mb-3">
+                  <Form.Label>Special Instructions</Form.Label>
+                  <Form.Control
+                    as="textarea"
+                    rows={4}
+                    placeholder="Enter any specific instructions, preferences, or requirements for your PC build..."
+                    value={instructions}
+                    onChange={(e) => setInstructions(e.target.value)}
+                  />
+                  <Form.Text className="text-muted">
+                    Examples: "Please ensure good cable management", "Prefer quiet cooling solutions", "Need RGB lighting setup"
+                  </Form.Text>
+                </Form.Group>
+
+                <div className="alert alert-info">
+                  <strong>Note:</strong> The technician will contact you within 24 hours to discuss your requirements and schedule the build.
+                </div>
+              </Col>
+            </Row>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button variant="secondary" onClick={() => setShowTechnicianModal(false)}>
+              Cancel
+            </Button>
+            <Button variant="primary" onClick={handleAssignTechnician}>
+              Assign Technician
+            </Button>
+          </Modal.Footer>
+        </Modal>
+      )}
+
+      {/* Assignment Success Modal */}
+      <Modal show={showAssignmentSuccess} onHide={() => setShowAssignmentSuccess(false)} centered>
+        <Modal.Header closeButton>
+          <Modal.Title className="text-success">
+            <i className="bi bi-check-circle-fill me-2"></i>
+            Technician Assigned Successfully!
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body className="text-center">
+          <div className="mb-4">
+            <div className="text-success" style={{ fontSize: '3rem' }}>✅</div>
+          </div>
+          <h4 className="text-success mb-3">Assignment Confirmed</h4>
+          <p className="mb-3">
+            <strong>{selectedTechnician?.name}</strong> has been assigned to your PC build project.
+          </p>
+          <div className="alert alert-info">
+            <strong>Next Steps:</strong>
+            <ul className="mb-0 mt-2 text-start">
+              <li>The technician will contact you within 24 hours</li>
+              <li>You'll discuss your PC build requirements</li>
+              <li>Schedule will be arranged for the build</li>
+              <li>Payment for technician services will be handled separately</li>
+            </ul>
+          </div>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="primary" onClick={() => setShowAssignmentSuccess(false)}>
+            Close
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </Container>
   );
 }

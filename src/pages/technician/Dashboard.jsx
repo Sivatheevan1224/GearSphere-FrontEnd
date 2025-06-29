@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Row, Col, Card } from 'react-bootstrap';
+import { Link } from 'react-router-dom';
 import { 
   Calendar, 
   CurrencyDollar, 
@@ -111,18 +112,18 @@ function TechnicianDashboard() {
             <Card.Body>
               <h4>Quick Actions</h4>
               <div className="d-flex gap-3 mt-3">
-                <a href="/technician/appointments" className="btn btn-primary">
+                <Link to="/technician/appointments" className="btn btn-primary">
                   <Calendar className="me-2" /> View Appointments
-                </a>
-                <a href="/technician/services" className="btn btn-success">
+                </Link>
+                <Link to="/technician/services" className="btn btn-success">
                   <Tools className="me-2" /> Manage Services
-                </a>
-                <a href="/technician/earnings" className="btn btn-info text-white">
+                </Link>
+                <Link to="/technician/earnings" className="btn btn-info text-white">
                   <CurrencyDollar className="me-2" /> View Earnings
-                </a>
-                <a href="/technician/reviews" className="btn btn-warning">
+                </Link>
+                <Link to="/technician/reviews" className="btn btn-warning">
                   <Star className="me-2" /> Check Reviews
-                </a>
+                </Link>
               </div>
             </Card.Body>
           </Card>
