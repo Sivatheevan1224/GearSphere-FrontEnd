@@ -11,6 +11,12 @@ function RegisterModal({ show, onHide, switchToLogin }) {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const [showOTPModal, setShowOTPModal] = useState(false);
+  const [otp, setOtp] = useState('');
+  const [enteredOtp, setEnteredOtp] = useState('');
+  const [registeredEmail, setRegisteredEmail] = useState('');
+  const [pendingUser, setPendingUser] = useState(null);
+  const [showRequestOTPModal, setShowRequestOTPModal] = useState(false);
 
   const handleDrag = (e) => {
     e.preventDefault();
@@ -70,16 +76,51 @@ function RegisterModal({ show, onHide, switchToLogin }) {
       setError("Email already registered.");
       return;
     }
-    users.push({ email, password, role });
+    const newUser = { email, password, role };
+    setPendingUser(newUser);
+    setRegisteredEmail(email);
+    setShowRequestOTPModal(true);
+  };
+
+  const handleRequestOTP = () => {
+    // Simulate OTP sending
+    const generatedOtp = Math.floor(100000 + Math.random() * 900000).toString();
+    setOtp(generatedOtp);
+    setShowRequestOTPModal(false);
+    setShowOTPModal(true);
+    alert(`Your OTP is: ${generatedOtp}`);
+  };
+
+  const handleOTPInputChange = (e) => {
+    setEnteredOtp(e.target.value);
+  };
+
+  const handleOTPSubmit = (e) => {
+    e.preventDefault();
+    if (!enteredOtp) {
+      setError('Please enter the OTP.');
+      return;
+    }
+    if (enteredOtp === otp) {
+      // Now save the user
+      const users = JSON.parse(localStorage.getItem("gs_users") || "[]");
+      if (pendingUser && !users.some(u => u.email === pendingUser.email)) {
+        users.push(pendingUser);
     localStorage.setItem("gs_users", JSON.stringify(users));
-    setSuccess("Registration successful! You can now log in.");
+      }
+      setShowOTPModal(false);
+      setSuccess("Registration and OTP verification successful! You can now log in.");
     setTimeout(() => {
       onHide();
       switchToLogin();
     }, 1200);
+    } else {
+      setError("Invalid OTP. Please try again.");
+    }
   };
 
   return (
+    <>
     <Modal show={show} onHide={onHide} centered size="lg">
       <Modal.Header closeButton>
         <Modal.Title>Create an Account</Modal.Title>
@@ -173,7 +214,9 @@ function RegisterModal({ show, onHide, switchToLogin }) {
             </Form.Label>
             <Form.Control 
               type="tel" 
-              placeholder="Enter phone number (e.g., 071 234 5678)" 
+                placeholder="07X XXX XXXX" 
+                pattern="0[0-9]{2} [0-9]{3} [0-9]{4}" 
+                title="Enter a valid Sri Lankan phone number (e.g., 077 123 4567)" 
             />
             <Form.Text className="text-muted">
               Enter a valid Sri Lankan phone number
@@ -195,7 +238,7 @@ function RegisterModal({ show, onHide, switchToLogin }) {
             <Row>
               <Col md={6} className="mb-2">
                 <Form.Control 
-                  placeholder="City" 
+                    placeholder="City (e.g., Colombo)" 
                 />
               </Col>
               <Col md={6} className="mb-2">
@@ -319,6 +362,44 @@ function RegisterModal({ show, onHide, switchToLogin }) {
         </p>
       </Modal.Footer>
     </Modal>
+      {/* Request OTP Modal */}
+      <Modal show={showRequestOTPModal} onHide={() => setShowRequestOTPModal(false)} centered>
+        <Modal.Header closeButton>
+          <Modal.Title>Request OTP</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <p>Click the button below to request an OTP for email verification.</p>
+          <Button variant="primary" className="w-100" onClick={handleRequestOTP}>
+            Request OTP
+          </Button>
+        </Modal.Body>
+      </Modal>
+      {/* Inline OTP Modal */}
+      <Modal show={showOTPModal} onHide={() => setShowOTPModal(false)} centered>
+        <Modal.Header closeButton>
+          <Modal.Title>Enter OTP</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <p>An OTP has been sent to your email: <b>{registeredEmail}</b></p>
+          <Form onSubmit={handleOTPSubmit}>
+            <Form.Group className="mb-3">
+              <Form.Label>OTP</Form.Label>
+              <Form.Control
+                type="text"
+                value={enteredOtp}
+                onChange={handleOTPInputChange}
+                placeholder="Enter 6-digit OTP"
+                maxLength={6}
+              />
+            </Form.Group>
+            {error && <Alert variant="danger">{error}</Alert>}
+            <Button variant="primary" type="submit">
+              Verify OTP
+            </Button>
+          </Form>
+        </Modal.Body>
+      </Modal>
+    </>
   );
 }
 

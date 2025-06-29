@@ -45,6 +45,138 @@ const ProductManagement = () => {
       rating: 4.6,
       sales: 35,
       image: 'https://example.com/nvme.jpg'
+    },
+    {
+      id: 'P004',
+      name: 'Intel Core i9-13900K',
+      category: 'CPU',
+      price: 549.99,
+      stock: 12,
+      status: 'Active',
+      rating: 4.9,
+      sales: 28,
+      image: 'https://example.com/i9-13900k.jpg'
+    },
+    {
+      id: 'P005',
+      name: 'AMD Ryzen 9 7950X',
+      category: 'CPU',
+      price: 699.99,
+      stock: 8,
+      status: 'Active',
+      rating: 4.7,
+      sales: 22,
+      image: 'https://example.com/ryzen-7950x.jpg'
+    },
+    {
+      id: 'P006',
+      name: 'ASUS ROG STRIX B760-F',
+      category: 'Motherboard',
+      price: 249.99,
+      stock: 20,
+      status: 'Active',
+      rating: 4.4,
+      sales: 18,
+      image: 'https://example.com/asus-b760f.jpg'
+    },
+    {
+      id: 'P007',
+      name: 'Corsair RM850x',
+      category: 'Power Supply',
+      price: 149.99,
+      stock: 35,
+      status: 'Active',
+      rating: 4.6,
+      sales: 42,
+      image: 'https://example.com/corsair-rm850x.jpg'
+    },
+    {
+      id: 'P008',
+      name: 'NZXT H510 Flow',
+      category: 'Case',
+      price: 89.99,
+      stock: 40,
+      status: 'Active',
+      rating: 4.3,
+      sales: 55,
+      image: 'https://example.com/nzxt-h510.jpg'
+    },
+    {
+      id: 'P009',
+      name: 'Noctua NH-D15',
+      category: 'Cooling',
+      price: 99.99,
+      stock: 25,
+      status: 'Active',
+      rating: 4.8,
+      sales: 38,
+      image: 'https://example.com/noctua-nhd15.jpg'
+    },
+    {
+      id: 'P010',
+      name: 'Samsung Odyssey G7',
+      category: 'Monitor',
+      price: 599.99,
+      stock: 15,
+      status: 'Active',
+      rating: 4.5,
+      sales: 25,
+      image: 'https://example.com/samsung-g7.jpg'
+    },
+    {
+      id: 'P011',
+      name: 'Logitech G Pro X',
+      category: 'Keyboard',
+      price: 149.99,
+      stock: 30,
+      status: 'Active',
+      rating: 4.4,
+      sales: 48,
+      image: 'https://example.com/logitech-gprox.jpg'
+    },
+    {
+      id: 'P012',
+      name: 'Razer DeathAdder V3',
+      category: 'Mouse',
+      price: 79.99,
+      stock: 50,
+      status: 'Active',
+      rating: 4.6,
+      sales: 65,
+      image: 'https://example.com/razer-deathadder.jpg'
+    },
+    {
+      id: 'P013',
+      name: 'SteelSeries Arctis Pro',
+      category: 'Headset',
+      price: 179.99,
+      stock: 22,
+      status: 'Active',
+      rating: 4.7,
+      sales: 33,
+      image: 'https://example.com/steelseries-arctis.jpg'
+    },
+    {
+      id: 'P014',
+      name: 'Blue Yeti X',
+      category: 'Microphone',
+      price: 169.99,
+      stock: 18,
+      status: 'Active',
+      rating: 4.5,
+      sales: 27,
+      image: 'https://example.com/blue-yeti-x.jpg'
+    },
+    {
+      id: 'P015',
+      name: 'Logitech C920',
+      category: 'Webcam',
+      price: 69.99,
+      stock: 45,
+      status: 'Active',
+      rating: 4.3,
+      sales: 58,
+      image: 'https://example.com/logitech-c920.jpg'
     }
   ]);
 
@@ -56,7 +188,19 @@ const ProductManagement = () => {
     'Motherboard',
     'Power Supply',
     'Case',
-    'Cooling'
+    'Cooling',
+    'Monitor',
+    'Keyboard',
+    'Mouse',
+    'Headset',
+    'Microphone',
+    'Webcam',
+    'Speakers',
+    'Network Card',
+    'Sound Card',
+    'Cables',
+    'Thermal Paste',
+    'Fans'
   ];
 
   const [addProduct, setAddProduct] = useState({
@@ -107,6 +251,8 @@ const ProductManagement = () => {
   const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
   const currentProducts = filteredProducts.slice(indexOfFirstProduct, indexOfLastProduct);
   const totalPages = Math.ceil(filteredProducts.length / productsPerPage);
+
+  const formatLKR = (amount) => 'LKR ' + Number(amount).toLocaleString('en-LK');
 
   return (
     <Container className="py-5">
@@ -183,7 +329,7 @@ const ProductManagement = () => {
                     </div>
                   </td>
                   <td>{product.category}</td>
-                  <td>${product.price}</td>
+                  <td>{formatLKR(product.price)}</td>
                   <td>{product.stock}</td>
                   <td>{getStatusBadge(product.status)}</td>
                   <td>
@@ -286,7 +432,7 @@ const ProductManagement = () => {
             <Row>
               <Col md={6}>
                 <Form.Group className="mb-3">
-                  <Form.Label>Price</Form.Label>
+                  <Form.Label>Price (LKR)</Form.Label>
                   <Form.Control
                     type="number"
                     name="price"
@@ -397,7 +543,7 @@ const ProductManagement = () => {
               <Row>
                 <Col md={6}>
                   <Form.Group className="mb-3">
-                    <Form.Label>Price</Form.Label>
+                    <Form.Label>Price (LKR)</Form.Label>
                     <Form.Control
                       type="number"
                       name="price"

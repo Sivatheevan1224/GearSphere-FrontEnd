@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Container, Row, Col, Button, Card, Badge, Carousel, Navbar, Nav, Accordion, Form, InputGroup } from "react-bootstrap";
-import { Cpu, People, Lightning, Shield, ChevronRight, Star, Grid3x3Gap, Tools, Award, Wrench, Headset, Search, Filter, SortDown, StarFill, Envelope, Telephone, GeoAlt, Clock, Person } from "react-bootstrap-icons";
+import { Cpu, People, Lightning, Shield, ChevronRight, Star, Grid3x3Gap, Tools, Award, Wrench, Headset, Search, Filter, SortDown, StarFill, Envelope, Telephone, GeoAlt, Clock, Person, Display, Motherboard, Memory, Hdd, Power, PcDisplay, Fan } from "react-bootstrap-icons";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "../styles.css";
 import LoginModal from "../components/LoginModal";
@@ -25,6 +25,7 @@ function HomePage() {
   const [cpu, setCpu] = useState("All CPUs");
   const [gpu, setGpu] = useState("All GPUs");
   const [sortBy, setSortBy] = useState("Featured");
+  const [partType, setPartType] = useState("All");
   const navigate = useNavigate();
 
   const scrollToSection = (sectionId) => {
@@ -69,57 +70,39 @@ function HomePage() {
     },
   ];
 
-  // All products data
-  const products = [
-    {
-      id: 1,
-      name: "Titan X Gaming PC",
-      category: "Gaming",
-      price: 2499,
-      specs: "RTX 4080, Intel i9, 32GB RAM, 2TB SSD",
-      image: "/placeholder.svg?height=200&width=300"
-    },
-    {
-      id: 2,
-      name: "Creator Pro Workstation",
-      category: "Workstation",
-      price: 3299,
-      specs: "RTX 4090, AMD Ryzen 9, 64GB RAM, 4TB SSD",
-      image: "/placeholder.svg?height=200&width=300"
-    },
-    {
-      id: 3,
-      name: "Stealth Mini ITX",
-      category: "Compact",
-      price: 1899,
-      specs: "RTX 4070, Intel i7, 32GB RAM, 1TB SSD",
-      image: "/placeholder.svg?height=200&width=300"
-    },
-    {
-      id: 4,
-      name: "Budget Gaming Rig",
-      category: "Gaming",
-      price: 999,
-      specs: "RTX 3060, AMD Ryzen 5, 16GB RAM, 1TB SSD",
-      image: "/placeholder.svg?height=200&width=300"
-    },
-    {
-      id: 5,
-      name: "Ultimate Streaming PC",
-      category: "Streaming",
-      price: 2199,
-      specs: "RTX 4070 Ti, AMD Ryzen 7, 32GB RAM, 2TB SSD",
-      image: "/placeholder.svg?height=200&width=300"
-    },
-    {
-      id: 6,
-      name: "Office Productivity PC",
-      category: "Office",
-      price: 799,
-      specs: "Intel i5, 16GB RAM, 512GB SSD",
-      image: "/placeholder.svg?height=200&width=300"
-    },
+  // PC Parts data
+  const pcParts = [
+    // CPU
+    { type: "CPU", name: "Intel Core i9-13900K", price: 125000, icon: <Cpu size={32} className="text-primary" /> },
+    { type: "CPU", name: "AMD Ryzen 9 7950X", price: 120000, icon: <Cpu size={32} className="text-danger" /> },
+    { type: "CPU", name: "Intel Core i7-13700K", price: 85000, icon: <Cpu size={32} className="text-primary" /> },
+    // GPU
+    { type: "GPU", name: "NVIDIA RTX 4090", price: 350000, icon: <Display size={32} className="text-success" /> },
+    { type: "GPU", name: "AMD Radeon RX 7900 XTX", price: 220000, icon: <Display size={32} className="text-danger" /> },
+    { type: "GPU", name: "NVIDIA RTX 4070 Ti", price: 180000, icon: <Display size={32} className="text-success" /> },
+    // RAM
+    { type: "RAM", name: "64GB DDR5 6000MHz", price: 65000, icon: <Memory size={32} className="text-warning" /> },
+    { type: "RAM", name: "32GB DDR5 6000MHz", price: 35000, icon: <Memory size={32} className="text-warning" /> },
+    // Storage
+    { type: "Storage", name: "4TB NVMe SSD", price: 85000, icon: <Hdd size={32} className="text-info" /> },
+    { type: "Storage", name: "2TB NVMe SSD", price: 45000, icon: <Hdd size={32} className="text-info" /> },
+    // PSU
+    { type: "PSU", name: "1200W Platinum", price: 45000, icon: <Power size={32} className="text-secondary" /> },
+    { type: "PSU", name: "850W Gold", price: 28000, icon: <Power size={32} className="text-secondary" /> },
+    // Case
+    { type: "Case", name: "Lian Li O11 Dynamic", price: 35000, icon: <PcDisplay size={32} className="text-dark" /> },
+    { type: "Case", name: "NZXT H510", price: 15000, icon: <PcDisplay size={32} className="text-dark" /> },
+    // Cooling
+    { type: "Cooling", name: "360mm AIO Liquid Cooler", price: 35000, icon: <Fan size={32} className="text-primary" /> },
+    { type: "Cooling", name: "Premium Air Cooler", price: 20000, icon: <Fan size={32} className="text-primary" /> },
   ];
+
+  // Filtered and searched parts
+  const filteredParts = pcParts.filter(part => {
+    const matchesType = partType === "All" || part.type === partType;
+    const matchesSearch = part.name.toLowerCase().includes(searchQuery.toLowerCase());
+    return matchesType && matchesSearch;
+  });
 
   // Reviews data
   const reviews = [
@@ -200,7 +183,6 @@ function HomePage() {
     customer: [
       { name: 'Marketplace', icon: <Grid3x3Gap />, path: '/marketplace', description: 'Browse and purchase PC components and accessories' },
       { name: 'PC Builder', icon: <Tools />, path: '/pc-builder', description: 'Design your custom PC with our easy-to-use builder' },
-      { name: 'Find Technician', icon: <Wrench />, path: '/find-technician', description: 'Find local PC technicians for repairs and upgrades' },
       { name: 'My Orders', icon: <Award />, path: '/orders', description: 'Track your orders and purchase history' },
       { name: 'My Profile', icon: <Person />, path: '/profile', description: 'Manage your account settings and preferences' }
     ],
@@ -561,13 +543,12 @@ function HomePage() {
       <section id="products" className="py-5">
         <Container>
           <h1 className="text-center mb-5">Our Products</h1>
-          
           <Row className="mb-4">
             <Col md={6} className="mb-3 mb-md-0">
               <InputGroup>
                 <Form.Control
-                  placeholder="Search products..."
-                  aria-label="Search products"
+                  placeholder="Search PC parts..."
+                  aria-label="Search PC parts"
                   value={searchQuery}
                   onChange={e => setSearchQuery(e.target.value)}
                 />
@@ -577,148 +558,36 @@ function HomePage() {
               </InputGroup>
             </Col>
             <Col md={6} className="d-flex justify-content-md-end">
-              <Button 
-                variant="outline-primary" 
-                className="me-2"
-                onClick={() => setFilterVisible(!filterVisible)}
-              >
-                <Filter className="me-1" /> Filters
-              </Button>
-              <Form.Select style={{maxWidth: "200px"}} value={sortBy} onChange={e => setSortBy(e.target.value)}>
-                <option value="Featured">Sort by: Featured</option>
-                <option value="PriceLowHigh">Price: Low to High</option>
-                <option value="PriceHighLow">Price: High to Low</option>
-                <option value="NameAZ">Name: A to Z</option>
+              <Form.Select style={{maxWidth: "220px"}} value={partType} onChange={e => setPartType(e.target.value)}>
+                <option value="All">All Types</option>
+                <option value="CPU">CPU</option>
+                <option value="GPU">GPU</option>
+                <option value="RAM">RAM</option>
+                <option value="Storage">Storage</option>
+                <option value="PSU">PSU</option>
+                <option value="Case">Case</option>
+                <option value="Cooling">Cooling</option>
               </Form.Select>
             </Col>
           </Row>
-          
-          {filterVisible && (
-            <Row className="mb-4">
-              <Col md={12}>
-                <Card className="p-3">
                   <Row>
-                    <Col md={3}>
-                      <Form.Group className="mb-3">
-                        <Form.Label>Category</Form.Label>
-                        <Form.Select value={category} onChange={e => setCategory(e.target.value)}>
-                          <option>All Categories</option>
-                          <option>Gaming</option>
-                          <option>Workstation</option>
-                          <option>Compact</option>
-                          <option>Streaming</option>
-                          <option>Office</option>
-                        </Form.Select>
-                      </Form.Group>
-                    </Col>
-                    <Col md={3}>
-                      <Form.Group className="mb-3">
-                        <Form.Label>Price Range</Form.Label>
-                        <Form.Select value={priceRange} onChange={e => setPriceRange(e.target.value)}>
-                          <option>All Prices</option>
-                          <option>Under $1,000</option>
-                          <option>$1,000 - $2,000</option>
-                          <option>$2,000 - $3,000</option>
-                          <option>Over $3,000</option>
-                        </Form.Select>
-                      </Form.Group>
-                    </Col>
-                    <Col md={3}>
-                      <Form.Group className="mb-3">
-                        <Form.Label>CPU</Form.Label>
-                        <Form.Select value={cpu} onChange={e => setCpu(e.target.value)}>
-                          <option>All CPUs</option>
-                          <option>Intel Core i9</option>
-                          <option>Intel Core i7</option>
-                          <option>Intel Core i5</option>
-                          <option>AMD Ryzen 9</option>
-                          <option>AMD Ryzen 7</option>
-                          <option>AMD Ryzen 5</option>
-                        </Form.Select>
-                      </Form.Group>
-                    </Col>
-                    <Col md={3}>
-                      <Form.Group className="mb-3">
-                        <Form.Label>GPU</Form.Label>
-                        <Form.Select value={gpu} onChange={e => setGpu(e.target.value)}>
-                          <option>All GPUs</option>
-                          <option>NVIDIA RTX 4090</option>
-                          <option>NVIDIA RTX 4080</option>
-                          <option>NVIDIA RTX 4070</option>
-                          <option>NVIDIA RTX 3080</option>
-                          <option>NVIDIA RTX 3070</option>
-                          <option>AMD Radeon RX 7900</option>
-                        </Form.Select>
-                      </Form.Group>
-                    </Col>
-                  </Row>
-                  <div className="d-flex justify-content-end">
-                    <Button variant="secondary" className="me-2" onClick={() => {
-                      setCategory("All Categories");
-                      setPriceRange("All Prices");
-                      setCpu("All CPUs");
-                      setGpu("All GPUs");
-                      setSearchQuery("");
-                    }}>Reset</Button>
-                    <Button variant="primary" onClick={() => setFilterVisible(false)}>Apply Filters</Button>
-                  </div>
-                </Card>
-              </Col>
-            </Row>
-          )}
-          
-          {/* Filtering and sorting logic */}
-          {(() => {
-            let filtered = products.filter(product => {
-              // Search
-              if (searchQuery && !product.name.toLowerCase().includes(searchQuery.toLowerCase())) return false;
-              // Category
-              if (category !== "All Categories" && product.category !== category) return false;
-              // Price
-              if (priceRange !== "All Prices") {
-                if (priceRange === "Under $1,000" && product.price >= 1000) return false;
-                if (priceRange === "$1,000 - $2,000" && (product.price < 1000 || product.price > 2000)) return false;
-                if (priceRange === "$2,000 - $3,000" && (product.price < 2000 || product.price > 3000)) return false;
-                if (priceRange === "Over $3,000" && product.price <= 3000) return false;
-              }
-              // CPU
-              if (cpu !== "All CPUs" && (!product.specs || !product.specs.includes(cpu))) return false;
-              // GPU
-              if (gpu !== "All GPUs" && (!product.specs || !product.specs.includes(gpu))) return false;
-              return true;
-            });
-            // Sort
-            if (sortBy === "PriceLowHigh") filtered.sort((a, b) => a.price - b.price);
-            else if (sortBy === "PriceHighLow") filtered.sort((a, b) => b.price - a.price);
-            else if (sortBy === "NameAZ") filtered.sort((a, b) => a.name.localeCompare(b.name));
-            // else Featured: no sort or custom logic
-            return (
-              <Row>
-                {filtered.length === 0 ? (
-                  <Col><div className="text-center text-muted py-5">No products found.</div></Col>
-                ) : (
-                  filtered.map(product => (
-                    <Col key={product.id} md={4} className="mb-4">
-                      <Card className="h-100 shadow-sm">
-                        <Card.Img variant="top" src={product.image} />
+            {filteredParts.length === 0 ? (
+              <Col><div className="text-center text-muted py-5">No parts found.</div></Col>
+            ) : (
+              filteredParts.map((part, idx) => (
+                <Col key={idx} md={3} sm={6} className="mb-4">
+                  <Card className="h-100 shadow-sm text-center">
                         <Card.Body>
-                          <Card.Title>{product.name}</Card.Title>
-                          <div className="mb-2">
-                            <span className="badge bg-secondary">{product.category}</span>
-                          </div>
-                          <Card.Text className="text-muted small">{product.specs}</Card.Text>
-                          <div className="d-flex justify-content-between align-items-center mt-3">
-                            <span className="fw-bold text-primary">${product.price}</span>
-                            <Button variant="outline-primary" size="sm">View Details</Button>
-                          </div>
+                      <div className="mb-3">{part.icon}</div>
+                      <Card.Title>{part.name}</Card.Title>
+                      <Card.Text className="text-muted">{part.type}</Card.Text>
+                      <h5 className="text-primary mb-0">LKR {part.price.toLocaleString()}</h5>
                         </Card.Body>
                       </Card>
                     </Col>
                   ))
                 )}
               </Row>
-            );
-          })()}
         </Container>
       </section>
 
@@ -811,7 +680,7 @@ function HomePage() {
                 
                 <Form.Group className="mb-3">
                   <Form.Label>Phone Number</Form.Label>
-                  <Form.Control type="tel" placeholder="Enter phone number" />
+                  <Form.Control type="tel" placeholder="07X XXX XXXX" pattern="0[0-9]{2} [0-9]{3} [0-9]{4}" title="Enter a valid Sri Lankan phone number (e.g., 077 123 4567)" />
                 </Form.Group>
                 
                 <Form.Group className="mb-3">
@@ -872,8 +741,7 @@ function HomePage() {
                         </div>
                         <div>
                           <h5 className="mb-1">Address</h5>
-                          <p className="mb-0">123 Tech Street, Suite 101</p>
-                          <p className="mb-0">San Francisco, CA 94107</p>
+                          <p className="mb-0">Street Address, City (e.g., Colombo)</p>
                         </div>
                       </div>
                       
