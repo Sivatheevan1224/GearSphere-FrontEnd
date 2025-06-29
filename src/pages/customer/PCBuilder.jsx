@@ -36,6 +36,11 @@ function PCBuilder() {
   const [showCheckoutModal, setShowCheckoutModal] = useState(false);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [showTechnicianChoice, setShowTechnicianChoice] = useState(false);
+  const [showPartModal, setShowPartModal] = useState(false);
+  const [partTypeToSelect, setPartTypeToSelect] = useState('');
+  const [compareSelection, setCompareSelection] = useState([]);
+  const [showPartCompare, setShowPartCompare] = useState(false);
+  const [compareError, setCompareError] = useState("");
 
   const { addOrder } = useOrders();
 
@@ -1482,6 +1487,46 @@ function PCBuilder() {
     window.location.href = '/find-technician';
   };
 
+  const handleOpenPartModal = (partType) => {
+    setPartTypeToSelect(partType);
+    setShowPartModal(true);
+  };
+
+  const handleClosePartModal = () => {
+    setShowPartModal(false);
+    setPartTypeToSelect('');
+  };
+
+  const handleSelectPart = (partType, part) => {
+    setSelectedComponents(prev => ({ ...prev, [partType]: part }));
+    setShowPartModal(false);
+    setPartTypeToSelect('');
+  };
+
+  const handleToggleCompare = (option) => {
+    setCompareSelection(prev => {
+      if (prev.some(item => item.name === option.name)) {
+        setCompareError("");
+        return prev.filter(item => item.name !== option.name);
+      } else {
+        if (prev.length >= 4) {
+          setCompareError("You can only compare up to 4 options at a time.");
+          return prev;
+        }
+        setCompareError("");
+        return [...prev, option];
+      }
+    });
+  };
+
+  const handleShowPartCompare = () => {
+    setShowPartCompare(true);
+  };
+
+  const handleClosePartCompare = () => {
+    setShowPartCompare(false);
+  };
+
   // Create PC build items for checkout
   const pcBuildItems = Object.entries(selectedComponents)
     .filter(([_, component]) => component)
@@ -1579,20 +1624,15 @@ function PCBuilder() {
                             {component?.icon || componentIcons[key]}
                           </Col>
                           <Col md={9}>
-                            <Form.Select
-                              value={component?.name || ''}
-                              onChange={(e) => {
-                                const selected = componentOptions[key].find(comp => comp.name === e.target.value);
-                                setSelectedComponents(prev => ({ ...prev, [key]: selected }));
-                              }}
+                            <Button
+                              className="mb-2 btn-darkblue"
+                              onClick={() => handleOpenPartModal(key)}
                             >
-                              <option value="">Select {key.toUpperCase()}</option>
-                              {componentOptions[key].map(comp => (
-                                <option key={comp.name} value={comp.name}>
-                                  {comp.name} - LKR {comp.price.toLocaleString()}
-                                </option>
-                              ))}
-                            </Form.Select>
+                              {component ? `Change ${key.toUpperCase()}` : `Select ${key.toUpperCase()}`}
+                            </Button>
+                            {component && (
+                              <span className="ms-2 text-muted small">Selected: <strong>{component.name}</strong></span>
+                            )}
                             {component && component.specs && (
                               <div className="mt-2">
                                 <small className="text-muted">
@@ -1849,7 +1889,7 @@ function PCBuilder() {
           </Row>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={() => setShowCheckoutModal(false)}>
+          <Button variant="danger" onClick={() => setShowCheckoutModal(false)}>
             Cancel
           </Button>
           <Button variant="primary" onClick={handleCheckoutConfirm}>
@@ -1940,7 +1980,221 @@ function PCBuilder() {
           </Row>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={() => setShowTechnicianChoice(false)}>
+          <Button variant="danger" onClick={() => setShowTechnicianChoice(false)}>
+            Close
+          </Button>
+        </Modal.Footer>
+      </Modal>
+
+      {/* Part Selection Modal */}
+      <Modal show={showPartModal} onHide={handleClosePartModal} centered size="lg">
+        <Modal.Header closeButton>
+          <Modal.Title>Select {partTypeToSelect && partTypeToSelect.toUpperCase()}</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          {compareSelection.length === 1 && (
+            <Alert variant="info" className="mb-3">
+              Selected: <strong>{compareSelection[0].name}</strong>
+            </Alert>
+          )}
+          {compareError && (
+            <Alert variant="danger" className="mb-3">
+              {compareError}
+            </Alert>
+          )}
+          {compareSelection.length >= 2 && compareSelection.length <= 4 && (
+            <div className="mb-3 d-flex justify-content-end">
+              <Button variant="info" onClick={handleShowPartCompare}>
+                Compare Selected ({compareSelection.length})
+              </Button>
+            </div>
+          )}
+          {partTypeToSelect && (
+            <Row>
+              {componentOptions[partTypeToSelect].map((option) => (
+                <Col md={6} lg={4} key={option.name} className="mb-4">
+                  <Card className="h-100">
+                    <Card.Body>
+                      <div className="d-flex align-items-center mb-2">
+                        <Form.Check
+                          type="checkbox"
+                          className="me-2"
+                          checked={compareSelection.some(item => item.name === option.name)}
+                          disabled={
+                            !compareSelection.some(item => item.name === option.name) && compareSelection.length >= 4
+                          }
+                          onChange={() => handleToggleCompare(option)}
+                        />
+                        {option.icon}
+                        <div className="ms-2">
+                          <h5 className="mb-1">{option.name}</h5>
+                          <div className="text-primary">LKR {option.price.toLocaleString()}</div>
+                        </div>
+                      </div>
+                      {option.specs && (
+                        <div className="mb-2">
+                          <small className="text-muted">
+                            {Object.entries(option.specs).map(([spec, value]) => (
+                              <span key={spec} className="me-2">
+                                <strong>{spec}:</strong> {value}
+                              </span>
+                            ))}
+                          </small>
+                        </div>
+                      )}
+                      <Button
+                        className="w-100 mt-2 btn-darkblue"
+                        onClick={() => handleSelectPart(partTypeToSelect, option)}
+                      >
+                        Select
+                      </Button>
+                    </Card.Body>
+                  </Card>
+                </Col>
+              ))}
+            </Row>
+          )}
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="danger" onClick={handleClosePartModal}>
+            Cancel
+          </Button>
+        </Modal.Footer>
+      </Modal>
+
+      {/* Part Compare Modal */}
+      <Modal show={showPartCompare} onHide={handleClosePartCompare} size="xl" centered>
+        <Modal.Header closeButton>
+          <Modal.Title>Compare {partTypeToSelect && partTypeToSelect.toUpperCase()} Options</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          {compareSelection.length >= 2 ? (
+            <div className="table-responsive">
+              <Table bordered hover>
+                <thead>
+                  <tr>
+                    <th>Feature</th>
+                    {compareSelection.map(item => (
+                      <th key={item.name} className="text-center">
+                        <div className="mb-2">{item.icon}</div>
+                        <div>{item.name}</div>
+                        <div className="text-primary">LKR {item.price.toLocaleString()}</div>
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {/* Technical Specifications */}
+                  <tr className="table-primary">
+                    <td colSpan={compareSelection.length + 1}>
+                      <strong>Technical Specifications</strong>
+                    </td>
+                  </tr>
+                  {compareSelection[0]?.specs && Object.keys(compareSelection[0].specs).map(spec => (
+                    <tr key={spec}>
+                      <td><strong>{spec}</strong></td>
+                      {compareSelection.map(item => (
+                        <td key={item.name} className="text-center">
+                          {safeGet(item, `specs.${spec}`)}
+                        </td>
+                      ))}
+                    </tr>
+                  ))}
+
+                  {/* Functionality */}
+                  {compareSelection[0]?.features?.functionality && (
+                    <>
+                      <tr className="table-success">
+                        <td colSpan={compareSelection.length + 1}>
+                          <strong>Functionality</strong>
+                        </td>
+                      </tr>
+                      {Object.entries(compareSelection[0].features.functionality).map(([key, _]) => (
+                        <tr key={key}>
+                          <td><strong>{key}</strong></td>
+                          {compareSelection.map(item => (
+                            <td key={item.name} className="text-center">
+                              {safeGet(item, `features.functionality.${key}`)}
+                            </td>
+                          ))}
+                        </tr>
+                      ))}
+                    </>
+                  )}
+
+                  {/* Usage Scenarios */}
+                  {compareSelection[0]?.features?.usage && (
+                    <>
+                      <tr className="table-info">
+                        <td colSpan={compareSelection.length + 1}>
+                          <strong>Usage Scenarios</strong>
+                        </td>
+                      </tr>
+                      {Object.entries(compareSelection[0].features.usage).map(([key, _]) => (
+                        <tr key={key}>
+                          <td><strong>{key}</strong></td>
+                          {compareSelection.map(item => (
+                            <td key={item.name}>
+                              {safeGet(item, `features.usage.${key}`)}
+                            </td>
+                          ))}
+                        </tr>
+                      ))}
+                    </>
+                  )}
+
+                  {/* Unique Features */}
+                  <tr className="table-warning">
+                    <td colSpan={compareSelection.length + 1}>
+                      <strong>Unique Features</strong>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td><strong>Special Features</strong></td>
+                    {compareSelection.map(item => (
+                      <td key={item.name}>
+                        <ul className="list-unstyled mb-0">
+                          {(() => {
+                            const features = safeGet(item, 'features.uniqueFeatures');
+                            const featureArray = Array.isArray(features) ? features : ['N/A'];
+                            return featureArray.map(feature => (
+                              <li key={feature}>{feature}</li>
+                            ));
+                          })()}
+                        </ul>
+                      </td>
+                    ))}
+                  </tr>
+
+                  {/* Price Analysis */}
+                  {compareSelection[0]?.features?.priceAnalysis && (
+                    <>
+                      <tr className="table-secondary">
+                        <td colSpan={compareSelection.length + 1}>
+                          <strong>Price Analysis</strong>
+                        </td>
+                      </tr>
+                      {Object.entries(compareSelection[0].features.priceAnalysis).map(([key, _]) => (
+                        <tr key={key}>
+                          <td><strong>{key}</strong></td>
+                          {compareSelection.map(item => (
+                            <td key={item.name} className="text-center">
+                              {safeGet(item, `features.priceAnalysis.${key}`)}
+                            </td>
+                          ))}
+                        </tr>
+                      ))}
+                    </>
+                  )}
+                </tbody>
+              </Table>
+            </div>
+          ) : (
+            <Alert variant="info">Select at least 2 options to compare.</Alert>
+          )}
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="danger" onClick={handleClosePartCompare}>
             Close
           </Button>
         </Modal.Footer>

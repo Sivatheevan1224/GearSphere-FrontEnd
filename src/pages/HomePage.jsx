@@ -573,7 +573,7 @@ function HomePage() {
                   <Row>
             {filteredParts.length === 0 ? (
               <Col><div className="text-center text-muted py-5">No parts found.</div></Col>
-            ) : (
+                ) : (
               filteredParts.map((part, idx) => (
                 <Col key={idx} md={3} sm={6} className="mb-4">
                   <Card className="h-100 shadow-sm text-center">

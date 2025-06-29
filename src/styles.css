@@ -575,3 +575,13 @@ section {
     border-color: #198754;
   }
   
+.btn-darkblue {
+  background-color: #1a237e !important;
+  color: #fff !important;
+  border: none;
+}
+.btn-darkblue:hover, .btn-darkblue:focus {
+  background-color: #0d1331 !important;
+  color: #fff !important;
+}
+  
