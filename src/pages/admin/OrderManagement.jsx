@@ -17,7 +17,7 @@ const OrderManagement = () => {
         id: 'C001',
         name: 'John Smith',
         email: 'john.smith@example.com',
-        phone: '+1 (555) 123-4567'
+        phone: '077 123 4567'
       },
       technician: {
         id: 'T001',
@@ -38,7 +38,7 @@ const OrderManagement = () => {
         id: 'C002',
         name: 'Sarah Johnson',
         email: 'sarah.j@example.com',
-        phone: '+1 (555) 234-5678'
+        phone: '071 234 5678'
       },
       status: 'Ready to Deliver',
       date: '2024-03-14',
@@ -56,7 +56,7 @@ const OrderManagement = () => {
         id: 'C003',
         name: 'David Wilson',
         email: 'david.w@example.com',
-        phone: '+1 (555) 345-6789'
+        phone: '070 345 6789'
       },
       technician: {
         id: 'T002',
@@ -121,6 +121,9 @@ const OrderManagement = () => {
   const currentOrders = filteredOrders.slice(indexOfFirstOrder, indexOfLastOrder);
   const totalPages = Math.ceil(filteredOrders.length / ordersPerPage);
 
+  // Currency formatter for LKR
+  const formatLKR = (amount) => `LKR ${amount.toLocaleString('en-LK')}`;
+
   return (
     <Container className="py-5">
       <h1 className="text-center mb-5">Order Management</h1>
@@ -182,7 +185,7 @@ const OrderManagement = () => {
                   </td>
                   <td>{order.date}</td>
                   <td>{getStatusBadge(order.status)}</td>
-                  <td>${order.total}</td>
+                  <td>{formatLKR(order.total)}</td>
                   <td>
                     <Button
                       variant="outline-primary"
@@ -256,7 +259,7 @@ const OrderManagement = () => {
                 <p className="mb-1"><strong>Type:</strong> {getTypeBadge(selectedOrder.type)}</p>
                 <p className="mb-1"><strong>Status:</strong> {getStatusBadge(selectedOrder.status)}</p>
                 <p className="mb-1"><strong>Date:</strong> {selectedOrder.date}</p>
-                <p className="mb-1"><strong>Total:</strong> ${selectedOrder.total}</p>
+                <p className="mb-1"><strong>Total:</strong> {formatLKR(selectedOrder.total)}</p>
                 {selectedOrder.tracking && (
                   <p className="mb-1"><strong>Tracking:</strong> {selectedOrder.tracking}</p>
                 )}
@@ -290,8 +293,8 @@ const OrderManagement = () => {
                       <tr key={index}>
                         <td>{item.name}</td>
                         <td>{item.quantity}</td>
-                        <td>${item.price}</td>
-                        <td>${item.quantity * item.price}</td>
+                        <td>{formatLKR(item.price)}</td>
+                        <td>{formatLKR(item.quantity * item.price)}</td>
                       </tr>
                     ))}
                   </tbody>

@@ -1,10 +1,10 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
+import { CartProvider } from './pages/customer/CartContext';
+import { OrdersProvider } from './pages/customer/OrdersContext';
 import MainNavbar from './components/MainNavbar';
 import HomePage from './pages/HomePage';
-import Login from './components/auth/Login';
-import Register from './components/auth/Register';
 
 // Customer Pages
 import Marketplace from './pages/customer/Marketplace';
@@ -12,7 +12,7 @@ import PCBuilder from './pages/customer/PCBuilder';
 import FindTechnician from './pages/customer/FindTechnician';
 import Orders from './pages/customer/Orders';
 import CustomerProfile from './pages/customer/Profile';
-import CustomerMain from './pages/customer/CustomerMain';
+import CustomerDashboard from './pages/customer/CustomerDashboard';
 
 // Technician Pages
 import TechnicianDashboard from './pages/technician/Dashboard';
@@ -22,7 +22,6 @@ import TechnicianProfile from './pages/technician/Profile';
 import Earnings from './pages/technician/Earnings';
 import TechnicianReviews from './pages/technician/Reviews';
 import Appointments from './pages/technician/Appointments';
-import TechnicianMain from './pages/technician/TechnicianMain';
 
 // Admin Pages
 import UserManagement from './pages/admin/UserManagement';
@@ -57,11 +56,11 @@ function AppContent() {
       <Routes>
         {/* Public Routes */}
         <Route path="/" element={<HomePage />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
+        
         {/* Customer Layout for all customer pages */}
         <Route element={<CustomerLayout />}>
-          <Route path="/customer" element={<CustomerMain />} />
+          <Route path="/customer" element={<CustomerDashboard />} />
+          <Route path="/customer/dashboard" element={<CustomerDashboard />} />
           <Route path="/marketplace" element={<Marketplace />} />
           <Route path="/pc-builder" element={<PCBuilder />} />
           <Route path="/find-technician" element={<FindTechnician />} />
@@ -70,7 +69,7 @@ function AppContent() {
         </Route>
         {/* Technician Layout for all technician pages */}
         <Route element={<TechnicianLayout />}>
-          <Route path="/technician" element={<TechnicianMain />} />
+          <Route path="/technician" element={<TechnicianDashboard />} />
           <Route path="/technician/dashboard" element={<TechnicianDashboard />} />
           <Route path="/technician/appointments" element={<Appointments />} />
           <Route path="/technician/profile" element={<TechnicianProfile />} />
@@ -114,7 +113,11 @@ function App() {
       }}
     >
       <AuthProvider>
+        <CartProvider>
+          <OrdersProvider>
         <AppContent />
+          </OrdersProvider>
+        </CartProvider>
       </AuthProvider>
     </Router>
   );

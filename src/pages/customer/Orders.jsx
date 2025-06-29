@@ -1,28 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { Container, Row, Col, Card, Table, Badge, Button, Modal } from 'react-bootstrap';
+import { OrdersContext } from './OrdersContext';
 
 const Orders = () => {
   const [showOrderDetails, setShowOrderDetails] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState(null);
+  const { orders } = useContext(OrdersContext);
 
-  // Mock data - replace with actual API call
-  const orders = [
-    {
-      id: 'ORD001',
-      date: '2024-03-15',
-      status: 'Delivered',
-      total: 1299.99,
-      items: [
-        { name: 'Intel Core i7-12700K', quantity: 1, price: 349.99 },
-        { name: 'NVIDIA RTX 4070', quantity: 1, price: 599.99 },
-        { name: 'Corsair 32GB RAM', quantity: 1, price: 149.99 },
-        { name: 'Samsung 1TB SSD', quantity: 1, price: 199.99 }
-      ],
-      shippingAddress: '123 Main St, New York, NY 10001',
-      trackingNumber: 'TRK123456789'
-    },
-    // Add more mock orders here
-  ];
+  const formatLKR = (amount) => 'LKR ' + Number(amount).toLocaleString('en-LK');
 
   const getStatusBadge = (status) => {
     const variants = {
@@ -44,40 +29,56 @@ const Orders = () => {
     <Container className="py-5">
       <h1 className="text-center mb-5">My Orders</h1>
 
-      <Card className="shadow-sm">
-        <Card.Body>
-          <Table responsive hover>
-            <thead>
-              <tr>
-                <th>Order ID</th>
-                <th>Date</th>
-                <th>Status</th>
-                <th>Total</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {orders.map(order => (
-                <tr key={order.id}>
-                  <td>{order.id}</td>
-                  <td>{order.date}</td>
-                  <td>{getStatusBadge(order.status)}</td>
-                  <td>${order.total.toFixed(2)}</td>
-                  <td>
-                    <Button
-                      variant="outline-primary"
-                      size="sm"
-                      onClick={() => handleViewDetails(order)}
-                    >
-                      View Details
-                    </Button>
-                  </td>
+      {orders.length === 0 ? (
+        <Card className="shadow-sm">
+          <Card.Body className="text-center py-5">
+            <h4 className="text-muted mb-3">No Orders Yet</h4>
+            <p className="text-muted">You haven't placed any orders yet.</p>
+            <Button variant="primary" href="/marketplace">
+              Browse Products
+            </Button>
+          </Card.Body>
+        </Card>
+      ) : (
+        <Card className="shadow-sm">
+          <Card.Body>
+            <Table responsive hover>
+              <thead>
+                <tr>
+                  <th>Order ID</th>
+                  <th>Date</th>
+                  <th>Status</th>
+                  <th>Payment Method</th>
+                  <th>Total</th>
+                  <th>Actions</th>
                 </tr>
-              ))}
-            </tbody>
-          </Table>
-        </Card.Body>
-      </Card>
+              </thead>
+              <tbody>
+                {orders.map(order => (
+                  <tr key={order.id}>
+                    <td>{order.id}</td>
+                    <td>{order.date}</td>
+                    <td>{getStatusBadge(order.status)}</td>
+                    <td>
+                      <Badge bg="success">{order.paymentMethod}</Badge>
+                    </td>
+                    <td>{formatLKR(order.total)}</td>
+                    <td>
+                      <Button
+                        variant="outline-primary"
+                        size="sm"
+                        onClick={() => handleViewDetails(order)}
+                      >
+                        View Details
+                      </Button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </Table>
+          </Card.Body>
+        </Card>
+      )}
 
       {/* Order Details Modal */}
       <Modal
@@ -97,7 +98,9 @@ const Orders = () => {
                   <p className="mb-1"><strong>Order ID:</strong> {selectedOrder.id}</p>
                   <p className="mb-1"><strong>Date:</strong> {selectedOrder.date}</p>
                   <p className="mb-1"><strong>Status:</strong> {getStatusBadge(selectedOrder.status)}</p>
-                  <p className="mb-1"><strong>Total:</strong> ${selectedOrder.total.toFixed(2)}</p>
+                  <p className="mb-1"><strong>Payment Method:</strong> <Badge bg="success">{selectedOrder.paymentMethod}</Badge></p>
+                  <p className="mb-1"><strong>Payment Status:</strong> <Badge bg="success">{selectedOrder.paymentStatus}</Badge></p>
+                  <p className="mb-1"><strong>Total:</strong> {formatLKR(selectedOrder.total)}</p>
                 </Col>
                 <Col md={6}>
                   <h5>Shipping Information</h5>
@@ -111,6 +114,7 @@ const Orders = () => {
                 <thead>
                   <tr>
                     <th>Item</th>
+                    <th>Category</th>
                     <th>Quantity</th>
                     <th>Price</th>
                     <th>Subtotal</th>
@@ -120,16 +124,17 @@ const Orders = () => {
                   {selectedOrder.items.map((item, index) => (
                     <tr key={index}>
                       <td>{item.name}</td>
+                      <td>{item.category}</td>
                       <td>{item.quantity}</td>
-                      <td>${item.price.toFixed(2)}</td>
-                      <td>${(item.quantity * item.price).toFixed(2)}</td>
+                      <td>{formatLKR(item.price)}</td>
+                      <td>{formatLKR(item.quantity * item.price)}</td>
                     </tr>
                   ))}
                 </tbody>
                 <tfoot>
                   <tr>
-                    <td colSpan="3" className="text-end"><strong>Total:</strong></td>
-                    <td><strong>${selectedOrder.total.toFixed(2)}</strong></td>
+                    <td colSpan="4" className="text-end"><strong>Total:</strong></td>
+                    <td><strong>{formatLKR(selectedOrder.total)}</strong></td>
                   </tr>
                 </tfoot>
               </Table>

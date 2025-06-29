@@ -1,10 +1,12 @@
 import React, { useState } from "react";
 import { Navbar, Container, Nav, Button, Modal } from "react-bootstrap";
 import { Link, useNavigate } from "react-router-dom";
+import { Bell } from "react-bootstrap-icons";
 
 function AdminNavbar({ fixed = "top" }) {
   const navigate = useNavigate();
   const [showLogoutModal, setShowLogoutModal] = useState(false);
+  const [expanded, setExpanded] = useState(false);
 
   const handleLogout = () => {
     localStorage.removeItem("user");
@@ -14,9 +16,9 @@ function AdminNavbar({ fixed = "top" }) {
 
   return (
     <>
-      <Navbar bg="light" expand="lg" className="mb-4" fixed={fixed}>
+      <Navbar bg="light" expand="lg" className="mb-4" fixed={fixed} expanded={expanded} onToggle={setExpanded}>
         <Container>
-          <Navbar.Brand as={Link} to="/">
+          <Navbar.Brand as={Link} to="/admin" onClick={() => setExpanded(false)}>
             <img
               src="/src/images/logo.PNG"
               alt="GearSphere Logo"
@@ -27,13 +29,15 @@ function AdminNavbar({ fixed = "top" }) {
           <Navbar.Toggle aria-controls="admin-navbar-nav" />
           <Navbar.Collapse id="admin-navbar-nav">
             <Nav className="me-auto">
-              <Nav.Link as={Link} to="/admin/users">User Management</Nav.Link>
-              <Nav.Link as={Link} to="/admin/seller-verification">Seller Verification</Nav.Link>
-              <Nav.Link as={Link} to="/admin/orders">Order Management</Nav.Link>
-              <Nav.Link as={Link} to="/admin/analytics">Analytics</Nav.Link>
-              <Nav.Link as={Link} to="/admin/reports">Reports</Nav.Link>
-              <Nav.Link as={Link} to="/admin/system-settings">System Settings</Nav.Link>
+              <Nav.Link as={Link} to="/admin" onClick={() => setExpanded(false)}>Dashboard</Nav.Link>
+              <Nav.Link as={Link} to="/admin/users" onClick={() => setExpanded(false)}>User Management</Nav.Link>
+              <Nav.Link as={Link} to="/admin/seller-verification" onClick={() => setExpanded(false)}>Seller Verification</Nav.Link>
+              <Nav.Link as={Link} to="/admin/orders" onClick={() => setExpanded(false)}>Order Management</Nav.Link>
+              <Nav.Link as={Link} to="/admin/analytics" onClick={() => setExpanded(false)}>Analytics</Nav.Link>
+              <Nav.Link as={Link} to="/admin/reports" onClick={() => setExpanded(false)}>Reports</Nav.Link>
+              <Nav.Link as={Link} to="/admin/system-settings" onClick={() => setExpanded(false)}>System Settings</Nav.Link>
             </Nav>
+            <Bell size={22} className="me-3 cursor-pointer text-secondary" style={{ verticalAlign: 'middle' }} />
             <Button variant="outline-danger" onClick={() => setShowLogoutModal(true)}>
               Logout
             </Button>
