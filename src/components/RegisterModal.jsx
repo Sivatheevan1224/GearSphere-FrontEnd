@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Modal, Button, Form, Row, Col } from 'react-bootstrap';
-import { Upload, GeoAltFill, Person, Tools, Telephone } from 'react-bootstrap-icons';
+import { Upload, GeoAltFill, Person, Tools, Telephone, Eye, EyeSlash } from 'react-bootstrap-icons';
 import axios from 'axios';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -24,6 +24,8 @@ function RegisterModal({ show, onHide, switchToLogin }) {
   const [sentOtp, setSentOtp] = useState('');
   const [otpModalVisible, setOtpModalVisible] = useState(false);
   const [registeringAs, setRegisteringAs] = useState('customer');
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const districtsList = [ "Ampara", "Anuradhapura", "Badulla", "Batticaloa", "Colombo", "Galle", "Gampaha", "Hambantota",
                           "Jaffna", "Kalutara", "Kandy", "Kegalle", "Kilinochchi", "Kurunegala", "Mannar", "Matale", "Matara",
@@ -116,7 +118,8 @@ function RegisterModal({ show, onHide, switchToLogin }) {
         switchToLogin();
       }, 1500);
     } else {
-      toast.error(res.data.message || "Registration failed.");
+      console.log("Registration failed response:", res.data);
+     toast.error(res.data.message || "Registration failed.");
     }
   } 
    catch (err) {
@@ -211,12 +214,38 @@ function RegisterModal({ show, onHide, switchToLogin }) {
 
             <Form.Group className="mb-3">
               <Form.Label>Password</Form.Label>
-              <Form.Control type="password" value={password} onChange={e => setPassword(e.target.value)} required />
+              <div className="position-relative">
+                <Form.Control 
+                  type={showPassword ? "text" : "password"} 
+                  value={password} 
+                  onChange={e => setPassword(e.target.value)} 
+                  required 
+                />
+                <span 
+                  onClick={() => setShowPassword(!showPassword)} 
+                  style={{ position: 'absolute', top: '50%', right: '10px', transform: 'translateY(-50%)', cursor: 'pointer', zIndex: 2 }}
+                >
+                  {showPassword ? <EyeSlash /> : <Eye />}
+                </span>
+              </div>
             </Form.Group>
 
             <Form.Group className="mb-3">
               <Form.Label>Confirm Password</Form.Label>
-              <Form.Control type="password" value={confirmPassword} onChange={e => setConfirmPassword(e.target.value)} required />
+              <div className="position-relative">
+                <Form.Control 
+                  type={showConfirmPassword ? "text" : "password"} 
+                  value={confirmPassword} 
+                  onChange={e => setConfirmPassword(e.target.value)} 
+                  required 
+                />
+                <span 
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)} 
+                  style={{ position: 'absolute', top: '50%', right: '10px', transform: 'translateY(-50%)', cursor: 'pointer', zIndex: 2 }}
+                >
+                  {showConfirmPassword ? <EyeSlash /> : <Eye />}
+                </span>
+              </div>
             </Form.Group>
 
             {userType === 'builder' && (
