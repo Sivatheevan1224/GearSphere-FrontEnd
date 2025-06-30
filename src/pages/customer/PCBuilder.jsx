@@ -1609,13 +1609,6 @@ function PCBuilder() {
                       <h5 className="mb-0">
                         {componentIcons[key]} {key.toUpperCase()}
                       </h5>
-                      <Button 
-                        variant="outline-primary" 
-                        size="sm"
-                        onClick={() => handleCompare(key)}
-                      >
-                        <ArrowsAngleExpand className="me-1" /> Compare Options
-                      </Button>
                     </div>
                     <Card>
                       <Card.Body>

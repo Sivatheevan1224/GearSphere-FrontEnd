@@ -1,0 +1,240 @@
+.signup-container{
+    width: 900px !important;
+    height: 650px !important;
+    border-radius: 16px;
+    background-color: white;
+    box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 25px;
+    display: flex;
+    flex-direction: column;
+    padding: 32px;
+    position: relative;
+    opacity: 1;
+    animation: slideIn 0.3s ease-out;
+}
+
+.signup-container .input_row {
+  display: flex;
+  gap: 15px;
+  width: 100%;
+}
+
+.signup-container .small_input {
+  width: calc(50% - 15px);
+}
+
+.signup-container a{
+    color: #060b26;
+    font-size: 12px;
+  }
+  .signup-container .cancel-btn{
+    cursor: pointer;
+    font-size: 2rem;
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    z-index: 10;
+    color: #666;
+    transition: color 0.3s ease;
+  }
+
+.signup-container .cancel-btn:hover {
+    color: #333;
+}
+
+.register-img{
+    width: 340px;
+    margin-left: 20px;
+    margin-top: 20px;
+    z-index: 2;
+    position: relative;
+    opacity: 1 !important;
+    filter: none !important;
+}
+ 
+  .form{
+    display: flex;
+    width: 100%;
+  }
+  
+  .form .form-section  h2{
+         
+    color: #0b0217;
+    text-align: center;
+    margin-right: 25px;
+    margin-bottom: -5px;
+    
+
+}
+.form-section .input_box {
+position: relative;
+margin-top: 30px;
+width: 100%;
+height: 35px;
+
+
+}
+.form-section .input_box input,
+.form-section .input_box select {
+  width: 100%;
+  padding: 10px 40px;
+  font-size: 14px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  margin: 15px 0;
+  transition: all 0.3s;
+}
+.form-section .input_box input:focus {
+border-color: #060b26;
+}
+
+.form-section .input_box select{
+  appearance: none;
+  -moz-appearance: none;
+  -webkit-appearance: none;
+}
+.form-section .icon{
+position: absolute;
+top: 70%;
+font-size: 22px;
+color: #707070;
+left: 5px;
+
+}
+.form-section .input_box input:focus ~ .icon{
+color: #060b26;
+}
+.form-section .option_field {
+margin-top: 14px;
+display: flex;
+align-items: center;
+justify-content: space-between;
+}
+
+.form-section a{
+color: #060b26;
+font-size: 12px;
+}
+  .signup-container .form-section{
+    margin-left: 20px;
+    width: 450px !important;
+    margin-right: 20px;
+    margin-top: 0;
+  }
+  .signup-container .form-img{
+    width: 350px;
+    border-left: 2px solid #707070;
+    margin-left: 10px;
+    margin-right: -10px;
+    margin-top: -10px;
+  }
+
+  .form .form-section .button {
+    background: linear-gradient(90deg, #4361ee, #3a0ca3);
+    margin-top: 30px;
+    width: 80%;
+    padding: 10px 0;
+    border-radius: 10px;
+    outline: none;
+    border: none;
+    color: white;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 6px rgba(67, 97, 238, 0.2);
+  }
+  .form .form-section  .button:hover{
+    background: linear-gradient(90deg, #3a0ca3, #4361ee);
+    color: white;
+    font-weight: bold;
+    border: none;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 8px rgba(67, 97, 238, 0.3);
+  }
+   .button-div{
+    display: flex;
+    gap: 18px;
+    width: 80%;
+    margin-left: 33px;
+    margin-top: 20px;
+  }
+
+  .signup-container .login_signup {
+    font-size: 14px;
+    text-align: left;
+    margin-top: 15px;
+    margin-left: 32px;
+  }
+  .signup-container .login_signup span{
+    margin-left: 3px;
+    text-decoration: underline;
+    color: rgb(20, 65, 164);
+    cursor: pointer;
+  }
+  .signup-container .login_signup span:hover{
+    color: black;
+  }
+
+  @media (max-width: 1200px) {
+    .signup-container {
+      width: 98vw !important;
+      height: auto !important;
+      padding: 10px;
+    }
+    .form {
+      flex-direction: column;
+      width: 100%;
+    }
+    .signup-container .form-img {
+      display: none;
+    }
+    .signup-container .form-section {
+      width: 100% !important;
+      margin: 0;
+    }
+    .register-img {
+      display: none;
+    }
+  } 
+
+.login {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  width: 100vw;
+  position: fixed;
+  top: 0;
+  left: 0;
+  background: rgba(0,0,0,0.15);
+  z-index: 9999;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-30px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.otp-modal-front {
+  z-index: 12000 !important;
+}
+.otp-modal-front .modal-dialog {
+  z-index: 12001 !important;
+  position: relative;
+}
+.otp-modal-front .modal-backdrop {
+  z-index: 11999 !important;
+} 

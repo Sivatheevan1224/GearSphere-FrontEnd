@@ -1,18 +1,20 @@
 import React, { useState, useEffect } from 'react';
-import { Navbar, Container, Nav, Button } from 'react-bootstrap';
-import { Link, useLocation } from 'react-router-dom';
+import { Navbar, Container, Nav, Button, Modal } from 'react-bootstrap';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import LoginModal from './LoginModal';
-import RegisterModal from './RegisterModal';
+import RegisterPage from './RegisterPage';
+import Signup from '../pages/Signup';
 
 function MainNavbar() {
   const [expanded, setExpanded] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [activeSection, setActiveSection] = useState('hero');
   const [showLoginModal, setShowLoginModal] = useState(false);
-  const [showRegisterModal, setShowRegisterModal] = useState(false);
+  const [showSignupModal, setShowSignupModal] = useState(false);
   const { user, logout } = useAuth();
   const location = useLocation();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -159,7 +161,8 @@ function MainNavbar() {
                   <Button 
                     variant="primary"
                     onClick={() => {
-                      setShowRegisterModal(true);
+                      console.log('Register button clicked');
+                      setShowSignupModal(true);
                       setExpanded(false);
                     }}
                   >
@@ -177,17 +180,17 @@ function MainNavbar() {
         onHide={() => setShowLoginModal(false)} 
         switchToRegister={() => {
           setShowLoginModal(false);
-          setShowRegisterModal(true);
+          setShowSignupModal(true);
         }} 
       />
-      <RegisterModal 
-        show={showRegisterModal} 
-        onHide={() => setShowRegisterModal(false)}
-        switchToLogin={() => {
-          setShowRegisterModal(false);
-          setShowLoginModal(true);
-        }}
-      />
+      
+      {/* Signup Modal - same behavior as LoginModal */}
+      {showSignupModal && (
+        <Signup 
+          signupClose={setShowSignupModal} 
+          loginClose={setShowLoginModal}
+        />
+      )}
     </>
   );
 }
