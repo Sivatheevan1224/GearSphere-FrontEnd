@@ -5,7 +5,7 @@ import { CartProvider } from './pages/customer/CartContext';
 import { OrdersProvider } from './pages/customer/OrdersContext';
 import MainNavbar from './components/MainNavbar';
 import HomePage from './pages/HomePage';
-import Signup from './pages/Signup';
+import Signup from './components/Signup';
 
 // Customer Pages
 import Marketplace from './pages/customer/Marketplace';

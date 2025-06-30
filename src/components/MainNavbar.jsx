@@ -3,8 +3,7 @@ import { Navbar, Container, Nav, Button, Modal } from 'react-bootstrap';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import LoginModal from './LoginModal';
-import RegisterPage from './RegisterPage';
-import Signup from '../pages/Signup';
+import Signup from './Signup';
 
 function MainNavbar() {
   const [expanded, setExpanded] = useState(false);

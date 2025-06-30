@@ -237,4 +237,62 @@ font-size: 12px;
 }
 .otp-modal-front .modal-backdrop {
   z-index: 11999 !important;
+}
+
+.Toastify__toast-container {
+  z-index: 13000 !important;
 } 
+
+/* TechnicianInstruction popup styling to match signup modal */
+.instruction-modal .modal-dialog {
+  max-width: 960px;
+  margin: auto;
+  border-radius: 16px;
+  animation: slideIn 0.3s ease-out;
+}
+
+.instruction-modal .modal-content {
+  border: none;
+  border-radius: 16px;
+  background-color: white;
+  box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 25px;
+  overflow: hidden;
+}
+
+/* Apply the same backdrop blur as signup.css */
+.instruction-modal.modal {
+  backdrop-filter: blur(8px);
+  background-color: rgba(0, 0, 0, 0.15);
+}
+
+/* Match button styles */
+.instruction-modal .btn-primary {
+  background: linear-gradient(90deg, #4361ee, #3a0ca3);
+  border: none;
+  border-radius: 10px;
+  font-weight: bold;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 6px rgba(67, 97, 238, 0.2);
+}
+
+.instruction-modal .btn-primary:hover {
+  background: linear-gradient(90deg, #3a0ca3, #4361ee);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 8px rgba(67, 97, 238, 0.3);
+  color: white;
+}
+
+/* Optional: Style secondary button for consistency */
+.instruction-modal .btn-secondary {
+  border-radius: 10px;
+  font-weight: bold;
+  transition: all 0.2s ease;
+}
+
+/* Responsive tweaks */
+@media (max-width: 768px) {
+  .instruction-modal .modal-dialog {
+    width: 95vw;
+    margin: 1rem;
+  }
+}
