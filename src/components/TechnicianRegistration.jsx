@@ -44,7 +44,7 @@ const TechnicianRegistration = ({ technicianData, openFinalReg, onBack, onSucces
     formData.append('cv', cv);
     try {
       const response = await axios.post(
-        'http://localhost/gearsphere_api/GearSphere-BackEnd/customersignup.php',
+        'http://localhost/gearsphere_api/GearSphere-BackEnd/Techniciansignup.php',
         formData,
         { headers: { 'Content-Type': 'multipart/form-data' } }
       );
