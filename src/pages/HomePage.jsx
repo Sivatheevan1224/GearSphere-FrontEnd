@@ -4,7 +4,6 @@ import { Cpu, People, Lightning, Shield, ChevronRight, Star, Grid3x3Gap, Tools, 
 import "bootstrap/dist/css/bootstrap.min.css";
 import "../styles.css";
 import LoginModal from "../components/LoginModal";
-import RegisterPage from '../components/RegisterPage';
 import Footer from "../components/Footer";
 import pcGif from '../images/pc_video.gif';
 import { Link, useNavigate } from "react-router-dom";

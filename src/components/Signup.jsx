@@ -14,6 +14,8 @@ import LocationOnIcon from '@mui/icons-material/LocationOn';
 import { Button, Modal } from "react-bootstrap";
 import PhoneIcon from "@mui/icons-material/Phone";
 import providerImg from "../images/provider_img.jpg";
+import TechnicianRegistration from './TechnicianRegistration';
+import techStyles from './TechnicianRegistration.module.css';
 
 const Signup = ({ signupClose, loginClose, setShowTechnicianInstruction }) => {
   const [firstName, setFirstName] = useState("");
@@ -227,7 +229,7 @@ const Signup = ({ signupClose, loginClose, setShowTechnicianInstruction }) => {
     <>
       {/* Only show signup form if instruction popup and tech details form are not open */}
       {!openInstruct && !showTechDetailsForm && (
-        <div className="login" onClick={(e) => {
+        <div className={techStyles['tech-essential-registration']} onClick={(e) => {
           if (e.target === e.currentTarget) {
             if (signupClose) signupClose(false);
           }
@@ -411,48 +413,22 @@ const Signup = ({ signupClose, loginClose, setShowTechnicianInstruction }) => {
       {/* Technician Details Form */}
       {showTechDetailsForm && (
         <Modal show={showTechDetailsForm} onHide={() => setShowTechDetailsForm(false)} size="xl" backdrop="static" centered>
-          <div className="d-flex" style={{ minHeight: 500, position: 'relative' }}>
-            {/* Close button */}
-            <ClearIcon
-              className="cancel-btn"
-              style={{ position: 'absolute', top: 15, right: 15, zIndex: 10, cursor: 'pointer', color: '#666' }}
-              onClick={() => setShowTechDetailsForm(false)}
-            />
-            {/* Left form section */}
-            <div className="flex-grow-1 p-4" style={{ background: '#fff', borderRadius: '12px 0 0 12px' }}>
-              <h3 className="mb-4">Technician Details</h3>
-              <form onSubmit={handleTechDetailsSubmit}>
-                <div className="mb-3">
-                  <label className="form-label">Experience (Years)</label>
-                  <input type="number" className="form-control" value={techExperience} onChange={e => setTechExperience(e.target.value)} required />
-                </div>
-                <div className="mb-3">
-                  <label className="form-label">Specialization</label>
-                  <select className="form-control" value={techSpecialization} onChange={e => setTechSpecialization(e.target.value)} required>
-                    <option value="">Select Specialization</option>
-                    <option>Gaming PCs</option>
-                    <option>Workstations</option>
-                    <option>Custom Water Cooling</option>
-                    <option>Small Form Factor</option>
-                    <option>General PC Building</option>
-                  </select>
-                </div>
-                <div className="mb-4">
-                  <label className="form-label">Upload CV</label>
-                  <input type="file" className="form-control" accept=".pdf,.doc,.docx" onChange={e => setTechCV(e.target.files[0])} required />
-                  <small className="text-muted">Please upload your CV in PDF, DOC, or DOCX format</small>
-                </div>
-                <div className="d-flex gap-2">
-                  <Button variant="secondary" onClick={() => setShowTechDetailsForm(false)}>Back</Button>
-                  <Button type="submit" variant="primary">Register as Technician</Button>
-                </div>
-              </form>
-            </div>
-            {/* Right image section */}
-            <div className="d-none d-md-flex align-items-center justify-content-center" style={{ width: 400, borderRadius: '0 12px 12px 0', background: '#f8f9fa' }}>
-              <img src={providerImg} alt="Technician Registration" style={{ width: 350, borderRadius: 12 }} />
-            </div>
-          </div>
+          <TechnicianRegistration
+            technicianData={{
+              name: `${firstName} ${lastName}`,
+              email,
+              password,
+              contact_number: contactNumber,
+              address: `${city} | ${district} | ${postalCode}`,
+              userType: 'technician',
+            }}
+            onBack={() => setShowTechDetailsForm(false)}
+            onSuccess={() => {
+              setShowTechDetailsForm(false);
+              if (signupClose) signupClose(false);
+              if (loginClose) loginClose(true);
+            }}
+          />
         </Modal>
       )}
       <ToastContainer />
