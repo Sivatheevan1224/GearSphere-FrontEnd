@@ -5,6 +5,7 @@ import { CartProvider } from './pages/customer/CartContext';
 import { OrdersProvider } from './pages/customer/OrdersContext';
 import MainNavbar from './components/MainNavbar';
 import HomePage from './pages/HomePage';
+import Signup from './pages/Signup';
 
 // Customer Pages
 import Marketplace from './pages/customer/Marketplace';
@@ -56,6 +57,7 @@ function AppContent() {
       <Routes>
         {/* Public Routes */}
         <Route path="/" element={<HomePage />} />
+        <Route path="/register" element={<Signup />} />
         
         {/* Customer Layout for all customer pages */}
         <Route element={<CustomerLayout />}>

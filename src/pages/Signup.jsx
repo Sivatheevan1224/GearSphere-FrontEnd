@@ -1,0 +1,463 @@
+import React, { useState } from "react";
+import axios from "axios";
+import { ToastContainer, toast } from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
+import './Signup.css';
+import ClearIcon from "@mui/icons-material/Clear";
+import EmailIcon from "@mui/icons-material/Email";
+import LockIcon from "@mui/icons-material/Lock";
+import AccountCircleIcon from "@mui/icons-material/AccountCircle";
+import registerimg from "../images/register.png";
+import TechnicianInstruction from "../components/TechnicianInstruction";
+import PersonIcon from '@mui/icons-material/Person';
+import LocationOnIcon from '@mui/icons-material/LocationOn';
+import { Button, Modal } from "react-bootstrap";
+import PhoneIcon from "@mui/icons-material/Phone";
+import providerImg from "../images/provider_img.jpg";
+
+const Signup = ({ signupClose, loginClose, setShowTechnicianInstruction }) => {
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [city, setCity] = useState("");
+  const [district, setDistrict] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [openInstruct, setOpenInstruct] = useState(false);
+  const [providerData, setProviderData] = useState({});
+  const [otpModalVisible, setOtpModalVisible] = useState(false);
+  const [enteredOtp, setEnteredOtp] = useState("");
+  const [sentOtp, setSentOtp] = useState("");
+  const [postalCode, setPostalCode] = useState("");
+  const [contactNumber, setContactNumber] = useState("");
+  const [registeringAsTechnician, setRegisteringAsTechnician] = useState(false);
+  const [registeringAs, setRegisteringAs] = useState("customer");
+  const [experience, setExperience] = useState("");
+  const [specialization, setSpecialization] = useState("");
+  const [file, setFile] = useState(null);
+  const [isTechnician, setIsTechnician] = useState(false);
+  const [showTechDetailsForm, setShowTechDetailsForm] = useState(false);
+  const [techExperience, setTechExperience] = useState("");
+  const [techSpecialization, setTechSpecialization] = useState("");
+  const [techCV, setTechCV] = useState(null);
+
+  const districts = [
+    '', 'Ampara', 'Anuradhapura', 'Badulla', 'Batticaloa', 'Colombo', 'Galle', 'Gampaha',
+    'Hambantota', 'Jaffna', 'Kalutara', 'Kandy', 'Kegalle', 'Kilinochchi', 'Kurunegala',
+    'Mannar', 'Matale', 'Matara', 'Monaragala', 'Mullaitivu', 'Nuwara Eliya', 'Polonnaruwa',
+    'Puttalam', 'Ratnapura', 'Trincomalee', 'Vavuniya'
+  ];
+
+  const sendOTP = async () => {
+    try {
+      const res = await axios.post("http://localhost/gearsphere_api/GearSphere-BackEnd/emailValidationOTP.php", { email });
+      if (res.data.success) {
+        setSentOtp(res.data.otp);
+        toast.success("OTP sent to your email.");
+        setOtpModalVisible(true);
+      } else {
+        toast.error(res.data.message || "Failed to send OTP.");
+      }
+    } catch (err) {
+      toast.error("Error sending OTP.");
+    }
+  };
+
+  const handleOtpSubmit = async () => {
+    if (parseInt(enteredOtp) === parseInt(sentOtp)) {
+      toast.success("OTP verified successfully.");
+      setOtpModalVisible(false);
+      if (isTechnician) {
+        setOpenInstruct(true);
+      } else {
+        await registerCustomer();
+      }
+    } else {
+      toast.error("OTP verification failed. Please try again.");
+    }
+  };
+
+  const handleTechnicianAgree = () => {
+    setOpenInstruct(false);
+    setShowTechDetailsForm(true);
+  };
+
+  const handleTechDetailsSubmit = async (e) => {
+    e.preventDefault();
+    const fullName = `${firstName} ${lastName}`;
+    const fullAddress = `${city} | ${district}`;
+    const formData = new FormData();
+    formData.append("name", fullName);
+    formData.append("email", email);
+    formData.append("password", password);
+    formData.append("contact_number", username); // or use a phone field if you have one
+    formData.append("address", fullAddress);
+    formData.append("userType", "technician");
+    formData.append("experience", techExperience);
+    formData.append("specialization", techSpecialization);
+    if (techCV) formData.append("cv", techCV);
+    try {
+      const res = await axios.post("http://localhost/gearsphere_api/GearSphere-BackEnd/customersignup.php", formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
+      if (res.data.status === "success") {
+        toast.success("Registration successful!");
+        setTimeout(() => {
+          setShowTechDetailsForm(false);
+          if (signupClose) signupClose(false);
+          if (loginClose) loginClose(true);
+        }, 1500);
+      } else {
+        toast.error(res.data.message || "Registration failed.");
+      }
+    } catch (err) {
+      if (err.response) {
+        toast.error(`Server Error: ${err.response.data.message || "Check PHP error log"}`);
+      } else if (err.request) {
+        toast.error("No response from server. Check if PHP backend is running.");
+      } else {
+        toast.error("Request setup error.");
+      }
+    }
+  };
+
+  const registerCustomer = async () => {
+    const fullName = `${firstName} ${lastName}`;
+    const fullAddress = `${city} | ${district} | ${postalCode}`;
+
+    const formData = new FormData();
+    formData.append('name', fullName);
+    formData.append('email', email);
+    formData.append('password', password);
+    formData.append('contact_number', contactNumber);
+    formData.append('address', fullAddress);
+    formData.append('userType', 'customer');
+
+    try {
+      const response = await axios.post("http://localhost/gearsphere_api/GearSphere-BackEnd/customersignup.php", formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
+      if (response.data.status === 'success') {
+        toast.success("Registered Successfully, You can login now...");
+        setTimeout(() => {
+          if (signupClose) signupClose(false);
+          if (loginClose) loginClose(true);
+        }, 3000);
+      } else {
+        toast.error(response.data.message || "Registration failed. Please check your credentials and try again.");
+      }
+    } catch (error) {
+      if (error.response) {
+        toast.error(`Server Error: ${error.response.data.message || "Check PHP error log"}`);
+      } else if (error.request) {
+        toast.error("No response from server. Check if PHP backend is running.");
+      } else {
+        toast.error("Customer email already exists.");
+      }
+      setTimeout(() => {
+        window.location.reload();
+      }, 3000);
+    }
+  };
+
+  const registerProvider = async () => {
+    const fullName = `${firstName} ${lastName}`;
+    const fullAddress = `${city} | ${district} | ${postalCode}`;
+    setProviderData({ fullName, fullAddress, email, password });
+    setOpenInstruct(true);
+  };
+
+  const handleSignup = async (e) => {
+    e.preventDefault();
+    if (!firstName || !lastName || !city || !district || !email || !password || !confirmPassword || !postalCode || !contactNumber) {
+      toast.error("All fields are required.");
+      return;
+    }
+    const nameRegex = /^[a-zA-Z]+$/;
+    if (!nameRegex.test(firstName) || !nameRegex.test(lastName)) {
+      toast.error("First name and last name should only contain letters.");
+      return;
+    }
+    if (!email.includes('@gmail.com')) {
+      toast.error("Please enter valid email..");
+      return;
+    }
+    if (password !== confirmPassword) {
+      toast.error("Passwords do not match.");
+      return;
+    }
+    const passwordRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{6,}$/;
+    if (!passwordRegex.test(password)) {
+      toast.error("Password must be at least 6 characters long and include at least one uppercase letter, one special character, and one number.");
+      return;
+    }
+    await sendOTP();
+  };
+
+  const handleTechnicianRegister = async (e) => {
+    e.preventDefault();
+    setIsTechnician(true);
+    // Validate fields (reuse your validation logic from handleProviderRegister)
+    if (!firstName || !lastName || !city || !district || !email || !password || !confirmPassword) {
+      toast.error("Please fill in all fields.");
+      return;
+    }
+    const nameRegex = /^[a-zA-Z]+$/;
+    if (!nameRegex.test(firstName) || !nameRegex.test(lastName)) {
+      toast.error("First name and last name should only contain letters.");
+      return;
+    }
+    if (!email.includes('@gmail.com')) {
+      toast.error("Please enter valid email..");
+      return;
+    }
+    if (password !== confirmPassword) {
+      toast.error("Passwords do not match.");
+      return;
+    }
+    const passwordRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{6,}$/;
+    if (!passwordRegex.test(password)) {
+      toast.error("Password must be at least 6 characters long and include at least one uppercase letter, one special character, and one number.");
+      return;
+    }
+    await sendOTP(email);
+  };
+
+  return (
+    <>
+      {/* Only show signup form if instruction popup and tech details form are not open */}
+      {!openInstruct && !showTechDetailsForm && (
+        <div className="login" onClick={(e) => {
+          if (e.target === e.currentTarget) {
+            if (signupClose) signupClose(false);
+          }
+        }}>
+          <div className="signup-container">
+            <ClearIcon
+              className="cancel-btn"
+              onClick={() => {
+                signupClose(false);
+              }}
+            />
+            <div className="form">
+              <div className="form-section">
+                <form onSubmit={handleSignup}>
+                  <h2>Sign up</h2>
+                  {/* First Name and Last Name */}
+                  <div className="input_row">
+                    <div className="input_box small_input">
+                      <input
+                        type="text"
+                        placeholder="First Name"
+                        value={firstName}
+                        onChange={(e) => setFirstName(e.target.value)}
+                        required
+                      />
+                      <PersonIcon className="icon" />
+                    </div>
+                    <div className="input_box small_input">
+                      <input
+                        type="text"
+                        placeholder="Last Name"
+                        value={lastName}
+                        onChange={(e) => setLastName(e.target.value)}
+                        required
+                      />
+                      <PersonIcon className="icon" />
+                    </div>
+                  </div>
+                  {/* Email */}
+                  <div className="input_box">
+                    <input
+                      type="email"
+                      placeholder="Enter your email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      required
+                    />
+                    <EmailIcon className="icon" />
+                  </div>
+                  {/* Phone Number */}
+                  <div className="input_box">
+                    <input
+                      type="tel"
+                      placeholder="Phone Number"
+                      value={contactNumber}
+                      onChange={(e) => setContactNumber(e.target.value)}
+                      required
+                    />
+                    <PhoneIcon className="icon" />
+                  </div>
+                  {/* City and District */}
+                  <div className="input_row">
+                    <div className="input_box small_input">
+                      <input
+                        type="text"
+                        placeholder="City"
+                        value={city}
+                        onChange={(e) => setCity(e.target.value)}
+                        required
+                      />
+                      <LocationOnIcon className="icon" />
+                    </div>
+                    <div className="input_box small_input">
+                      <select
+                        value={district}
+                        onChange={(e) => setDistrict(e.target.value)}
+                        required
+                        placeholder='district'
+                      >
+                        <option value="">District</option>
+                        {districts.map((district, index) => (
+                          <option key={index} value={district}>
+                            {district}
+                          </option>
+                        ))}
+                      </select>
+                      <LocationOnIcon className="icon" />
+                    </div>
+                    <div className="input_box small_input">
+                      <input
+                        type="text"
+                        placeholder="Postal Code"
+                        value={postalCode}
+                        onChange={(e) => setPostalCode(e.target.value)}
+                        required
+                      />
+                      <LocationOnIcon className="icon" />
+                    </div>
+                  </div>
+                  {/* Password and Confirm Password */}
+                  <div className="input_box">
+                    <input
+                      type="password"
+                      placeholder="Create password"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      required
+                    />
+                    <LockIcon className="icon" />
+                  </div>
+                  <div className="input_box">
+                    <input
+                      type="password"
+                      placeholder="Confirm password"
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      required
+                    />
+                    <LockIcon className="icon" />
+                  </div>
+                  <div className="button-div">
+                    <button className="button" type="submit">
+                      Register as Customer
+                    </button>
+                    <button
+                      className="button"
+                      type="button"
+                      onClick={handleTechnicianRegister}
+                    >
+                      Register as Technician
+                    </button>
+                  </div>
+                  <div className="login_signup">
+                    Already have an account?
+                    <span
+                      onClick={() => {
+                        if (signupClose) signupClose(false);
+                        if (loginClose) loginClose(true);
+                      }}
+                    >
+                      Login
+                    </span>
+                  </div>
+                </form>
+              </div>
+              <div className="form-img">
+                <img className="register-img" src={registerimg} alt="" />
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+      {/* OTP Modal */}
+      <Modal show={otpModalVisible} onHide={() => setOtpModalVisible(false)} centered className="otp-modal-front">
+        <Modal.Header closeButton>
+          <Modal.Title>OTP Verification</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <p>Please enter the OTP sent to your email:</p>
+          <input
+            type="text"
+            className="form-control"
+            placeholder="Enter OTP"
+            value={enteredOtp}
+            onChange={(e) => setEnteredOtp(e.target.value)}
+          />
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setOtpModalVisible(false)}>
+            Cancel
+          </Button>
+          <Button variant="primary" onClick={handleOtpSubmit}>
+            Verify OTP
+          </Button>
+        </Modal.Footer>
+      </Modal>
+      {/* Technician Instruction Popup */}
+      {openInstruct && (
+        <TechnicianInstruction show={openInstruct} onHide={() => setOpenInstruct(false)} onAgree={handleTechnicianAgree} imgSrc={providerImg} />
+      )}
+      {/* Technician Details Form */}
+      {showTechDetailsForm && (
+        <Modal show={showTechDetailsForm} onHide={() => setShowTechDetailsForm(false)} size="xl" backdrop="static" centered>
+          <div className="d-flex" style={{ minHeight: 500, position: 'relative' }}>
+            {/* Close button */}
+            <ClearIcon
+              className="cancel-btn"
+              style={{ position: 'absolute', top: 15, right: 15, zIndex: 10, cursor: 'pointer', color: '#666' }}
+              onClick={() => setShowTechDetailsForm(false)}
+            />
+            {/* Left form section */}
+            <div className="flex-grow-1 p-4" style={{ background: '#fff', borderRadius: '12px 0 0 12px' }}>
+              <h3 className="mb-4">Technician Details</h3>
+              <form onSubmit={handleTechDetailsSubmit}>
+                <div className="mb-3">
+                  <label className="form-label">Experience (Years)</label>
+                  <input type="number" className="form-control" value={techExperience} onChange={e => setTechExperience(e.target.value)} required />
+                </div>
+                <div className="mb-3">
+                  <label className="form-label">Specialization</label>
+                  <select className="form-control" value={techSpecialization} onChange={e => setTechSpecialization(e.target.value)} required>
+                    <option value="">Select Specialization</option>
+                    <option>Gaming PCs</option>
+                    <option>Workstations</option>
+                    <option>Custom Water Cooling</option>
+                    <option>Small Form Factor</option>
+                    <option>General PC Building</option>
+                  </select>
+                </div>
+                <div className="mb-4">
+                  <label className="form-label">Upload CV</label>
+                  <input type="file" className="form-control" accept=".pdf,.doc,.docx" onChange={e => setTechCV(e.target.files[0])} required />
+                  <small className="text-muted">Please upload your CV in PDF, DOC, or DOCX format</small>
+                </div>
+                <div className="d-flex gap-2">
+                  <Button variant="secondary" onClick={() => setShowTechDetailsForm(false)}>Back</Button>
+                  <Button type="submit" variant="primary">Register as Technician</Button>
+                </div>
+              </form>
+            </div>
+            {/* Right image section */}
+            <div className="d-none d-md-flex align-items-center justify-content-center" style={{ width: 400, borderRadius: '0 12px 12px 0', background: '#f8f9fa' }}>
+              <img src={providerImg} alt="Technician Registration" style={{ width: 350, borderRadius: 12 }} />
+            </div>
+          </div>
+        </Modal>
+      )}
+      <ToastContainer />
+    </>
+  );
+};
+
+export default Signup; 

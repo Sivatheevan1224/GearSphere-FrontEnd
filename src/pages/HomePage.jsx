@@ -4,7 +4,7 @@ import { Cpu, People, Lightning, Shield, ChevronRight, Star, Grid3x3Gap, Tools, 
 import "bootstrap/dist/css/bootstrap.min.css";
 import "../styles.css";
 import LoginModal from "../components/LoginModal";
-import RegisterModal from "../components/RegisterModal";
+import RegisterPage from '../components/RegisterPage';
 import Footer from "../components/Footer";
 import pcGif from '../images/pc_video.gif';
 import { Link, useNavigate } from "react-router-dom";
@@ -776,14 +776,16 @@ function HomePage() {
       />
 
       {/* Register Modal */}
-      <RegisterModal
-        show={showRegisterModal}
-        onHide={() => setShowRegisterModal(false)}
-        switchToLogin={() => {
-          setShowRegisterModal(false);
-          setShowLoginModal(true);
-        }}
-      />
+      {showRegisterModal && (
+        <RegisterPage
+          show={showRegisterModal}
+          onHide={() => setShowRegisterModal(false)}
+          switchToLogin={() => {
+            setShowRegisterModal(false);
+            setShowLoginModal(true);
+          }}
+        />
+      )}
       <Footer />
     </>
   );
