@@ -593,3 +593,8 @@ section.Toastify {
   display: block !important;
 }
   
+.homepage-root {
+  font-size: 1.18rem;
+  font-weight: 500;
+}
+  

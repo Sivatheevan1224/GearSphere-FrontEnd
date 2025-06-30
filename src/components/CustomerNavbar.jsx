@@ -4,6 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { Bell, Cart } from "react-bootstrap-icons";
 import { CartContext } from "../pages/customer/CartContext";
 import Checkout from "../pages/customer/Checkout";
+import profile1 from '../images/profile/pp1.png';
 
 function CustomerNavbar({ fixed = "top" }) {
   const navigate = useNavigate();
@@ -53,7 +54,6 @@ function CustomerNavbar({ fixed = "top" }) {
               <Nav.Link as={Link} to="/marketplace" onClick={() => setExpanded(false)}>Marketplace</Nav.Link>
               <Nav.Link as={Link} to="/pc-builder" onClick={() => setExpanded(false)}>PC Builder</Nav.Link>
               <Nav.Link as={Link} to="/orders" onClick={() => setExpanded(false)}>My Orders</Nav.Link>
-              <Nav.Link as={Link} to="/profile" onClick={() => setExpanded(false)}>My Profile</Nav.Link>
             </Nav>
             <div className="d-flex align-items-center">
               <Bell size={22} className="me-3 cursor-pointer text-secondary" style={{ verticalAlign: 'middle' }} />
@@ -74,9 +74,17 @@ function CustomerNavbar({ fixed = "top" }) {
                   </Badge>
                 )}
               </div>
-            <Button variant="outline-danger" onClick={() => setShowLogoutModal(true)}>
-              Logout
-            </Button>
+              <Nav.Link as={Link} to="/profile" className="d-flex align-items-center p-0 ms-2">
+                <img
+                  src={profile1}
+                  alt="Profile"
+                  className="rounded-circle"
+                  style={{ width: 40, height: 40, objectFit: 'cover', border: '2px solid #4361ee' }}
+                />
+              </Nav.Link>
+              <Button variant="outline-danger" onClick={() => setShowLogoutModal(true)} className="ms-3">
+                Logout
+              </Button>
             </div>
           </Navbar.Collapse>
         </Container>

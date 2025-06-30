@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Navbar, Container, Nav, Button, Modal } from "react-bootstrap";
 import { Link, useNavigate } from "react-router-dom";
 import { Bell } from "react-bootstrap-icons";
+import profile2 from '../images/profile/pp2.png';
 
 function TechnicianNavbar({ fixed = "top" }) {
   const navigate = useNavigate();
@@ -33,12 +34,21 @@ function TechnicianNavbar({ fixed = "top" }) {
               <Nav.Link as={Link} to="/technician/appointments" onClick={() => setExpanded(false)}>Appointments</Nav.Link>
               <Nav.Link as={Link} to="/technician/earnings" onClick={() => setExpanded(false)}>Earnings</Nav.Link>
               <Nav.Link as={Link} to="/technician/reviews" onClick={() => setExpanded(false)}>Reviews</Nav.Link>
-              <Nav.Link as={Link} to="/technician/profile" onClick={() => setExpanded(false)}>My Profile</Nav.Link>
             </Nav>
-            <Bell size={22} className="me-3 cursor-pointer text-secondary" style={{ verticalAlign: 'middle' }} />
-            <Button variant="outline-danger" onClick={() => setShowLogoutModal(true)}>
-              Logout
-            </Button>
+            <div className="d-flex align-items-center">
+              <Bell size={22} className="me-3 cursor-pointer text-secondary" style={{ verticalAlign: 'middle' }} />
+              <Nav.Link as={Link} to="/technician/profile" className="d-flex align-items-center p-0 ms-2">
+                <img
+                  src={profile2}
+                  alt="Profile"
+                  className="rounded-circle"
+                  style={{ width: 40, height: 40, objectFit: 'cover', border: '2px solid #4361ee' }}
+                />
+              </Nav.Link>
+              <Button variant="outline-danger" onClick={() => setShowLogoutModal(true)} className="ms-3">
+                Logout
+              </Button>
+            </div>
           </Navbar.Collapse>
         </Container>
       </Navbar>

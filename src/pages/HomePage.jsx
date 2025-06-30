@@ -12,6 +12,16 @@ import makinthanImg from '../images/makinthan.png';
 import pugazhImg from '../images/pugazh.png';
 import kowsiImg from '../images/kowsi.png';
 import gif1 from '../images/download.jpg';
+import profile1 from '../images/profile/pp1.png';
+import profile2 from '../images/profile/pp2.png';
+import profile3 from '../images/profile/pp3.jpg';
+import profile4 from '../images/profile/pp4.jpg';
+import profile5 from '../images/profile/pp5.jpg';
+import profile6 from '../images/profile/pp6.jpg';
+import pcpic1 from '../images/pcpic1.png';
+import pcpic2 from '../images/pcpic2.jpeg';
+import pcpic3 from '../images/pcpic3.jpg';
+import aboutus from '../images/aboutus.png';
 
 function HomePage() {
   const [showLoginModal, setShowLoginModal] = useState(false);
@@ -41,33 +51,6 @@ function HomePage() {
     }
   };
 
-  // Featured products data
-  const featuredProducts = [
-    {
-      id: 1,
-      name: "Titan X Gaming PC",
-      description: "High-end gaming rig with the latest RTX GPU and Intel i9 processor",
-      price: "$2,499",
-      imageUrl: "/placeholder.svg?height=300&width=400",
-      badge: "Best Seller",
-    },
-    {
-      id: 2,
-      name: "Creator Pro Workstation",
-      description: "Professional workstation optimized for content creation and 3D rendering",
-      price: "$3,299",
-      imageUrl: "/placeholder.svg?height=300&width=400",
-      badge: "New",
-    },
-    {
-      id: 3,
-      name: "Stealth Mini ITX",
-      description: "Compact but powerful PC with premium cooling in a small form factor",
-      price: "$1,899",
-      imageUrl: "/placeholder.svg?height=300&width=400",
-      badge: "Popular",
-    },
-  ];
 
   // PC Parts data
   const pcParts = [
@@ -113,7 +96,7 @@ function HomePage() {
       title: "Exceptional Build Quality",
       content: "The custom PC I received exceeded all my expectations. The build quality is exceptional and performance is outstanding. I've been gaming on it for months without any issues.",
       productName: "Titan X Gaming PC",
-      avatar: "/placeholder.svg?height=50&width=50"
+      avatar: profile1
     },
     {
       id: 2,
@@ -123,7 +106,7 @@ function HomePage() {
       title: "Perfect for 3D Work",
       content: "As a 3D artist, I need reliable hardware that can handle heavy workloads. My GearSphere PC delivers exactly that. Renders are faster than ever and the system stays cool even under load.",
       productName: "Creator Pro Workstation",
-      avatar: "/placeholder.svg?height=50&width=50"
+      avatar: profile2
     },
     {
       id: 3,
@@ -133,7 +116,7 @@ function HomePage() {
       title: "Great Value for Money",
       content: "The PC builder was incredibly knowledgeable and helped me choose the perfect components for my development needs. Only giving 4 stars because shipping took longer than expected.",
       productName: "Stealth Mini ITX",
-      avatar: "/placeholder.svg?height=50&width=50"
+      avatar: profile3
     },
     {
       id: 4,
@@ -143,7 +126,7 @@ function HomePage() {
       title: "Amazing Customer Service",
       content: "Not only was my PC built perfectly, but the customer service was outstanding. They helped me troubleshoot a minor issue over the phone and were incredibly patient.",
       productName: "Ultimate Streaming PC",
-      avatar: "/placeholder.svg?height=50&width=50"
+      avatar: profile4
     },
     {
       id: 5,
@@ -153,7 +136,7 @@ function HomePage() {
       title: "Good PC, Shipping Issues",
       content: "The PC itself is great and performs well for gaming. However, there were some shipping delays and the packaging could have been better. The support team was helpful in resolving my concerns.",
       productName: "Budget Gaming Rig",
-      avatar: "/placeholder.svg?height=50&width=50"
+      avatar: profile5
     },
     {
       id: 6,
@@ -163,7 +146,7 @@ function HomePage() {
       title: "Perfect Office PC",
       content: "This PC is perfect for my office needs. It's quiet, fast, and the price was very reasonable. The ordering process was smooth and delivery was prompt.",
       productName: "Office Productivity PC",
-      avatar: "/placeholder.svg?height=50&width=50"
+      avatar: profile6
     },
   ];
 
@@ -178,38 +161,8 @@ function HomePage() {
       ));
   };
 
-  const roleFunctions = {
-    customer: [
-      { name: 'Marketplace', icon: <Grid3x3Gap />, path: '/marketplace', description: 'Browse and purchase PC components and accessories' },
-      { name: 'PC Builder', icon: <Tools />, path: '/pc-builder', description: 'Design your custom PC with our easy-to-use builder' },
-      { name: 'My Orders', icon: <Award />, path: '/orders', description: 'Track your orders and purchase history' },
-      { name: 'My Profile', icon: <Person />, path: '/profile', description: 'Manage your account settings and preferences' }
-    ],
-    technician: [
-      { name: 'Services', icon: <Grid3x3Gap />, path: '/technician/services', description: 'Manage your repair and maintenance services' },
-      { name: 'Appointments', icon: <Award />, path: '/technician/appointments', description: 'View and manage service appointments' },
-      { name: 'Reviews', icon: <Star />, path: '/technician/reviews', description: 'View customer reviews and ratings' },
-      { name: 'Earnings', icon: <Lightning />, path: '/technician/earnings', description: 'Track your earnings and payment history' },
-      { name: 'My Profile', icon: <Person />, path: '/technician/profile', description: 'Manage your technician profile and settings' }
-    ],
-    seller: [
-      { name: 'Products', icon: <Grid3x3Gap />, path: '/seller/products', description: 'Manage your product listings and inventory' },
-      { name: 'Inventory', icon: <Award />, path: '/seller/inventory', description: 'Track and manage your product stock' },
-      { name: 'Orders', icon: <Star />, path: '/seller/orders', description: 'View and process customer orders' },
-      { name: 'Analytics', icon: <Lightning />, path: '/seller/analytics', description: 'View sales and performance metrics' },
-      { name: 'My Profile', icon: <Person />, path: '/seller/profile', description: 'Manage your seller profile and settings' }
-    ],
-    admin: [
-      { name: 'Users', icon: <People />, path: '/admin/users', description: 'Manage user accounts and permissions' },
-      { name: 'Technician Verification', icon: <Award />, path: '/admin/technician-verification', description: 'Verify and approve technician applications' },
-      { name: 'Orders', icon: <Star />, path: '/admin/orders', description: 'Monitor and manage all platform orders' },
-      { name: 'Analytics', icon: <Lightning />, path: '/admin/analytics', description: 'View platform-wide analytics and metrics' },
-      { name: 'Settings', icon: <Tools />, path: '/admin/settings', description: 'Manage platform settings and configurations' }
-    ]
-  };
-
   return (
-    <>
+    <div className="homepage-root">
       {/* Hero Section */}
       <section id="hero" className="py-5 bg-black text-white position-relative overflow-hidden">
         <div
@@ -260,24 +213,25 @@ function HomePage() {
       </section>
 
       {/* About Section */}
-      <section id="about" className="py-5">
+      <section id="about" className="py-5 about-section-custom">
         <Container>
-          <h1 className="text-center mb-5">About GearSphere</h1>
+          <h1 className="text-center mb-5 about-title-custom">About GearSphere</h1>
           <Row className="mb-5">
             <Col md={6}>
-              <h2>Our Story</h2>
-              <p>
+              <h2 className="about-heading-custom">Our Story</h2>
+              <p className="about-text-custom">
                 GearSphere was founded in 2020 by a group of passionate PC enthusiasts who wanted to make custom PC building accessible to everyone. What started as a small operation has grown into a trusted platform connecting customers with expert PC builders nationwide.
               </p>
-              <p>
+              <p className="about-text-custom">
                 At <strong>GearSphere</strong>, our mission is to make custom PC building easy, affordable, and accessible for everyone — whether you're a beginner with no technical background or an experienced user looking for high-performance builds. We aim to bridge the gap between customers and skilled PC technicians by creating a trusted platform where both can connect easily. Our goal is to simplify the building process with guided tools that help users select compatible parts, compare options, and receive suggestions based on budget and purpose. We focus on quality and transparency by working only with verified technicians and sellers, offering clear pricing and honest reviews. GearSphere also supports long-term value by providing lifetime technical support, upgrade options, and reliable repair services. In addition, we empower technicians and sellers by giving them an online presence and tools to grow their business. Through this, GearSphere aims to become the most trusted and complete platform for custom PC building.
               </p>
             </Col>
             <Col md={6}>
               <img 
-                src={gif1} 
+                src={aboutus} 
                 alt="GearSphere Team" 
                 className="img-fluid rounded shadow about-gif-img"
+                style={{ width: '120%' }}
               />
             </Col>
           </Row>
@@ -388,7 +342,7 @@ function HomePage() {
             </Col>
             <Col md={6}>
               <img 
-                src="/placeholder.svg?height=300&width=500" 
+                src={pcpic3} 
                 alt="PC Building Service" 
                 className="img-fluid rounded shadow"
               />
@@ -786,7 +740,7 @@ function HomePage() {
         />
       )}
       <Footer />
-    </>
+    </div>
   );
 }
 

@@ -1,0 +1,182 @@
+/* Bulletproof centering for login modal */
+.modal.custom-login-modal,
+.modal.custom-login-modal.show,
+.custom-login-modal.modal,
+.custom-login-modal.modal.show {
+  position: fixed !important;
+  inset: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  z-index: 1050 !important;
+  background: none !important;
+  box-sizing: border-box !important;
+}
+
+.custom-login-modal.modal-dialog {
+  margin: 0 !important;
+  max-width: 720px !important;
+  width: 85% !important;
+  position: relative !important;
+  transform: none !important;
+  left: 0 !important;
+  top: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  /* border: 2px solid red;  Uncomment for debugging */
+}
+
+/* Fullscreen backdrop with blur */
+.custom-login-backdrop,
+.modal-backdrop.show {
+  position: fixed !important;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0,0,0,0.5) !important;
+  backdrop-filter: blur(10px) !important;
+  -webkit-backdrop-filter: blur(10px) !important;
+  z-index: 1040;
+}
+
+/* Modal content styles */
+.modal-content.login {
+  display: flex;
+  flex-direction: row;
+  border-radius: 12px;
+  overflow: hidden;
+  background-color: white;
+  box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 20px;
+  opacity: 0.97;
+  padding: 0;
+  height: auto;
+  min-height: 0;
+}
+
+/* Image panel */
+.login-img {
+  flex: 1;
+  max-height: 280px;
+  height: 100%;
+  display: block;
+}
+
+.login-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 12px 0 0 12px;
+}
+
+/* Form panel */
+.login-form {
+  flex: 1.2;
+  padding: 10px 15px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
+/* Header & title */
+.login-form > .modal-header {
+  padding: 0 0 5px 0;
+  margin: 0;
+  border-bottom: none;
+}
+
+.login-form > .modal-title {
+  margin: 0 0 10px 0;
+  padding: 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+/* Form spacing */
+.login-form .mb-3,
+.login-form .mb-4 {
+  margin-bottom: 8px !important;
+  padding: 0;
+}
+
+/* Inputs */
+.login-form .form-control {
+  height: 32px;
+  padding: 4px 8px;
+  font-size: 0.9rem;
+}
+
+/* Button */
+.login-form button.w-100 {
+  padding: 6px 12px;
+  font-size: 1rem;
+  margin-top: 6px;
+}
+
+/* Footer */
+.modal-footer {
+  padding: 5px 0 0 0;
+  font-size: 0.85rem;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .modal.custom-login-modal.show {
+    height: auto;
+  }
+
+  .custom-login-modal.modal-dialog {
+    width: 95% !important;
+    max-width: none;
+    margin: 0 !important;
+  }
+
+  .modal-content.login {
+    flex-direction: column;
+  }
+
+  .login-img {
+    display: none;
+  }
+
+  .login-form {
+    padding: 10px;
+  }
+}
+
+/* Force modal to center on screen */
+body > .modal.custom-login-modal,
+body > .modal.custom-login-modal.show {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  position: fixed !important;
+  inset: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  margin: 0 !important;
+  z-index: 1050 !important;
+  background: none !important;
+  pointer-events: all !important;
+}
+
+body > .modal.custom-login-modal .modal-dialog {
+  margin: 0 auto !important;
+  position: relative !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  transform: none !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  max-width: 720px !important;
+  width: 85% !important;
+}
