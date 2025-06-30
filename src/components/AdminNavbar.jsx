@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Navbar, Container, Nav, Button, Modal } from "react-bootstrap";
 import { Link, useNavigate } from "react-router-dom";
 import { Bell } from "react-bootstrap-icons";
+import profile4 from '../images/profile/pp4.jpg';
 
 function AdminNavbar({ fixed = "top" }) {
   const navigate = useNavigate();
@@ -37,10 +38,20 @@ function AdminNavbar({ fixed = "top" }) {
               <Nav.Link as={Link} to="/admin/reports" onClick={() => setExpanded(false)}>Reports</Nav.Link>
               <Nav.Link as={Link} to="/admin/system-settings" onClick={() => setExpanded(false)}>System Settings</Nav.Link>
             </Nav>
-            <Bell size={22} className="me-3 cursor-pointer text-secondary" style={{ verticalAlign: 'middle' }} />
-            <Button variant="outline-danger" onClick={() => setShowLogoutModal(true)}>
-              Logout
-            </Button>
+            <div className="d-flex align-items-center">
+              <Bell size={22} className="me-3 cursor-pointer text-secondary" style={{ verticalAlign: 'middle' }} />
+              <Nav.Link as={Link} to="/admin" className="d-flex align-items-center p-0 ms-2">
+                <img
+                  src={profile4}
+                  alt="Profile"
+                  className="rounded-circle"
+                  style={{ width: 40, height: 40, objectFit: 'cover', border: '2px solid #4361ee' }}
+                />
+              </Nav.Link>
+              <Button variant="outline-danger" onClick={() => setShowLogoutModal(true)} className="ms-3">
+                Logout
+              </Button>
+            </div>
           </Navbar.Collapse>
         </Container>
       </Navbar>

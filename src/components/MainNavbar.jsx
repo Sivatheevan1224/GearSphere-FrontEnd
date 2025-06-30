@@ -4,6 +4,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import LoginModal from './LoginModal';
 import Signup from './Signup';
+import profile1 from '../images/profile/pp1.png';
 
 function MainNavbar() {
   const [expanded, setExpanded] = useState(false);
@@ -136,7 +137,14 @@ function MainNavbar() {
             <Nav className="d-flex flex-column flex-lg-row">
               {user ? (
                 <>
-                  <Nav.Link as={Link} to="/profile">Profile</Nav.Link>
+                  <Nav.Link as={Link} to="/profile" className="d-flex align-items-center p-0 ms-2">
+                    <img
+                      src={user?.profileImage || profile1}
+                      alt="Profile"
+                      className="rounded-circle"
+                      style={{ width: 40, height: 40, objectFit: 'cover', border: '2px solid #4361ee' }}
+                    />
+                  </Nav.Link>
                   <Button 
                     variant="outline-primary" 
                     className="me-lg-2"
