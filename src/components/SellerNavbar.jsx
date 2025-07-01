@@ -3,15 +3,17 @@ import { Navbar, Container, Nav, Button, Modal } from "react-bootstrap";
 import { Link, useNavigate } from "react-router-dom";
 import { Bell } from "react-bootstrap-icons";
 import profile3 from '../images/profile/pp3.jpg';
+import { useAuth } from '../context/AuthContext';
 
 function SellerNavbar({ fixed = "top" }) {
   const navigate = useNavigate();
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [expanded, setExpanded] = useState(false);
+  const { logout } = useAuth();
 
   const handleLogout = () => {
     sessionStorage.clear();
-    navigate("/");
+    logout();
   };
 
   return (

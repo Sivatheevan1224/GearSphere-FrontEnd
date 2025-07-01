@@ -38,12 +38,17 @@ function HomePage() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const user = JSON.parse(sessionStorage.getItem("user"));
-    if (user) {
-      if (user.user_type === "customer") navigate("/customer/dashboard");
-      else if (user.user_type === "Technician") navigate("/technician/dashboard");
-      else if (user.user_type === "admin") navigate("/admin");
-      else if (user.user_type === "seller") navigate("/seller/dashboard");
+    const userType = sessionStorage.getItem("user_type");
+    if (userType) {
+      if (userType.toLowerCase() === "customer") {
+        navigate("/customer/dashboard", { replace: true });
+      } else if (userType.toLowerCase() === "technician") {
+        navigate("/technician/dashboard", { replace: true });
+      } else if (userType.toLowerCase() === "admin") {
+        navigate("/admin", { replace: true });
+      } else if (userType.toLowerCase() === "seller") {
+        navigate("/seller", { replace: true });
+      }
     }
   }, [navigate]);
 

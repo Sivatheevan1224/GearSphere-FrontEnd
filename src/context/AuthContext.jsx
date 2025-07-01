@@ -82,7 +82,7 @@ export function AuthProvider({ children }) {
     localStorage.removeItem('userRole');
     setCurrentUser(null);
     setUserRole(null);
-    navigate('/login');
+    navigate('/');
   };
 
   // Register function

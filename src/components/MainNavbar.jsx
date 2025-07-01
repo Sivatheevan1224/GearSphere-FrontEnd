@@ -107,37 +107,37 @@ function MainNavbar() {
           <Navbar.Collapse id="basic-navbar-nav">
             <Nav className="me-auto">
               <Nav.Link 
-                onClick={() => scrollToSection('hero')}
+                onClick={() => { sessionStorage.clear(); scrollToSection('hero'); setExpanded(false); }}
                 className={`nav-link-custom cursor-pointer ${activeSection === 'hero' ? 'section-in-view' : ''}`}
               >
                 Home
               </Nav.Link>
               <Nav.Link 
-                onClick={() => scrollToSection('about')}
+                onClick={() => { sessionStorage.clear(); scrollToSection('about'); setExpanded(false); }}
                 className={`nav-link-custom cursor-pointer ${activeSection === 'about' ? 'section-in-view' : ''}`}
               >
                 About Us
               </Nav.Link>
               <Nav.Link 
-                onClick={() => scrollToSection('services')}
+                onClick={() => { sessionStorage.clear(); scrollToSection('services'); setExpanded(false); }}
                 className={`nav-link-custom cursor-pointer ${activeSection === 'services' ? 'section-in-view' : ''}`}
               >
                 Services
               </Nav.Link>
               <Nav.Link 
-                onClick={() => scrollToSection('products')}
+                onClick={() => { sessionStorage.clear(); scrollToSection('products'); setExpanded(false); }}
                 className={`nav-link-custom cursor-pointer ${activeSection === 'products' ? 'section-in-view' : ''}`}
               >
                 Products
               </Nav.Link>
               <Nav.Link 
-                onClick={() => scrollToSection('reviews')}
+                onClick={() => { sessionStorage.clear(); scrollToSection('reviews'); setExpanded(false); }}
                 className={`nav-link-custom cursor-pointer ${activeSection === 'reviews' ? 'section-in-view' : ''}`}
               >
                 Reviews
               </Nav.Link>
               <Nav.Link 
-                onClick={() => scrollToSection('contact')}
+                onClick={() => { sessionStorage.clear(); scrollToSection('contact'); setExpanded(false); }}
                 className={`nav-link-custom cursor-pointer ${activeSection === 'contact' ? 'section-in-view' : ''}`}
               >
                 Contact
