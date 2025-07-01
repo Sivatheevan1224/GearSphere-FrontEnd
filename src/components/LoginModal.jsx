@@ -26,6 +26,16 @@ function LoginModal({ show, onHide, switchToRegister }) {
   const [checkOTP,setCheckOTP] = useState("");
   const [step, setStep] = useState(1);
 
+  useEffect(() => {
+    const user = JSON.parse(sessionStorage.getItem("user"));
+    if (user) {
+      if (user.user_type === "customer") navigate("/customer/dashboard");
+      else if (user.user_type === "Technician") navigate("/technician/dashboard");
+      else if (user.user_type === "admin") navigate("/admin");
+      else if (user.user_type === "seller") navigate("/seller/dashboard");
+    }
+  }, [navigate]);
+
   //Handle login 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -48,10 +58,11 @@ function LoginModal({ show, onHide, switchToRegister }) {
         toast.success(response.data.message, { autoClose: 2000 });
 
         setTimeout(() => {
-
-          sessionStorage.setItem("user_type", user_type);
-          sessionStorage.setItem("user_id", user_id);
-          sessionStorage.setItem("email", email);
+          sessionStorage.setItem("user", JSON.stringify({
+            user_id,
+            user_type,
+            email,
+          }));
           toast.dismiss();
           onHide();
 

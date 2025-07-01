@@ -17,8 +17,7 @@ function CustomerNavbar({ fixed = "top" }) {
   const formatLKR = (amount) => 'LKR ' + Number(amount).toLocaleString('en-LK');
 
   const handleLogout = () => {
-    localStorage.removeItem("user");
-    localStorage.removeItem("userRole");
+    sessionStorage.clear();
     navigate("/");
   };
 
