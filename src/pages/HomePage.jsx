@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Container, Row, Col, Button, Card, Badge, Carousel, Navbar, Nav, Accordion, Form, InputGroup } from "react-bootstrap";
 import { Cpu, People, Lightning, Shield, ChevronRight, Star, Grid3x3Gap, Tools, Award, Wrench, Headset, Search, Filter, SortDown, StarFill, Envelope, Telephone, GeoAlt, Clock, Person, Display, Motherboard, Memory, Hdd, Power, PcDisplay, Fan } from "react-bootstrap-icons";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -36,6 +36,17 @@ function HomePage() {
   const [sortBy, setSortBy] = useState("Featured");
   const [partType, setPartType] = useState("All");
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const userType = sessionStorage.getItem("user_type");
+    if (userType) {
+      const type = userType.toLowerCase();
+      if (type === "admin") navigate("/admin");
+      else if (type === "customer") navigate("/customer/dashboard");
+      else if (type === "seller") navigate("/seller");
+      else if (type === "technician") navigate("/technician/dashboard");
+    }
+  }, [navigate]);
 
   const scrollToSection = (sectionId) => {
     const element = document.getElementById(sectionId);

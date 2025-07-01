@@ -5,8 +5,9 @@ import { Outlet, useNavigate } from "react-router-dom";
 function CustomerLayout() {
   const navigate = useNavigate();
   useEffect(() => {
-    const userType = sessionStorage.getItem("user_type");
-    if (userType?.toLowerCase() !== "customer") {
+    const userType = sessionStorage.getItem("user_type")?.toLowerCase();
+    const userId = sessionStorage.getItem("user_id");
+    if (!userType || !userId || userType !== "customer") {
       navigate("/", { replace: true });
     }
   }, [navigate]);

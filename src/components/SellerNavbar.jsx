@@ -10,9 +10,9 @@ function SellerNavbar({ fixed = "top" }) {
   const [expanded, setExpanded] = useState(false);
 
   const handleLogout = () => {
-    localStorage.removeItem("user");
-    localStorage.removeItem("userRole");
-    navigate("/");
+    sessionStorage.clear();
+    navigate("/", { replace: true });
+    window.location.reload();
   };
 
   return (
