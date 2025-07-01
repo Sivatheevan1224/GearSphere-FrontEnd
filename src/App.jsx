@@ -6,7 +6,6 @@ import { OrdersProvider } from './pages/customer/OrdersContext';
 import MainNavbar from './components/MainNavbar';
 import HomePage from './pages/HomePage';
 import Signup from './components/Signup';
-import PrivateRoute from './components/PrivateRoute';
 
 // Customer Pages
 import Marketplace from './pages/customer/Marketplace';
@@ -62,16 +61,8 @@ function AppContent() {
         
         {/* Customer Layout for all customer pages */}
         <Route element={<CustomerLayout />}>
-          <Route path="/customer" element={
-            <PrivateRoute allowedRoles={["customer"]}>
-              <CustomerDashboard />
-            </PrivateRoute>
-          } />
-          <Route path="/customer/dashboard" element={
-            <PrivateRoute allowedRoles={["customer"]}>
-              <CustomerDashboard />
-            </PrivateRoute>
-          } />
+          <Route path="/customer" element={<CustomerDashboard />} />
+          <Route path="/customer/dashboard" element={<CustomerDashboard />} />
           <Route path="/marketplace" element={<Marketplace />} />
           <Route path="/pc-builder" element={<PCBuilder />} />
           <Route path="/find-technician" element={<FindTechnician />} />
@@ -80,16 +71,8 @@ function AppContent() {
         </Route>
         {/* Technician Layout for all technician pages */}
         <Route element={<TechnicianLayout />}>
-          <Route path="/technician" element={
-            <PrivateRoute allowedRoles={["Technician"]}>
-              <TechnicianDashboard />
-            </PrivateRoute>
-          } />
-          <Route path="/technician/dashboard" element={
-            <PrivateRoute allowedRoles={["Technician"]}>
-              <TechnicianDashboard />
-            </PrivateRoute>
-          } />
+          <Route path="/technician" element={<TechnicianDashboard />} />
+          <Route path="/technician/dashboard" element={<TechnicianDashboard />} />
           <Route path="/technician/appointments" element={<Appointments />} />
           <Route path="/technician/profile" element={<TechnicianProfile />} />
           <Route path="/technician/services" element={<TechnicianServices />} />
@@ -99,11 +82,7 @@ function AppContent() {
         </Route>
         {/* Admin Layout for all admin pages */}
         <Route element={<AdminLayout />}>
-          <Route path="/admin" element={
-            <PrivateRoute allowedRoles={["admin"]}>
-              <AdminMain />
-            </PrivateRoute>
-          } />
+          <Route path="/admin" element={<AdminMain />} />
           <Route path="/admin/users" element={<UserManagement />} />
           <Route path="/admin/seller-verification" element={<SellerVerification />} />
           <Route path="/admin/orders" element={<OrderManagement />} />
@@ -114,21 +93,13 @@ function AppContent() {
         </Route>
         {/* Seller Layout for all seller pages */}
         <Route element={<SellerLayout />}>
-          <Route path="/seller" element={
-            <PrivateRoute allowedRoles={["seller"]}>
-              <SellerMain />
-            </PrivateRoute>
-          } />
+          <Route path="/seller" element={<SellerMain />} />
           <Route path="/seller/products" element={<ProductManagement />} />
           <Route path="/seller/inventory" element={<Inventory />} />
           <Route path="/seller/orders" element={<SellerOrders />} />
           <Route path="/seller/analytics" element={<SalesAnalytics />} />
           <Route path="/seller/profile" element={<SellerProfile />} />
-          <Route path="/seller/dashboard" element={
-            <PrivateRoute allowedRoles={["seller"]}>
-              <Dashboard />
-            </PrivateRoute>
-          } />
+          <Route path="/seller/dashboard" element={<Dashboard />} />
         </Route>
       </Routes>
     </>

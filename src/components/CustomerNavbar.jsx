@@ -5,7 +5,6 @@ import { Bell, Cart } from "react-bootstrap-icons";
 import { CartContext } from "../pages/customer/CartContext";
 import Checkout from "../pages/customer/Checkout";
 import profile1 from '../images/profile/pp1.png';
-import { useAuth } from '../context/AuthContext';
 
 function CustomerNavbar({ fixed = "top" }) {
   const navigate = useNavigate();
@@ -14,13 +13,13 @@ function CustomerNavbar({ fixed = "top" }) {
   const [showCheckoutModal, setShowCheckoutModal] = useState(false);
   const [expanded, setExpanded] = useState(false);
   const { cartItems, removeFromCart, updateQuantity, getCartTotal, getCartCount } = useContext(CartContext);
-  const { logout } = useAuth();
 
   const formatLKR = (amount) => 'LKR ' + Number(amount).toLocaleString('en-LK');
 
   const handleLogout = () => {
-    sessionStorage.clear();
-    logout();
+    localStorage.removeItem("user");
+    localStorage.removeItem("userRole");
+    navigate("/");
   };
 
   const handleQuantityChange = (productId, newQuantity) => {

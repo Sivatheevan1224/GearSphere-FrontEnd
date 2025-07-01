@@ -3,17 +3,16 @@ import { Navbar, Container, Nav, Button, Modal } from "react-bootstrap";
 import { Link, useNavigate } from "react-router-dom";
 import { Bell } from "react-bootstrap-icons";
 import profile4 from '../images/profile/pp4.jpg';
-import { useAuth } from '../context/AuthContext';
 
 function AdminNavbar({ fixed = "top" }) {
   const navigate = useNavigate();
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [expanded, setExpanded] = useState(false);
-  const { logout } = useAuth();
 
   const handleLogout = () => {
-    sessionStorage.clear();
-    logout();
+    localStorage.removeItem("user");
+    localStorage.removeItem("userRole");
+    navigate("/");
   };
 
   return (
