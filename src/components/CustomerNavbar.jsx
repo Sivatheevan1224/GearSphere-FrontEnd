@@ -17,9 +17,9 @@ function CustomerNavbar({ fixed = "top" }) {
   const formatLKR = (amount) => 'LKR ' + Number(amount).toLocaleString('en-LK');
 
   const handleLogout = () => {
-    localStorage.removeItem("user");
-    localStorage.removeItem("userRole");
-    navigate("/");
+    sessionStorage.clear();
+    navigate("/", { replace: true });
+    window.location.reload();
   };
 
   const handleQuantityChange = (productId, newQuantity) => {

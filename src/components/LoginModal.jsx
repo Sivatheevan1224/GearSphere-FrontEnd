@@ -49,19 +49,19 @@ function LoginModal({ show, onHide, switchToRegister }) {
 
         setTimeout(() => {
 
-          sessionStorage.setItem("user_type", user_type);
+          sessionStorage.setItem("user_type", user_type.toLowerCase());
           sessionStorage.setItem("user_id", user_id);
           sessionStorage.setItem("email", email);
           toast.dismiss();
           onHide();
 
-          if (user_type === "admin") {
+          if (user_type.toLowerCase() === "admin") {
             navigate("/admin");
-          } else if (user_type === "customer") {
+          } else if (user_type.toLowerCase() === "customer") {
             navigate("/customer/dashboard");
-          } else if (user_type === "Technician") {
+          } else if (user_type.toLowerCase() === "technician") {
             navigate("/technician/dashboard");
-          }else if (user_type === "seller") {
+          } else if (user_type.toLowerCase() === "seller") {
             navigate("/seller");
           }
         }, 2000);

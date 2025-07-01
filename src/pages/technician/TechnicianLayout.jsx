@@ -5,8 +5,9 @@ import { Outlet, useNavigate } from "react-router-dom";
 function TechnicianLayout() {
   const navigate = useNavigate();
   useEffect(() => {
-    const userType = sessionStorage.getItem("user_type");
-    if (userType?.toLowerCase() !== "technician") {
+    const userType = sessionStorage.getItem("user_type")?.toLowerCase();
+    const userId = sessionStorage.getItem("user_id");
+    if (!userType || !userId || userType !== "technician") {
       navigate("/", { replace: true });
     }
   }, [navigate]);

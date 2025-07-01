@@ -17,8 +17,8 @@ export function AuthProvider({ children }) {
   // Check if user is logged in on initial load
   useEffect(() => {
     const checkAuth = () => {
-      const user = localStorage.getItem('user');
-      const role = localStorage.getItem('userRole');
+      const user = sessionStorage.getItem('user');
+      const role = sessionStorage.getItem('userRole');
       
       if (user && role) {
         setCurrentUser(JSON.parse(user));
@@ -49,8 +49,8 @@ export function AuthProvider({ children }) {
       const data = await response.json();
       
       // Store user data
-      localStorage.setItem('user', JSON.stringify(data.user));
-      localStorage.setItem('userRole', data.user.role);
+      sessionStorage.setItem('user', JSON.stringify(data.user));
+      sessionStorage.setItem('userRole', data.user.role);
       
       setCurrentUser(data.user);
       setUserRole(data.user.role);
@@ -78,11 +78,11 @@ export function AuthProvider({ children }) {
 
   // Logout function
   const logout = () => {
-    localStorage.removeItem('user');
-    localStorage.removeItem('userRole');
+    sessionStorage.clear();
     setCurrentUser(null);
     setUserRole(null);
-    navigate('/');
+    navigate('/', { replace: true });
+    window.location.reload();
   };
 
   // Register function
