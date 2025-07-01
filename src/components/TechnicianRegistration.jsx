@@ -52,7 +52,7 @@ const TechnicianRegistration = ({ technicianData, openFinalReg, onBack, onSucces
   
     try {
       const response = await axios.post(
-        'http://localhost/gearsphere_api/GearSphere-BackEnd/Techniciansignup.php',
+        'http://localhost/gearsphere_api/GearSphere-BackEnd/techniciansignup.php',
         formData
       );
   
