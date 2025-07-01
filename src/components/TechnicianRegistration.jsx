@@ -33,21 +33,29 @@ const TechnicianRegistration = ({ technicianData, openFinalReg, onBack, onSucces
       toast.error('Please fill in all fields.');
       return;
     }
+  
     const formData = new FormData();
+  
+    // Ensure all required fields are added
     if (technicianData) {
-      Object.entries(technicianData).forEach(([key, value]) => {
-        formData.append(key, value);
-      });
+      formData.append('name', technicianData.name || '');
+      formData.append('email', technicianData.email || '');
+      formData.append('password', technicianData.password || '');
+      formData.append('contact_number', technicianData.contact_number || '');
+      formData.append('address', technicianData.address || '');
+      formData.append('userType', 'Technician');
     }
+  
     formData.append('specialization', specialization);
     formData.append('experience', experience);
     formData.append('cv', cv);
+  
     try {
       const response = await axios.post(
         'http://localhost/gearsphere_api/GearSphere-BackEnd/Techniciansignup.php',
-        formData,
-        { headers: { 'Content-Type': 'multipart/form-data' } }
+        formData
       );
+  
       if (response.data.status === 'success') {
         toast.success('Technician registration successful!');
         setTimeout(() => {
@@ -59,8 +67,10 @@ const TechnicianRegistration = ({ technicianData, openFinalReg, onBack, onSucces
       }
     } catch (error) {
       toast.error('Registration failed.');
+      console.error('Registration error:', error);
     }
   };
+  
 
   return (
     <div className={styles['tech-essential-registration']}>
