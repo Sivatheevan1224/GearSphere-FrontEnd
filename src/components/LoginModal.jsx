@@ -3,7 +3,10 @@ import { Modal, Button, Form, Alert, InputGroup } from "react-bootstrap"
 import { useNavigate } from "react-router-dom"
 import { BsEye, BsEyeSlash } from "react-icons/bs"
 import loginImage from "../images/login.jpg"
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import "./loginmodal.css"
+import axios from "axios";
 
 function LoginModal({ show, onHide, switchToRegister }) {
   const [email, setEmail] = useState("")
@@ -18,73 +21,154 @@ function LoginModal({ show, onHide, switchToRegister }) {
   const [otp, setOtp] = useState("")
   const [newPassword, setNewPassword] = useState("")
   const navigate = useNavigate()
+  const [forgotPasswordEmail, setForgotPasswordEmail] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");  
+  const [checkOTP,setCheckOTP] = useState("");
+  const [step, setStep] = useState(1);
 
-  useEffect(() => {
-    const backdrop = document.querySelector(".modal-backdrop")
-    if (backdrop) {
-      backdrop.style.backdropFilter = "blur(10px)"
-      backdrop.style.webkitBackdropFilter = "blur(10px)"
+  //Handle login 
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    if (!email.includes('@gmail.com')) {
+      toast.error("Please enter valid email..");
+      return;
     }
-  }, [show])
+    try {
+      const response = await axios.post(
+        "http://localhost/gearsphere_api/GearSphere-BackEnd/login.php",
+        {
+          email,
+          password,
+        }
+      );
+      console.log(response.data);
+      if (response.data.success) {
+        const { user_type, user_id } = response.data;
 
-  const handleSubmit = (e) => {
-    e.preventDefault()
-    setError("")
+        toast.success(response.data.message, { autoClose: 2000 });
 
-    if (email === "customer1@gmail.com" && password === "customer1") {
-      onHide()
-      navigate("/customer/dashboard")
-      return
-    }
-    if (email === "admin@gmail.com" && password === "admin") {
-      onHide()
-      navigate("/admin")
-      return
-    }
-    if (email === "pctechnician1@gmail.com" && password === "pctechnician1") {
-      onHide()
-      navigate("/technician/dashboard")
-      return
-    }
-    if (email === "seller@gmail.com" && password === "seller") {
-      onHide()
-      navigate("/seller")
-      return
-    }
+        setTimeout(() => {
 
-    const users = JSON.parse(localStorage.getItem("gs_users") || "[]")
-    const found = users.find(u => u.email === email && u.password === password)
-    if (found) {
-      onHide()
-      if (found.role === "customer") navigate("/customer/dashboard")
-      else if (found.role === "technician") navigate("/technician/dashboard")
-      else navigate("/")
-      return
+          sessionStorage.setItem("user_type", user_type);
+          sessionStorage.setItem("user_id", user_id);
+          sessionStorage.setItem("email", email);
+          toast.dismiss();
+          onHide();
+
+          if (user_type === "admin") {
+            navigate("/admin");
+          } else if (user_type === "customer") {
+            navigate("/customer/dashboard");
+          } else if (user_type === "Technician") {
+            navigate("/technician/dashboard");
+          }else if (user_type === "seller") {
+            navigate("/seller");
+          }
+        }, 2000);
+      }
+      else {
+        toast.error(response.data.message);
+      }
+
+
+    } catch (error) {
+      console.log(error);
+      if (error.response && error.response.data) {
+        toast.error(error.response.data.message);
+      } else if (error.message) {
+        toast.error("Login failed: " + error.message);
+      }else {
+        toast.error("Login failed. Try again..");
+      }
+
     }
-    setError("Invalid email or password.")
+  };
+
+  // Handle forgot password
+  const handleForgotPassword = async () => {
+    if (!forgotPasswordEmail.includes('@gmail.com')) {
+      toast.error("Please enter valid email..");
+      return;
+    }
+    try {
+      if(step === 1)
+      {
+        const response = await axios.post("http://localhost/gearsphere_api/GearSphere-BackEnd/generateOTP.php",
+          {
+            email: forgotPasswordEmail.trim()            //username: forgotPasswordUsername,
+          }
+        );
+       // console.log(response.data)
+        if(response.data.success)
+        {
+          toast.success(response.data.message);
+          setCheckOTP(response.data.otp);
+          //console.log(response.data.otp);
+          setStep(2);
+        }
+        else{
+          toast.error(response.data.message);
+        }
+      }
+      else if(step === 2)
+      {
+        //console.log(otp);
+        if(otp.trim() === checkOTP.toString().trim())
+        {
+          toast.success("OTP verified successfully...");
+          setCheckOTP("");
+          setStep(3);
+        }
+        else{
+          toast.error("Invalid OTP, Try again later...");
+           setStep(1); 
+        }
+      }
+      else if(step === 3)
+      {
+        if (newPassword !== confirmPassword) {
+          toast.error("Passwords do not match.");
+          return;
+        }
+    
+        const passwordRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{6,}$/;
+    
+        if (!passwordRegex.test(newPassword)) {
+          toast.error("Password must be at least 6 characters long and include at least one uppercase letter, one special character, and one number.");
+          return;
+        }
+
+        const response = await axios.post(
+          "http://localhost/gearsphere_api/GearSphere-BackEnd/changePassword.php",
+          {
+            email: forgotPasswordEmail,
+            new_password: newPassword,
+          }
+        );
+        console.log("Change Password Response:", response.data);
+        if(response.data.success)
+        {
+          toast.success(response.data.message);
+          setTimeout(() => {
+            setShowForgotModal(false);
+          }, 1000); 
+        }
+        else{
+          toast.error(response.data.message);
+          setTimeout(() => {
+            setShowForgotModal(false);
+          }, 1000); 
+        }
+      }
+    } catch (error) {
+      if (error.response && error.response.data) {
+        toast.error(error.response.data.message);
+      } else {
+        toast.error("Password reset failed.");
+      }
+    }
   }
 
-  const handleForgotPasswordClick = () => {
-    setShowForgotModal(true)
-    setForgotStep(1)
-    setForgotEmail("")
-    setForgotError("")
-    setEnteredOtp("")
-    setOtp("")
-    setNewPassword("")
-    if (typeof onHide === 'function') onHide(); // Hide login modal
-  }
-
-  // Helper to re-show login modal after forgot password success
-  const handleForgotModalCloseAndShowLogin = () => {
-    setShowForgotModal(false);
-    if (typeof switchToRegister === 'function') {
-      // do nothing, only for register
-    } else if (typeof onHide === 'function') {
-      // Show login modal again if parent controls it
-      onHide(false);
-    }
-  }
 
   return (
     <>
@@ -107,7 +191,7 @@ function LoginModal({ show, onHide, switchToRegister }) {
             <Modal.Title className="mb-3">Login to GearSphere</Modal.Title>
             <Modal.Body className="px-0">
               {error && <Alert variant="danger">{error}</Alert>}
-              <Form onSubmit={handleSubmit}>
+              <Form onSubmit={handleLogin}>
                 <Form.Group className="mb-3">
                   <Form.Label>Email address</Form.Label>
                   <Form.Control
@@ -141,7 +225,7 @@ function LoginModal({ show, onHide, switchToRegister }) {
                 <div className="d-flex justify-content-end align-items-center mb-3">
                   <a
                     href="#"
-                    onClick={handleForgotPasswordClick}
+                    onClick={() => setShowForgotModal(true)}
                   >
                     Forgot password?
                   </a>
@@ -170,149 +254,88 @@ function LoginModal({ show, onHide, switchToRegister }) {
         </div>
       </Modal>
 
-      {/* Forgot Password Step 1: Enter Email */}
-      <Modal show={showForgotModal && forgotStep === 1} onHide={() => setShowForgotModal(false)} className="modal-top">
-        <Modal.Header closeButton>
-          <Modal.Title>Forgot Password</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          {forgotError && <Alert variant="danger">{forgotError}</Alert>}
-          <Form onSubmit={e => {
-            e.preventDefault();
-            setForgotError("");
-            const users = JSON.parse(localStorage.getItem("gs_users") || "[]");
-            const found = users.find(u => u.email === forgotEmail);
-            if (!found) {
-              setForgotError("Email not found.");
-              return;
-            }
-            setForgotStep(2);
-          }}>
-            <Form.Group className="mb-3">
-              <Form.Label>Enter your registered email address</Form.Label>
-              <Form.Control
-                type="email"
-                placeholder="Enter email"
-                value={forgotEmail}
-                onChange={e => setForgotEmail(e.target.value)}
-                required
-              />
-            </Form.Group>
-            <Button variant="primary" type="submit" className="w-100">
-              Next
-            </Button>
-          </Form>
-        </Modal.Body>
-      </Modal>
 
-      {/* Forgot Password Step 2: Request OTP */}
-      <Modal show={showForgotModal && forgotStep === 2} onHide={() => setShowForgotModal(false)} className="modal-top">
+      <Modal
+        show={showForgotModal}
+        onHide={() => setShowForgotModal(false)}
+        className="forgot-modal"
+      >
         <Modal.Header closeButton>
-          <Modal.Title>Forgot Password</Modal.Title>
+          <Modal.Title>Reset Password</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <p>Email found: <b>{forgotEmail}</b></p>
-          <Button variant="primary" className="w-100" onClick={() => {
-            const generatedOtp = Math.floor(100000 + Math.random() * 900000).toString();
-            setOtp(generatedOtp);
-            setForgotStep(3);
-            alert(`Your OTP is: ${generatedOtp}`);
-          }}>
-            Request OTP
-          </Button>
-        </Modal.Body>
-      </Modal>
-
-      {/* Forgot Password Step 3: Enter OTP */}
-      <Modal show={showForgotModal && forgotStep === 3} onHide={() => setShowForgotModal(false)} className="modal-top">
-        <Modal.Header closeButton>
-          <Modal.Title>Enter OTP</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          {forgotError && <Alert variant="danger">{forgotError}</Alert>}
-          <p>An OTP has been sent to your email: <b>{forgotEmail}</b></p>
-          <Form onSubmit={e => {
-            e.preventDefault();
-            setForgotError("");
-            if (enteredOtp === otp) {
-              setForgotStep(4);
-            } else {
-              setForgotError("Invalid OTP. Please try again.");
-            }
-          }}>
-            <Form.Group className="mb-3">
-              <Form.Label>OTP</Form.Label>
-              <Form.Control
-                type="text"
-                value={enteredOtp}
-                onChange={e => setEnteredOtp(e.target.value)}
-                placeholder="Enter 6-digit OTP"
-                maxLength={6}
-                required
-              />
-            </Form.Group>
-            <Button variant="primary" type="submit" className="w-100">
-              Verify OTP
-            </Button>
-          </Form>
-        </Modal.Body>
-      </Modal>
-
-      {/* Forgot Password Step 4: Enter New Password */}
-      <Modal show={showForgotModal && forgotStep === 4} onHide={() => setShowForgotModal(false)} className="modal-top">
-        <Modal.Header closeButton>
-          <Modal.Title>Set New Password</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          {forgotError && <Alert variant="danger">{forgotError}</Alert>}
-          <Form onSubmit={e => {
-            e.preventDefault();
-            setForgotError("");
-            if (!newPassword) {
-              setForgotError("Please enter a new password.");
-              return;
-            }
-            const users = JSON.parse(localStorage.getItem("gs_users") || "[]");
-            const idx = users.findIndex(u => u.email === forgotEmail);
-            if (idx !== -1) {
-              users[idx].password = newPassword;
-              localStorage.setItem("gs_users", JSON.stringify(users));
-              setForgotStep(5);
-            } else {
-              setForgotError("Unexpected error. Please try again.");
-            }
-          }}>
-            <Form.Group className="mb-3">
-              <Form.Label>New Password</Form.Label>
-              <InputGroup>
+          <Form>
+            {step === 1 &&
+             <>
+             <Form.Group controlId="formBasicEmail">
+                <Form.Label>Email address</Form.Label>
                 <Form.Control
-                  type="password"
-                  value={newPassword}
-                  onChange={e => setNewPassword(e.target.value)}
-                  placeholder="Enter new password"
+                  type="email"
+                  placeholder="Enter your email"
+                  value={forgotPasswordEmail}
+                  onChange={(e) => setForgotPasswordEmail(e.target.value)}
                   required
                 />
-              </InputGroup>
-            </Form.Group>
-            <Button variant="primary" type="submit" className="w-100">
-              Change Password
-            </Button>
+              </Form.Group>
+             </>
+              }
+
+            {step === 2 &&
+              <Form.Group controlId="formOtp">
+                <Form.Label>OTP</Form.Label>
+                <Form.Control
+                  type="text"
+                  placeholder="Enter the OTP"
+                  value={otp}
+                  onChange={(e) => setOtp(e.target.value)}
+                  required
+                />
+              </Form.Group>
+            }
+
+            {step === 3 &&
+              <>
+                <Form.Group controlId="formBasicPassword">
+                  <Form.Label>New Password</Form.Label>
+                  <Form.Control
+                    type="password"
+                    placeholder="Enter new password"
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                    required
+                  />
+                </Form.Group>
+
+                <Form.Group controlId="formConfirmPassword">
+                  <Form.Label>Confirm Password</Form.Label>
+                  <Form.Control
+                    type="password"
+                    placeholder="Confirm new password"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    required
+                  />
+                </Form.Group>
+              </>
+            }
+
           </Form>
         </Modal.Body>
-      </Modal>
-
-      {/* Forgot Password Step 5: Success */}
-      <Modal show={showForgotModal && forgotStep === 5} onHide={handleForgotModalCloseAndShowLogin} className="modal-top">
-        <Modal.Header closeButton>
-          <Modal.Title>Password Changed</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <Alert variant="success">Your password has been changed successfully. You can now log in with your new password.</Alert>
-          <Button variant="primary" className="w-100" onClick={handleForgotModalCloseAndShowLogin}>
-            Close
+        <Modal.Footer>
+          <Button
+            variant="secondary"
+            onClick={() => setShowForgotModal(false)}
+          >
+            close
           </Button>
-        </Modal.Body>
+          <Button variant="primary" onClick={handleForgotPassword}>
+            {step === 1 ? "Send OTP" : step === 2 ? "Verify OTP" : "Reset Password"}
+          </Button>
+        </Modal.Footer>
       </Modal>
+      <ToastContainer />
+      
+      
     </>
   )
 }
