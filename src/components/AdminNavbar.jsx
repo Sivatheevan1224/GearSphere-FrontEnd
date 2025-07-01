@@ -10,7 +10,8 @@ function AdminNavbar({ fixed = "top" }) {
   const [expanded, setExpanded] = useState(false);
 
   const handleLogout = () => {
-    sessionStorage.clear();
+    localStorage.removeItem("user");
+    localStorage.removeItem("userRole");
     navigate("/");
   };
 

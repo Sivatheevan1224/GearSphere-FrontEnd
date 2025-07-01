@@ -9,7 +9,8 @@ function TechnicianNavbar({ fixed = "top" }) {
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [expanded, setExpanded] = useState(false);
   const handleLogout = () => {
-    sessionStorage.clear();
+    localStorage.removeItem("user");
+    localStorage.removeItem("userRole");
     navigate("/");
   };
   return (

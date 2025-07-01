@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Navbar, Container, Nav, Button, Modal } from 'react-bootstrap';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 import LoginModal from './LoginModal';
 import Signup from './Signup';
 import profile1 from '../images/profile/pp1.png';
@@ -11,7 +12,7 @@ function MainNavbar() {
   const [activeSection, setActiveSection] = useState('hero');
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [showSignupModal, setShowSignupModal] = useState(false);
-  const [user, setUser] = useState(() => JSON.parse(sessionStorage.getItem('user')));
+  const { user, logout } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -41,14 +42,6 @@ function MainNavbar() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  useEffect(() => {
-    const handleStorage = () => {
-      setUser(JSON.parse(sessionStorage.getItem('user')));
-    };
-    window.addEventListener('storage', handleStorage);
-    return () => window.removeEventListener('storage', handleStorage);
-  }, []);
-
   const scrollToSection = (sectionId) => {
     setTimeout(() => {
       const element = document.getElementById(sectionId);
@@ -67,9 +60,7 @@ function MainNavbar() {
   };
 
   const handleLogout = () => {
-    sessionStorage.clear();
-    setUser(null);
-    navigate('/');
+    logout();
   };
 
   return (
@@ -177,6 +168,7 @@ function MainNavbar() {
                   <Button 
                     variant="primary"
                     onClick={() => {
+                      console.log('Register button clicked');
                       setShowSignupModal(true);
                       setExpanded(false);
                     }}
