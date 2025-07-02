@@ -1,6 +1,6 @@
 import React from 'react';
 import { Container, Row, Col } from 'react-bootstrap';
-import { Cpu } from 'react-bootstrap-icons';
+import logo from '../images/logo.png';
 
 function Footer() {
   const scrollToSection = (sectionId) => {
@@ -23,7 +23,7 @@ function Footer() {
         <Row>
           <Col md={4} className="mb-4 mb-md-0">
             <div className="d-flex align-items-center mb-3">
-              <Cpu className="text-primary me-2" size={24} />
+              <img src={logo} alt="GearSphere Logo" style={{height: 32, width: 'auto', marginRight: 10, verticalAlign: 'middle', background: '#fff', padding: 4, borderRadius: 8}} />
               <h5 className="mb-0 fw-bold">GearSphere</h5>
             </div>
             <p className="mb-3">Building the future, one custom PC at a time.</p>
