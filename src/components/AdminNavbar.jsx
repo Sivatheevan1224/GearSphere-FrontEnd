@@ -31,8 +31,8 @@ function AdminNavbar({ fixed = "top" }) {
           <Navbar.Collapse id="admin-navbar-nav">
             <Nav className="me-auto">
               <Nav.Link as={Link} to="/admin" onClick={() => setExpanded(false)}>Dashboard</Nav.Link>
-              <Nav.Link as={Link} to="/admin/users" onClick={() => setExpanded(false)}>User Management</Nav.Link>
-              <Nav.Link as={Link} to="/admin/seller-verification" onClick={() => setExpanded(false)}>Seller Verification</Nav.Link>
+              <Nav.Link as={Link} to="/admin/customers" onClick={() => setExpanded(false)}>Customer Management</Nav.Link>
+              <Nav.Link as={Link} to="/admin/technicians" onClick={() => setExpanded(false)}>Technician Management</Nav.Link>
               <Nav.Link as={Link} to="/admin/orders" onClick={() => setExpanded(false)}>Order Management</Nav.Link>
               <Nav.Link as={Link} to="/admin/analytics" onClick={() => setExpanded(false)}>Analytics</Nav.Link>
               <Nav.Link as={Link} to="/admin/reports" onClick={() => setExpanded(false)}>Reports</Nav.Link>
