@@ -78,7 +78,7 @@ function MainNavbar() {
               scrollToSection('hero');
               setExpanded(false);
             }}
-            className={`d-flex align-items-center cursor-pointer ${isScrolled ? 'navbar-brand-glow' : ''}`}
+            className="d-flex align-items-center cursor-pointer"
             role="button"
           >
             <img 

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Container, Row, Col, Button, Card, Badge, Carousel, Navbar, Nav, Accordion, Form, InputGroup } from "react-bootstrap";
-import { Cpu, People, Lightning, Shield, ChevronRight, Star, Grid3x3Gap, Tools, Award, Wrench, Headset, Search, Filter, SortDown, StarFill, Envelope, Telephone, GeoAlt, Clock, Person, Display, Motherboard, Memory, Hdd, Power, PcDisplay, Fan } from "react-bootstrap-icons";
+import { Cpu, People, Lightning, Shield, ChevronRight, Star, Grid3x3Gap, Tools, Award, Wrench, Headset, Search, Filter, SortDown, StarFill, Envelope, Telephone, GeoAlt, Clock, Person, Display, Motherboard, Memory, Hdd, Power, PcDisplay, Fan, PersonCheck, Cart, CameraVideo, Mic, Printer, BatteryFull, Wifi, Tablet, Camera, CameraReels, ChevronLeft } from "react-bootstrap-icons";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "../styles.css";
 import LoginModal from "../components/LoginModal";
@@ -21,7 +21,97 @@ import profile6 from '../images/profile/pp6.jpg';
 import pcpic1 from '../images/pcpic1.png';
 import pcpic2 from '../images/pcpic2.jpeg';
 import pcpic3 from '../images/pcpic3.jpg';
-import aboutus from '../images/aboutus.png';
+import aboutus from '../images/aboutus2.png';
+import serviceimg from '../images/services.png';
+
+const ourValuesCardHoverStyle = `
+.our-values-card {
+  transition: box-shadow 0.3s, transform 0.3s;
+}
+.our-values-card:hover {
+  box-shadow: 0 8px 32px rgba(67,97,238,0.18), 0 1.5px 8px rgba(0,0,0,0.10);
+  transform: translateY(-6px) scale(1.04);
+  background: rgba(255,255,255,0.95);
+}
+`;
+
+const serviceCardBorderStyle = `
+.service-card.modern-border {
+  position: relative;
+  background: white;
+  border: none;
+  border-radius: 1.25rem;
+  overflow: visible;
+  z-index: 1;
+}
+.service-card.modern-border::before {
+  content: '';
+  position: absolute;
+  top: -3px; left: -3px; right: -3px; bottom: -3px;
+  z-index: 0;
+  border-radius: 1.35rem;
+  background: linear-gradient(135deg, #4361ee, #00b894, #fd7e14, #6c5ce7);
+  background-size: 300% 300%;
+  animation: borderGradientMove 6s ease infinite;
+}
+@keyframes borderGradientMove {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+.service-card.modern-border > .card-body {
+  position: relative;
+  z-index: 1;
+  background: white;
+  border-radius: 1.1rem;
+}
+`;
+
+const productSliderStyle = `
+.product-slider-row {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: 8px;
+  position: relative;
+  scrollbar-width: thin;
+  scrollbar-color: #4361ee #f1f1f1;
+}
+.product-slider-row::-webkit-scrollbar {
+  height: 10px;
+}
+.product-slider-row::-webkit-scrollbar-thumb {
+  background: #4361ee;
+  border-radius: 5px;
+}
+.product-slider-row::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 5px;
+}
+.product-slider-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 2;
+  background: #fff;
+  border: 1px solid #4361ee;
+  color: #4361ee;
+  border-radius: 50%;
+  width: 38px;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(67,97,238,0.08);
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+.product-slider-arrow:hover {
+  background: #4361ee;
+  color: #fff;
+}
+.product-slider-arrow.left { left: -18px; }
+.product-slider-arrow.right { right: -18px; }
+`;
 
 function HomePage() {
   const [showLoginModal, setShowLoginModal] = useState(false);
@@ -66,28 +156,75 @@ function HomePage() {
   // PC Parts data
   const pcParts = [
     // CPU
-    { type: "CPU", name: "Intel Core i9-13900K", price: 125000, icon: <Cpu size={32} className="text-primary" /> },
-    { type: "CPU", name: "AMD Ryzen 9 7950X", price: 120000, icon: <Cpu size={32} className="text-danger" /> },
-    { type: "CPU", name: "Intel Core i7-13700K", price: 85000, icon: <Cpu size={32} className="text-primary" /> },
+    { type: "CPU", name: "Intel Core i9-13900K", price: 125000, icon: <Cpu size={32} className="text-primary" />, image: null },
+    { type: "CPU", name: "AMD Ryzen 9 7950X", price: 120000, icon: <Cpu size={32} className="text-danger" />, image: null },
+    { type: "CPU", name: "Intel Core i7-13700K", price: 85000, icon: <Cpu size={32} className="text-primary" />, image: null },
+    { type: "CPU", name: "Intel Core i5-12600K", price: 60000, icon: <Cpu size={32} className="text-primary" />, image: null },
+    { type: "CPU", name: "AMD Ryzen 5 5600X", price: 45000, icon: <Cpu size={32} className="text-danger" />, image: null },
+    { type: "CPU", name: "Intel Core i3-12100F", price: 25000, icon: <Cpu size={32} className="text-primary" />, image: null },
+    { type: "CPU", name: "AMD Ryzen 3 4100", price: 18000, icon: <Cpu size={32} className="text-danger" />, image: null },
     // GPU
-    { type: "GPU", name: "NVIDIA RTX 4090", price: 350000, icon: <Display size={32} className="text-success" /> },
-    { type: "GPU", name: "AMD Radeon RX 7900 XTX", price: 220000, icon: <Display size={32} className="text-danger" /> },
-    { type: "GPU", name: "NVIDIA RTX 4070 Ti", price: 180000, icon: <Display size={32} className="text-success" /> },
+    { type: "GPU", name: "NVIDIA RTX 4090", price: 350000, icon: <Display size={32} className="text-success" />, image: null },
+    { type: "GPU", name: "AMD Radeon RX 7900 XTX", price: 220000, icon: <Display size={32} className="text-danger" />, image: null },
+    { type: "GPU", name: "NVIDIA RTX 4070 Ti", price: 180000, icon: <Display size={32} className="text-success" />, image: null },
+    { type: "GPU", name: "NVIDIA RTX 3060", price: 90000, icon: <Display size={32} className="text-success" />, image: null },
+    { type: "GPU", name: "AMD Radeon RX 6600", price: 70000, icon: <Display size={32} className="text-danger" />, image: null },
+    { type: "GPU", name: "NVIDIA GTX 1660 Super", price: 45000, icon: <Display size={32} className="text-success" />, image: null },
+    { type: "GPU", name: "AMD Radeon RX 6500 XT", price: 35000, icon: <Display size={32} className="text-danger" />, image: null },
     // RAM
-    { type: "RAM", name: "64GB DDR5 6000MHz", price: 65000, icon: <Memory size={32} className="text-warning" /> },
-    { type: "RAM", name: "32GB DDR5 6000MHz", price: 35000, icon: <Memory size={32} className="text-warning" /> },
+    { type: "RAM", name: "64GB DDR5 6000MHz", price: 65000, icon: <Memory size={32} className="text-warning" />, image: null },
+    { type: "RAM", name: "32GB DDR5 6000MHz", price: 35000, icon: <Memory size={32} className="text-warning" />, image: null },
+    { type: "RAM", name: "16GB DDR4 3200MHz", price: 12000, icon: <Memory size={32} className="text-warning" />, image: null },
+    { type: "RAM", name: "8GB DDR4 2666MHz", price: 6000, icon: <Memory size={32} className="text-warning" />, image: null },
+    { type: "RAM", name: "8GB DDR3 1600MHz", price: 3500, icon: <Memory size={32} className="text-warning" />, image: null },
     // Storage
-    { type: "Storage", name: "4TB NVMe SSD", price: 85000, icon: <Hdd size={32} className="text-info" /> },
-    { type: "Storage", name: "2TB NVMe SSD", price: 45000, icon: <Hdd size={32} className="text-info" /> },
+    { type: "Storage", name: "4TB NVMe SSD", price: 85000, icon: <Hdd size={32} className="text-info" />, image: null },
+    { type: "Storage", name: "2TB NVMe SSD", price: 45000, icon: <Hdd size={32} className="text-info" />, image: null },
+    { type: "Storage", name: "1TB SATA SSD", price: 18000, icon: <Hdd size={32} className="text-info" />, image: null },
+    { type: "Storage", name: "2TB HDD", price: 9000, icon: <Hdd size={32} className="text-info" />, image: null },
+    { type: "Storage", name: "1TB HDD", price: 6000, icon: <Hdd size={32} className="text-info" />, image: null },
     // PSU
-    { type: "PSU", name: "1200W Platinum", price: 45000, icon: <Power size={32} className="text-secondary" /> },
-    { type: "PSU", name: "850W Gold", price: 28000, icon: <Power size={32} className="text-secondary" /> },
+    { type: "PSU", name: "1200W Platinum", price: 45000, icon: <Power size={32} className="text-secondary" />, image: null },
+    { type: "PSU", name: "850W Gold", price: 28000, icon: <Power size={32} className="text-secondary" />, image: null },
+    { type: "PSU", name: "650W Bronze", price: 12000, icon: <Power size={32} className="text-secondary" />, image: null },
+    { type: "PSU", name: "500W Basic", price: 7000, icon: <Power size={32} className="text-secondary" />, image: null },
     // Case
-    { type: "Case", name: "Lian Li O11 Dynamic", price: 35000, icon: <PcDisplay size={32} className="text-dark" /> },
-    { type: "Case", name: "NZXT H510", price: 15000, icon: <PcDisplay size={32} className="text-dark" /> },
+    { type: "Case", name: "Lian Li O11 Dynamic", price: 35000, icon: <PcDisplay size={32} className="text-dark" />, image: null },
+    { type: "Case", name: "NZXT H510", price: 15000, icon: <PcDisplay size={32} className="text-dark" />, image: null },
+    { type: "Case", name: "Cooler Master NR200", price: 18000, icon: <PcDisplay size={32} className="text-dark" />, image: null },
+    { type: "Case", name: "Corsair 4000D Airflow", price: 20000, icon: <PcDisplay size={32} className="text-dark" />, image: null },
     // Cooling
-    { type: "Cooling", name: "360mm AIO Liquid Cooler", price: 35000, icon: <Fan size={32} className="text-primary" /> },
-    { type: "Cooling", name: "Premium Air Cooler", price: 20000, icon: <Fan size={32} className="text-primary" /> },
+    { type: "Cooling", name: "360mm AIO Liquid Cooler", price: 35000, icon: <Fan size={32} className="text-primary" />, image: null },
+    { type: "Cooling", name: "Premium Air Cooler", price: 20000, icon: <Fan size={32} className="text-primary" />, image: null },
+    { type: "Cooling", name: "120mm Case Fan", price: 3000, icon: <Fan size={32} className="text-primary" />, image: null },
+    { type: "Cooling", name: "ARGB Fan Kit", price: 7000, icon: <Fan size={32} className="text-primary" />, image: null },
+    // Peripherals
+    { type: "Keyboard", name: "Mechanical Keyboard", price: 12000, icon: <Grid3x3Gap size={32} className="text-primary" />, image: null },
+    { type: "Keyboard", name: "Wireless Keyboard", price: 9000, icon: <Grid3x3Gap size={32} className="text-primary" />, image: null },
+    { type: "Mouse", name: "Gaming Mouse", price: 8000, icon: <Person size={32} className="text-success" />, image: null },
+    { type: "Mouse", name: "Wireless Mouse", price: 7000, icon: <Person size={32} className="text-success" />, image: null },
+    { type: "Speaker", name: "Stereo Speakers", price: 15000, icon: <Headset size={32} className="text-danger" />, image: null },
+    { type: "Speaker", name: "Bluetooth Speaker", price: 10000, icon: <Headset size={32} className="text-danger" />, image: null },
+    { type: "Monitor", name: "27'' 4K Monitor", price: 90000, icon: <Display size={32} className="text-info" />, image: null },
+    { type: "Monitor", name: "24'' FHD Monitor", price: 40000, icon: <Display size={32} className="text-info" />, image: null },
+    { type: "Monitor", name: "32'' QHD Curved Monitor", price: 120000, icon: <Display size={32} className="text-info" />, image: null },
+    { type: "Webcam", name: "HD Webcam", price: 7000, icon: <CameraVideo size={32} className="text-secondary" />, image: null },
+    { type: "Webcam", name: "4K Webcam", price: 15000, icon: <CameraVideo size={32} className="text-secondary" />, image: null },
+    { type: "Microphone", name: "USB Microphone", price: 9000, icon: <Mic size={32} className="text-primary" />, image: null },
+    { type: "Microphone", name: "Studio Microphone", price: 25000, icon: <Mic size={32} className="text-primary" />, image: null },
+    { type: "UPS", name: "1000VA UPS", price: 25000, icon: <BatteryFull size={32} className="text-success" />, image: null },
+    { type: "UPS", name: "600VA UPS", price: 12000, icon: <BatteryFull size={32} className="text-success" />, image: null },
+    { type: "Router", name: "WiFi Router", price: 8000, icon: <Wifi size={32} className="text-info" />, image: null },
+    { type: "Router", name: "Mesh Router", price: 18000, icon: <Wifi size={32} className="text-info" />, image: null },
+    // More peripherals
+    { type: "Mousepad", name: "RGB Mousepad", price: 3500, icon: <Grid3x3Gap size={32} className="text-primary" />, image: null },
+    { type: "Headset", name: "Gaming Headset", price: 12000, icon: <Headset size={32} className="text-danger" />, image: null },
+    { type: "Headset", name: "Wireless Headset", price: 18000, icon: <Headset size={32} className="text-danger" />, image: null },
+    { type: "Monitor Arm", name: "Dual Monitor Arm", price: 15000, icon: <PcDisplay size={32} className="text-dark" />, image: null },
+    { type: "Monitor Arm", name: "Single Monitor Arm", price: 9000, icon: <PcDisplay size={32} className="text-dark" />, image: null },
+    { type: "Controller", name: "Game Controller", price: 8000, icon: <Person size={32} className="text-success" />, image: null },
+    { type: "SSD Enclosure", name: "NVMe SSD Enclosure", price: 5000, icon: <Hdd size={32} className="text-info" />, image: null },
+    { type: "Docking Station", name: "USB-C Docking Station", price: 20000, icon: <Power size={32} className="text-secondary" />, image: null },
   ];
 
   // Filtered and searched parts
@@ -174,8 +311,11 @@ function HomePage() {
 
   return (
     <div className="homepage-root">
+      <style>{ourValuesCardHoverStyle}</style>
+      <style>{serviceCardBorderStyle}</style>
+      <style>{productSliderStyle}</style>
       {/* Hero Section */}
-      <section id="hero" className="py-5 bg-black text-white position-relative overflow-hidden">
+      <section id="hero" className="py-5 bg-black text-white position-relative overflow-hidden mb-5" style={{borderTopLeftRadius: 0, borderTopRightRadius: 0, borderBottomLeftRadius: '2rem', borderBottomRightRadius: '2rem', boxShadow: '0 4px 32px rgba(0,0,0,0.10)', marginTop: 0, marginBottom: '2rem'}}>
         <div
           className="position-absolute top-0 start-0 w-100 h-100"
           style={{
@@ -224,26 +364,27 @@ function HomePage() {
       </section>
 
       {/* About Section */}
-      <section id="about" className="py-5 about-section-custom">
+      <section id="about" className="py-5 about-section-custom position-relative mb-5" style={{overflow: 'hidden', borderRadius: '2rem', boxShadow: '0 4px 32px rgba(0,0,0,0.10)', background: 'transparent', marginTop: '2rem', marginBottom: '2rem'}}>
         <Container>
           <h1 className="text-center mb-5 about-title-custom">About GearSphere</h1>
           <Row className="mb-5">
-            <Col md={6}>
+            <Col md={6} style={{display: 'flex', flexDirection: 'column', justifyContent: 'center'}}>
               <h2 className="about-heading-custom">Our Story</h2>
-              <p className="about-text-custom">
-                GearSphere was founded in 2020 by a group of passionate PC enthusiasts who wanted to make custom PC building accessible to everyone. What started as a small operation has grown into a trusted platform connecting customers with expert PC builders nationwide.
+              <p className="about-text-custom" style={{textAlign: 'justify'}}>
+              <strong>GearSphere</strong> was founded in 2020 by a group of passionate PC enthusiasts to make custom PC building accessible to everyone. What began as a small effort has grown into a trusted platform connecting customers with expert PC builders across the country.
               </p>
-              <p className="about-text-custom">
-                At <strong>GearSphere</strong>, our mission is to make custom PC building easy, affordable, and accessible for everyone — whether you're a beginner with no technical background or an experienced user looking for high-performance builds. We aim to bridge the gap between customers and skilled PC technicians by creating a trusted platform where both can connect easily. Our goal is to simplify the building process with guided tools that help users select compatible parts, compare options, and receive suggestions based on budget and purpose. We focus on quality and transparency by working only with verified technicians and sellers, offering clear pricing and honest reviews. GearSphere also supports long-term value by providing lifetime technical support, upgrade options, and reliable repair services. In addition, we empower technicians and sellers by giving them an online presence and tools to grow their business. Through this, GearSphere aims to become the most trusted and complete platform for custom PC building.
+              <p className="about-text-custom" style={{textAlign: 'justify'}}>
+              Our mission is to make custom PC building easy, affordable, and accessible whether you're a beginner or an experienced user. GearSphere bridges the gap between customers and skilled technicians, offering guided tools to select compatible parts, compare options, and get budget-friendly suggestions. We work only with verified technicians and sellers to ensure quality, clear pricing, and honest reviews. We also provide lifetime technical support, upgrade options, and empower technicians by giving them a professional platform to grow.
               </p>
             </Col>
-            <Col md={6}>
-              <img 
-                src={aboutus} 
-                alt="GearSphere Team" 
-                className="img-fluid rounded shadow about-gif-img"
-                style={{ width: '120%' }}
-              />
+            <Col md={6} style={{display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%'}}>
+              <div style={{width: '100%', height: '100%', minHeight: 340, borderRadius: '2rem', overflow: 'hidden'}}>
+                <img 
+                  src={aboutus} 
+                  alt="GearSphere Team" 
+                  style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '2rem' }}
+                />
+              </div>
             </Col>
           </Row>
           
@@ -252,21 +393,21 @@ function HomePage() {
               <h2 className="text-center mb-4">Our Values</h2>
               <Row>
                 <Col md={4} className="mb-4">
-                  <div className="text-center p-4 h-100 border rounded shadow-sm">
+                  <div className="our-values-card text-center p-4 h-100 border rounded shadow-sm">
                     <h4>Quality</h4>
-                    <p>We never compromise on component quality and build standards.</p>
+                    <p style={{textAlign: 'justify'}}>We never compromise on component quality and build standards.</p>
                   </div>
                 </Col>
                 <Col md={4} className="mb-4">
-                  <div className="text-center p-4 h-100 border rounded shadow-sm">
+                  <div className="our-values-card text-center p-4 h-100 border rounded shadow-sm">
                     <h4>Transparency</h4>
-                    <p>Clear pricing, honest advice, and no hidden fees.</p>
+                    <p style={{textAlign: 'justify'}}>Clear pricing, honest advice, and no hidden fees.</p>
                   </div>
                 </Col>
                 <Col md={4} className="mb-4">
-                  <div className="text-center p-4 h-100 border rounded shadow-sm">
+                  <div className="our-values-card text-center p-4 h-100 border rounded shadow-sm">
                     <h4>Support</h4>
-                    <p>Lifetime technical support for all our custom builds.</p>
+                    <p style={{textAlign: 'justify'}}>Lifetime technical support for all our custom builds.</p>
                   </div>
                 </Col>
               </Row>
@@ -336,24 +477,24 @@ function HomePage() {
       </section>
 
       {/* Services Section */}
-      <section id="services" className="py-5 bg-light">
+      <section id="services" className="py-5 bg-white mb-5" style={{borderRadius: '2rem', boxShadow: '0 4px 32px rgba(0,0,0,0.10)', marginTop: '2rem', marginBottom: '2rem'}}>
         <Container className="py-5">
           <h1 className="text-center mb-5">Our Services</h1>
           
           <Row className="mb-5">
             <Col md={6} className="mb-4 mb-md-0">
               <h2>Expert PC Building Services</h2>
-              <p>
+              <p style={{textAlign: 'justify'}}>
                 At GearSphere, we offer comprehensive PC building services tailored to your specific needs. Whether you're a gamer, content creator, or professional, our expert builders will craft the perfect system for you.
               </p>
-              <p>
+              <p style={{textAlign: 'justify'}}>
                 We handle everything from component selection to assembly, testing, and delivery, ensuring you receive a high-performance, reliable system.
               </p>
               <Button variant="primary" className="mt-3" onClick={() => setShowLoginModal(true)}>Get Started</Button>
             </Col>
             <Col md={6}>
               <img 
-                src={pcpic3} 
+                src={serviceimg} 
                 alt="PC Building Service" 
                 className="img-fluid rounded shadow"
               />
@@ -366,53 +507,53 @@ function HomePage() {
               <h2 className="text-center mb-4">Our Service Offerings</h2>
               <Row>
                 <Col md={3} className="mb-4">
-                  <Card className="service-card h-100">
+                  <Card className="service-card modern-border h-100">
                     <Card.Body className="text-center">
                       <div className="service-icon mb-3">
-                        <Cpu size={40} className="text-primary" />
+                        <Cpu size={40} style={{color: '#4361ee'}} />
                       </div>
                       <Card.Title>Custom PC Building</Card.Title>
-                      <Card.Text>
-                        Personalized systems built to your specifications with premium components.
+                      <Card.Text style={{textAlign: 'justify'}}>
+                        Personalized systems built to your specifications with premium components and expert assembly.
                       </Card.Text>
                     </Card.Body>
                   </Card>
                 </Col>
                 <Col md={3} className="mb-4">
-                  <Card className="service-card h-100">
+                  <Card className="service-card modern-border h-100">
                     <Card.Body className="text-center">
                       <div className="service-icon mb-3">
-                        <Tools size={40} className="text-primary" />
+                        <Tools size={40} style={{color: '#00b894'}} />
                       </div>
-                      <Card.Title>PC Upgrades</Card.Title>
-                      <Card.Text>
-                        Boost your existing system's performance with targeted component upgrades.
+                      <Card.Title>Budget-Based PC Build Recommendation</Card.Title>
+                      <Card.Text style={{textAlign: 'justify'}}>
+                        Get personalized PC build recommendations based on your budget and needs, ensuring the best value for your money.
                       </Card.Text>
                     </Card.Body>
                   </Card>
                 </Col>
                 <Col md={3} className="mb-4">
-                  <Card className="service-card h-100">
+                  <Card className="service-card modern-border h-100">
                     <Card.Body className="text-center">
                       <div className="service-icon mb-3">
-                        <Wrench size={40} className="text-primary" />
+                        <PersonCheck size={40} style={{color: '#fd7e14'}} />
                       </div>
-                      <Card.Title>Repairs & Maintenance</Card.Title>
-                      <Card.Text>
-                        Professional troubleshooting, repairs, and preventative maintenance.
+                      <Card.Title>Assign Technician for PC Build</Card.Title>
+                      <Card.Text style={{textAlign: 'justify'}}>
+                        Easily assign a verified technician to build your custom PC, ensuring professional assembly and support.
                       </Card.Text>
                     </Card.Body>
                   </Card>
                 </Col>
                 <Col md={3} className="mb-4">
-                  <Card className="service-card h-100">
+                  <Card className="service-card modern-border h-100">
                     <Card.Body className="text-center">
                       <div className="service-icon mb-3">
-                        <Headset size={40} className="text-primary" />
+                        <Cart size={40} style={{color: '#6c5ce7'}} />
                       </div>
-                      <Card.Title>Technical Support</Card.Title>
-                      <Card.Text>
-                        Ongoing assistance and expert advice for all your PC-related questions.
+                      <Card.Title>Buy PC Parts</Card.Title>
+                      <Card.Text style={{textAlign: 'justify'}}>
+                        Purchase high-quality PC parts and components directly from trusted sellers through our marketplace.
                       </Card.Text>
                     </Card.Body>
                   </Card>
@@ -504,7 +645,7 @@ function HomePage() {
       </section>
 
       {/* Products Section */}
-      <section id="products" className="py-5">
+      <section id="products" className="py-5 bg-white mb-5" style={{borderRadius: '2rem', boxShadow: '0 4px 32px rgba(0,0,0,0.10)', marginTop: '2rem', marginBottom: '2rem'}}>
         <Container>
           <h1 className="text-center mb-5">Our Products</h1>
           <Row className="mb-4">
@@ -524,39 +665,61 @@ function HomePage() {
             <Col md={6} className="d-flex justify-content-md-end">
               <Form.Select style={{maxWidth: "220px"}} value={partType} onChange={e => setPartType(e.target.value)}>
                 <option value="All">All Types</option>
-                <option value="CPU">CPU</option>
-                <option value="GPU">GPU</option>
-                <option value="RAM">RAM</option>
-                <option value="Storage">Storage</option>
-                <option value="PSU">PSU</option>
-                <option value="Case">Case</option>
-                <option value="Cooling">Cooling</option>
+                {[...new Set(pcParts.map(p => p.type))].map(type => (
+                  <option key={type} value={type}>{type}</option>
+                ))}
               </Form.Select>
             </Col>
           </Row>
-                  <Row>
-            {filteredParts.length === 0 ? (
-              <Col><div className="text-center text-muted py-5">No parts found.</div></Col>
-                ) : (
-              filteredParts.map((part, idx) => (
-                <Col key={idx} md={3} sm={6} className="mb-4">
-                  <Card className="h-100 shadow-sm text-center">
-                        <Card.Body>
-                      <div className="mb-3">{part.icon}</div>
-                      <Card.Title>{part.name}</Card.Title>
-                      <Card.Text className="text-muted">{part.type}</Card.Text>
-                      <h5 className="text-primary mb-0">LKR {part.price.toLocaleString()}</h5>
-                        </Card.Body>
-                      </Card>
-                    </Col>
-                  ))
-                )}
-              </Row>
+          <div style={{position: 'relative'}}>
+            <div className="product-slider-arrow left" onClick={() => {
+              const row = document.getElementById('product-slider-row');
+              if (row) row.scrollBy({left: -240, behavior: 'smooth'});
+            }}>
+              <ChevronLeft size={24} />
+            </div>
+            <div className="product-slider-arrow right" onClick={() => {
+              const row = document.getElementById('product-slider-row');
+              if (row) row.scrollBy({left: 240, behavior: 'smooth'});
+            }}>
+              <ChevronRight size={24} />
+            </div>
+            <div id="product-slider-row" className="product-slider-row" style={{display: 'flex', flexDirection: 'column', gap: 24, minWidth: 320, overflowX: 'auto', WebkitOverflowScrolling: 'touch', paddingBottom: 8}}>
+              {[0, 1, 2].map(rowIdx => {
+                const itemsPerRow = 6;
+                const rowParts = filteredParts.slice(rowIdx * itemsPerRow, (rowIdx + 1) * itemsPerRow);
+                return (
+                  <div key={rowIdx} style={{display: 'flex', gap: 24, minWidth: 320}}>
+                    {rowParts.length === 0 && rowIdx === 0 ? (
+                      <div className="text-center text-muted py-5 w-100">No parts found.</div>
+                    ) : (
+                      rowParts.map((part, idx) => (
+                        <div key={idx} style={{flex: '0 0 220px', maxWidth: 220}}>
+                          <Card className="h-100 shadow-sm text-center">
+                            <Card.Body>
+                              <div className="mb-3">
+                                {part.image
+                                  ? <img src={part.image} alt={part.name} style={{width: 60, height: 60, objectFit: 'contain'}} />
+                                  : part.icon}
+                              </div>
+                              <Card.Title>{part.name}</Card.Title>
+                              <Card.Text className="text-muted">{part.type}</Card.Text>
+                              <h5 className="text-primary mb-0">LKR {part.price.toLocaleString()}</h5>
+                            </Card.Body>
+                          </Card>
+                        </div>
+                      ))
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
         </Container>
       </section>
 
       {/* Reviews Section */}
-      <section id="reviews" className="py-5 bg-light">
+      <section id="reviews" className="py-5 bg-white mb-5" style={{borderRadius: '2rem', boxShadow: '0 4px 32px rgba(0,0,0,0.10)', marginTop: '2rem', marginBottom: '2rem'}}>
         <Container>
           <h1 className="text-center mb-5">Customer Reviews</h1>
           
@@ -609,7 +772,7 @@ function HomePage() {
       </section>
 
       {/* Contact Section */}
-      <section id="contact" className="py-5">
+      <section id="contact" className="py-5 bg-white" style={{borderRadius: '2rem', boxShadow: '0 4px 32px rgba(0,0,0,0.10)', marginTop: '2rem', marginBottom: 0}}>
         <Container>
           <h1 className="text-center mb-5">Contact Us</h1>
           
