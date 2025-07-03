@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { Container, Row, Col, Card, Form, Button, Nav, Tab, Alert, Modal } from 'react-bootstrap';
+import axios from 'axios';
 
 const CustomerProfile = () => {
   const [formData, setFormData] = useState({
@@ -29,6 +30,10 @@ const CustomerProfile = () => {
 
   const [showSuccess, setShowSuccess] = useState(false);
 
+  const [profilePicFile, setProfilePicFile] = useState(null);
+  const [profilePicPreview, setProfilePicPreview] = useState(null);
+  const fileInputRef = useRef();
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({
@@ -53,10 +58,32 @@ const CustomerProfile = () => {
     }));
   };
 
-  const handleProfileUpdate = (e) => {
+  const handleProfilePicChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setProfilePicFile(file);
+      setProfilePicPreview(URL.createObjectURL(file));
+    }
+  };
+
+  const handleProfileUpdate = async (e) => {
     e.preventDefault();
-    // TODO: Implement profile update logic
-    console.log('Profile update:', formData);
+    const formData = new FormData();
+    formData.append('firstName', formData.firstName);
+    formData.append('lastName', formData.lastName);
+    formData.append('email', formData.email);
+    formData.append('phone', formData.phone);
+    formData.append('address', formData.address);
+    formData.append('city', formData.city);
+    formData.append('state', formData.state);
+    formData.append('zipCode', formData.zipCode);
+    formData.append('country', formData.country);
+    formData.append('district', formData.district);
+    if (profilePicFile) {
+      formData.append('profile_image', profilePicFile);
+    }
+    // TODO: Implement profile update logic with axios POST
+    // await axios.post('YOUR_BACKEND_ENDPOINT', formData);
     setShowSuccess(true);
     setTimeout(() => setShowSuccess(false), 3000);
   };
@@ -82,11 +109,23 @@ const CustomerProfile = () => {
               <Card.Body>
                 <div className="text-center mb-4">
                   <img
-                    src="https://via.placeholder.com/150"
+                    src={profilePicPreview || "https://via.placeholder.com/150"}
                     alt="Profile"
                     className="rounded-circle mb-3"
                     style={{ width: '150px', height: '150px', objectFit: 'cover' }}
                   />
+                  <div>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      style={{ display: 'none' }}
+                      ref={fileInputRef}
+                      onChange={handleProfilePicChange}
+                    />
+                    <Button variant="outline-primary" size="sm" onClick={() => fileInputRef.current.click()}>
+                      Change Photo
+                    </Button>
+                  </div>
                   <h5>{formData.firstName} {formData.lastName}</h5>
                   <p className="text-muted">Customer</p>
                 </div>
