@@ -383,7 +383,7 @@ function HomePage() {
             backgroundPosition: 'center',
             backgroundColor: 'rgba(0, 0, 0, 0.5)', // black overlay
             backgroundBlendMode: 'darken',         // or try 'multiply'
-            filter: 'blur(20px)',
+            //filter: 'blur(0px)',
             zIndex: 0,
             opacity: 1
           }}
