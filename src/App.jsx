@@ -6,6 +6,7 @@ import { OrdersProvider } from './pages/customer/OrdersContext';
 import MainNavbar from './components/MainNavbar';
 import HomePage from './pages/HomePage';
 import Signup from './components/Signup';
+import TechnicianManagement from './pages/admin/TechnicianManagement';
 
 // Customer Pages
 import Marketplace from './pages/customer/Marketplace';
@@ -25,7 +26,7 @@ import TechnicianReviews from './pages/technician/Reviews';
 import Appointments from './pages/technician/Appointments';
 
 // Admin Pages
-import UserManagement from './pages/admin/UserManagement';
+import CustomerManagement from './pages/admin/CustomerManagement';
 import OrderManagement from './pages/admin/OrderManagement';
 import Analytics from './pages/admin/Analytics';
 import SystemSettings from './pages/admin/SystemSettings';
@@ -83,7 +84,8 @@ function AppContent() {
         {/* Admin Layout for all admin pages */}
         <Route element={<AdminLayout />}>
           <Route path="/admin" element={<AdminMain />} />
-          <Route path="/admin/users" element={<UserManagement />} />
+          <Route path="/admin/customers" element={<CustomerManagement />} />
+          <Route path="/admin/technicians" element={<TechnicianManagement />} />
           <Route path="/admin/seller-verification" element={<SellerVerification />} />
           <Route path="/admin/orders" element={<OrderManagement />} />
           <Route path="/admin/order-management" element={<OrderManagement />} />
