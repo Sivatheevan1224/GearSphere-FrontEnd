@@ -22,6 +22,7 @@ function CustomerManagement() {
       const response = await axios.get('http://localhost/gearsphere_api/GearSphere-BackEnd/getAllCustomers.php?action=getAll');
       const transformedData = response.data.map((customer) => ({
         id: customer.user_id,
+        profile: customer.profile_image,
         name: customer.name,
         email: customer.email,
         phone: customer.contact_number,
@@ -101,6 +102,7 @@ function CustomerManagement() {
           <Table responsive hover>
             <thead>
               <tr>
+                <th>Profile</th>
                 <th>Name</th>
                 <th>Email</th>
                 <th>Phone</th>
@@ -113,6 +115,13 @@ function CustomerManagement() {
             <tbody>
               {customers.map(customer => (
                 <tr key={customer.id}>
+                  <td>
+                    <img
+                      src={`http://localhost/gearsphere_api/GearSphere-BackEnd/profile_images/${customer.profile}`}
+                      alt="Profile"
+                      style={{ width: '40px', height: '40px', objectFit: 'cover', borderRadius: '50%' }}
+                    />
+                  </td>
                   <td>{customer.name}</td>
                   <td>{customer.email}</td>
                   <td>{customer.phone}</td>
@@ -151,6 +160,19 @@ function CustomerManagement() {
         <Modal.Body>
           {selectedUser && (
             <>
+              <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                <img
+                  src={`http://localhost/gearsphere_api/GearSphere-BackEnd/profile_images/${selectedUser.profile}`}
+                  alt="Profile"
+                  style={{
+                    width: '100px',
+                    height: '100px',
+                    objectFit: 'cover',
+                    borderRadius: '50%',
+                    marginBottom: '15px'
+                  }}
+                />
+              </div>
               <h5 className="mb-3">{selectedUser.name}</h5>
               <p><strong>Email:</strong> {selectedUser.email}</p>
               <p><strong>Phone:</strong> {selectedUser.phone}</p>

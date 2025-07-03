@@ -24,6 +24,7 @@ function TechnicianManagement() {
       joinDate: '2024-01-20',
       rating: 4.8,
       completedJobs: 25,
+      profile:'http://localhost/gearsphere_api/GearSphere-BackEnd/profile_images/user_image.jpg',
       cv: 'http://localhost/gearsphere_api/GearSphere-BackEnd/verifypdfs/6863fae8ce7a4_CST 112-2 Calculus Mid 2023.pdf'
     },
     {
@@ -37,6 +38,7 @@ function TechnicianManagement() {
       joinDate: '2024-03-01',
       rating: 0,
       completedJobs: 0,
+      profile:'http://localhost/gearsphere_api/GearSphere-BackEnd/profile_images/user_image.jpg',
       cv: '/verifypdfs/sample_cv2.pdf'
     }
   ]);
@@ -87,6 +89,7 @@ function TechnicianManagement() {
           <Table responsive hover>
             <thead>
               <tr>
+                <th>Profile</th>
                 <th>Name</th>
                 <th>Email</th>
                 <th>Phone</th>
@@ -101,6 +104,13 @@ function TechnicianManagement() {
             <tbody>
               {technicians.map(technician => (
                 <tr key={technician.id}>
+                  <td>
+                    <img
+                      src={`http://localhost/gearsphere_api/GearSphere-BackEnd/profile_images/${technician.profile}`}
+                      alt="Profile"
+                      style={{ width: '40px', height: '40px', objectFit: 'cover', borderRadius: '50%' }}
+                    />
+                  </td>
                   <td>{technician.name}</td>
                   <td>{technician.email}</td>
                   <td>{technician.phone}</td>
@@ -145,6 +155,7 @@ function TechnicianManagement() {
           {selectedUser && (
             <div>
               <p>Are you sure you want to verify this technician?</p>
+
               <p><strong>Name:</strong> {selectedUser.name}</p>
               <p><strong>Email:</strong> {selectedUser.email}</p>
               <p><strong>Phone:</strong> {selectedUser.phone}</p>
@@ -175,6 +186,13 @@ function TechnicianManagement() {
           {selectedUser && (
             <>
               <div className={styles.detailSection}>
+                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                  <img
+                    src={`http://localhost/gearsphere_api/GearSphere-BackEnd/profile_images/${selectedUser.profile}`}
+                    alt="Profile"
+                    style={{ width: '100px', height: '100px', objectFit: 'cover', borderRadius: '50%', marginBottom: '15px' }}
+                  />
+                </div>
                 <div className={styles.detailLabel}>Name</div>
                 <div className={styles.detailValue}>{selectedUser.name}</div>
                 <div className={styles.detailLabel}>Email</div>
