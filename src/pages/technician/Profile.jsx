@@ -1,28 +1,61 @@
-/**
- * TechnicianProfile.jsx - Minimal working example for profile photo update icon
- * - Left: read-only details card
- * - Right: update form with current photo, large blue upload icon (bi bi-upload), and hidden file input
- */
-import React, { useState, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Container, Row, Col, Card, Form, Button } from 'react-bootstrap';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import 'bootstrap-icons/font/bootstrap-icons.css';
-import DashboardFooter from '../pagefooter/DashboardFooter';
-
+import axios from 'axios';
 
 const TechnicianProfile = () => {
   const [formData, setFormData] = useState({
-    firstName: 'John',
-    lastName: 'Doe',
-    email: 'john.doe@example.com',
-    phone: '0764111147',
-    address: 'Point Pedro | Jaffna',
-    profilePic: 'https://via.placeholder.com/150'
+    name: '',
+    contact_number: '',
+    address: '',
+    chargePerDay: '',
+    profilePic: 'https://via.placeholder.com/150',
   });
-  const fileInputRef = useRef();
-  const [profilePicPreview, setProfilePicPreview] = useState(null);
   const [profilePicFile, setProfilePicFile] = useState(null);
+  const [profilePicPreview, setProfilePicPreview] = useState(null);
+  const fileInputRef = useRef();
+
+  useEffect(() => {
+    const fetchTechnicianData = async () => {
+      try {
+        const userId = sessionStorage.getItem('user_id');
+        const technicianId = sessionStorage.getItem('technician_id');
+        if (!userId || !technicianId) return toast.error('Session expired. Please log in.');
+
+        const token = localStorage.getItem('token');
+        const response = await axios.get(
+          `http://localhost/gearsphere_api/GearSphere-Backend/getTechnicianDetail.php?user_id=${userId}`,
+          {
+            headers: {
+              'Authorization': `Bearer ${token}`
+            }
+          }
+        );
+        const data = response.data;
+
+        if (data) {
+          const profilePicUrl = data.profile_image
+            ? `http://localhost/gearsphere_api/GearSphere-Backend/profile_images/${data.profile_image}`
+            : 'https://via.placeholder.com/150';
+          setFormData({
+            name: data.name || '',
+            contact_number: data.contact_number || '',
+            address: data.address || '',
+            chargePerDay: data.charge_per_day || '',
+            profilePic: profilePicUrl,
+          });
+          sessionStorage.setItem('technician_profile_pic', profilePicUrl);
+          window.dispatchEvent(new Event('profilePicUpdated'));
+        }
+      } catch (err) {
+        console.error('Fetch failed:', err);
+        toast.error('Failed to fetch profile');
+      }
+    };
+
+    fetchTechnicianData();
+  }, []);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -39,39 +72,85 @@ const TechnicianProfile = () => {
 
   const handleProfileUpdate = async (e) => {
     e.preventDefault();
-    const formDataToSend = new FormData();
-    formDataToSend.append('firstName', formData.firstName);
-    formDataToSend.append('lastName', formData.lastName);
-    formDataToSend.append('email', formData.email);
-    formDataToSend.append('phone', formData.phone);
-    formDataToSend.append('address', formData.address);
-    formDataToSend.append('city', formData.city);
-    formDataToSend.append('state', formData.state);
-    formDataToSend.append('zipCode', formData.zipCode);
-    formDataToSend.append('country', formData.country);
-    formDataToSend.append('district', formData.district);
-    if (profilePicFile) {
-      formDataToSend.append('profile_image', profilePicFile);
+
+    const userId = sessionStorage.getItem('user_id');
+    const technicianId = sessionStorage.getItem('technician_id');
+
+    if (!userId || !technicianId) {
+      toast.error('Missing session data. Please log in again.');
+      return;
     }
-    // TODO: Implement profile update logic with axios POST
-    // await axios.post('YOUR_BACKEND_ENDPOINT', formDataToSend);
-    toast.success('Profile updated successfully!');
-    // Update left card with new photo (and reset preview)
-    if (profilePicPreview) {
-      setFormData(prev => ({
-        ...prev,
-        profilePic: profilePicPreview
-      }));
-      setProfilePicPreview(null);
-      setProfilePicFile(null);
+
+    const payload = new FormData();
+    payload.append('user_id', userId);
+    payload.append('technician_id', technicianId);
+    payload.append('name', formData.name);
+    payload.append('contact_number', formData.contact_number);
+    payload.append('address', formData.address);
+    payload.append('chargesPerDay', formData.chargePerDay);
+
+    if (profilePicFile) {
+      payload.append('profile_image', profilePicFile);
+    }
+
+    try {
+      const token = localStorage.getItem('token');
+      const response = await axios.post(
+        'http://localhost/gearsphere_api/GearSphere-BackEnd/updateTechnicianProfile.php',
+        payload,
+        {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        }
+      );
+      if (response.data.success) {
+        toast.success('Profile updated successfully');
+        // Fetch the updated profile from backend
+        const userId = sessionStorage.getItem('user_id');
+        const token = localStorage.getItem('token');
+        try {
+          const profileRes = await axios.get(
+            `http://localhost/gearsphere_api/GearSphere-Backend/getTechnicianDetail.php?user_id=${userId}`,
+            { headers: { 'Authorization': `Bearer ${token}` } }
+          );
+          const data = profileRes.data;
+          const profilePicUrl = data.profile_image
+            ? `http://localhost/gearsphere_api/GearSphere-Backend/profile_images/${data.profile_image}`
+            : 'https://via.placeholder.com/150';
+          setFormData(prev => ({
+            ...prev,
+            profilePic: profilePicUrl,
+          }));
+          sessionStorage.setItem('technician_profile_pic', profilePicUrl);
+          window.dispatchEvent(new Event('profilePicUpdated'));
+        } catch (err) {
+          // fallback: just use preview if fetch fails
+          if (profilePicPreview) {
+            setFormData(prev => ({
+              ...prev,
+              profilePic: profilePicPreview,
+            }));
+            sessionStorage.setItem('technician_profile_pic', profilePicPreview);
+            window.dispatchEvent(new Event('profilePicUpdated'));
+          }
+        }
+        setProfilePicPreview(null);
+        setProfilePicFile(null);
+      } else {
+        toast.error('Update failed: ' + (response.data.message || 'Unknown error'));
+      }
+    } catch (err) {
+      console.error('Update error:', err);
+      toast.error('An error occurred during update');
     }
   };
 
   return (
-    <Container className="">
+    <Container>
+      <br /><br /><br /><br /><br />
       <div className="profile-border-wrapper">
         <Row>
-          {/* Left: Read-only details card */}
           <Col md={5}>
             <Card className="shadow-sm">
               <Card.Body className="text-center">
@@ -81,90 +160,63 @@ const TechnicianProfile = () => {
                   className="rounded-circle mb-3"
                   style={{ width: '120px', height: '120px', objectFit: 'cover' }}
                 />
-                <h5>{formData.firstName} {formData.lastName}</h5>
-                <p className="text-muted">{formData.email}</p>
-                <p><b>Contact:</b> {formData.phone}</p>
+                <h5>{formData.name}</h5>
+                <p><b>Contact:</b> {formData.contact_number}</p>
                 <p><b>Address:</b> {formData.address}</p>
+                <p><b>Charge/Day:</b> Rs. {formData.chargePerDay}</p>
               </Card.Body>
             </Card>
           </Col>
-          {/* Right: Update form */}
+
           <Col md={7} className="border rounded p-4 shadow-sm bg-white">
             <h1 className="text-center mb-5">My Profile</h1>
             <div className="text-center mb-4">
-                    <img
-                      src={profilePicPreview || formData.profilePic || 'https://via.placeholder.com/150'}
-                      alt="Profile"
-                      className="rounded-circle mb-3"
-                      style={{ width: '150px', height: '150px', objectFit: 'cover' }}
-                    />
-                    <div>
-                      <input
-                        type="file"
-                        accept="image/*"
-                        style={{ display: 'none' }}
-                        ref={fileInputRef}
-                        onChange={handleProfilePicChange}
-                      />
-                      <Button variant="outline-primary" size="sm" onClick={() => fileInputRef.current.click()}>
-                        Change Photo
-                      </Button>
-                    </div>
-                    <h5>{formData.firstName} {formData.lastName}</h5>
-                    <p className="text-muted">Technician</p>
-                  </div>
+              <img
+                src={profilePicPreview || formData.profilePic}
+                alt="Profile"
+                className="rounded-circle mb-3"
+                style={{ width: '150px', height: '150px', objectFit: 'cover' }}
+              />
+              <div>
+                <input
+                  type="file"
+                  accept="image/*"
+                  style={{ display: 'none' }}
+                  ref={fileInputRef}
+                  onChange={handleProfilePicChange}
+                />
+                <Button variant="outline-primary" size="sm" onClick={() => fileInputRef.current.click()}>
+                  Change Photo
+                </Button>
+              </div>
+              <h5 className="mt-3">{formData.name}</h5>
+              <p className="text-muted">Technician</p>
+            </div>
+
             <Form onSubmit={handleProfileUpdate}>
-              <Row>
-                <Col md={6}>
-                  <Form.Group className="mb-3">
-                    <Form.Label>First Name</Form.Label>
-                    <Form.Control
-                      type="text"
-                      name="firstName"
-                      value={formData.firstName}
-                      onChange={handleInputChange}
-                    />
-                  </Form.Group>
-                </Col>
-                <Col md={6}>
-                  <Form.Group className="mb-3">
-                    <Form.Label>Last Name</Form.Label>
-                    <Form.Control
-                      type="text"
-                      name="lastName"
-                      value={formData.lastName}
-                      onChange={handleInputChange}
-                    />
-                  </Form.Group>
-                </Col>
-              </Row>
-              <Row>
-                <Col md={6}>
-                  <Form.Group className="mb-3">
-                    <Form.Label>Email</Form.Label>
-                    <Form.Control
-                      type="email"
-                      name="email"
-                      value={formData.email}
-                      onChange={handleInputChange}
-                    />
-                  </Form.Group>
-                </Col>
-                <Col md={6}>
-                  <Form.Group className="mb-3">
-                    <Form.Label>Phone</Form.Label>
-                    <Form.Control
-                      type="tel"
-                      name="phone"
-                      value={formData.phone}
-                      onChange={handleInputChange}
-                      placeholder="07X XXX XXXX"
-                      pattern="0[0-9]{2} [0-9]{3} [0-9]{4}"
-                      title="Enter a valid Sri Lankan phone number (e.g., 077 123 4567)"
-                    />
-                  </Form.Group>
-                </Col>
-              </Row>
+              <Form.Group className="mb-3">
+                <Form.Label>Full Name</Form.Label>
+                <Form.Control
+                  type="text"
+                  name="name"
+                  value={formData.name}
+                  onChange={handleInputChange}
+                />
+              </Form.Group>
+
+              <Form.Group className="mb-3">
+                <Form.Label>contact_number</Form.Label>
+                <Form.Control
+                  type="tel"
+                  name="contact_number"
+                  value={formData.contact_number}
+                  onChange={handleInputChange}
+                  placeholder="07X XXX XXXX"
+                  pattern="0[0-9]{9}"
+                  title="Enter a valid Sri Lankan phone number"
+                />
+              </Form.Group>
+
               <Form.Group className="mb-3">
                 <Form.Label>Address</Form.Label>
                 <Form.Control
@@ -172,43 +224,28 @@ const TechnicianProfile = () => {
                   name="address"
                   value={formData.address}
                   onChange={handleInputChange}
-                  placeholder="Street Address"
+                  placeholder="e.g., Point Pedro | Jaffna"
                 />
               </Form.Group>
-              <Row>
-                <Col md={6}>
-                  <Form.Group className="mb-3">
-                    <Form.Label>City</Form.Label>
-                    <Form.Control
-                      type="text"
-                      name="city"
-                      value={formData.city}
-                      onChange={handleInputChange}
-                      placeholder="City (e.g., Colombo)"
-                    />
-                  </Form.Group>
-                </Col>
-                <Col md={6}>
-                  <Form.Group className="mb-3">
-                    <Form.Label>District</Form.Label>
-                    <Form.Control
-                      type="text"
-                      name="district"
-                      value={formData.district || ''}
-                      onChange={handleInputChange}
-                      placeholder="District (e.g., Colombo)"
-                    />
-                  </Form.Group>
-                </Col>
-              </Row>
-              <Button variant="primary" type="submit">
-                Update Profile
-              </Button>
+
+              <Form.Group className="mb-3">
+                <Form.Label>Charge Per Day (Rs.)</Form.Label>
+                <Form.Control
+                  type="number"
+                  name="chargePerDay"
+                  value={formData.chargePerDay}
+                  onChange={handleInputChange}
+                  min="0"
+                />
+              </Form.Group>
+
+              <Button variant="primary" type="submit">Update Profile</Button>
             </Form>
           </Col>
         </Row>
       </div>
-      <style dangerouslySetInnerHTML={{__html: `
+
+      <style dangerouslySetInnerHTML={{ __html: `
         .profile-border-wrapper {
           border: 1.5px solid #dee2e6;
           border-radius: 18px;
@@ -217,22 +254,10 @@ const TechnicianProfile = () => {
           box-shadow: 0 2px 12px rgba(0,0,0,0.03);
           margin-bottom: 2rem;
         }
-        .profile-update-card {
-          border: 1.5px solid #b6c2ce;
-          border-radius: 14px;
-          background: #f8f9fa;
-        }
-        .profile-upload-icon {
-          transition: color 0.2s;
-        }
-        .profile-upload-icon:hover {
-          color: #0056b3 !important;
-        }
-      `}} />
+      ` }} />
       <ToastContainer position="top-right" autoClose={3000} />
-      
     </Container>
   );
 };
 
-export default TechnicianProfile; 
+export default TechnicianProfile;

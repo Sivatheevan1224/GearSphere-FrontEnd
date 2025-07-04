@@ -44,7 +44,7 @@ function LoginModal({ show, onHide, switchToRegister }) {
       );
       console.log(response.data);
       if (response.data.success) {
-        const { user_type, user_id } = response.data;
+        const { user_type, user_id, technician_id } = response.data;
 
         toast.success(response.data.message, { autoClose: 2000 });
 
@@ -53,6 +53,12 @@ function LoginModal({ show, onHide, switchToRegister }) {
           sessionStorage.setItem("user_type", user_type.toLowerCase());
           sessionStorage.setItem("user_id", user_id);
           sessionStorage.setItem("email", email);
+          // Save technician_id if user is technician
+          if (user_type.toLowerCase() === "technician" && technician_id) {
+            sessionStorage.setItem("technician_id", technician_id);
+          } else {
+            sessionStorage.removeItem("technician_id"); // Clean up if not technician
+          }
           toast.dismiss();
           onHide();
 
