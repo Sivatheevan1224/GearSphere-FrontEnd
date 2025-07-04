@@ -15,7 +15,7 @@ function CustomerLayout() {
   return (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
       <CustomerNavbar fixed="top" />
-      <div style={{ flex: '1 0 auto', marginTop: 80 }}>
+      <div style={{ flex: '1 0 auto' }}>
         <Outlet />
       </div>
       <DashboardFooter />

@@ -4,7 +4,7 @@ const DashboardFooter = () => (
   <footer style={{
     background: '#212529',
     borderTop: '1.5px solid #343a40',
-    padding: '1rem 0',
+    padding: '2.5rem 0',
     marginTop: '2rem',
     color: '#fff'
   }}>
@@ -29,7 +29,7 @@ const DashboardFooter = () => (
         <img
           src="/src/images/logo.PNG"
           alt="GearSphere Logo"
-          style={{ height: '40px', marginBottom: 4, filter: 'brightness(0) invert(1)' }}
+          style={{ height: '70px', marginBottom: 8, filter: 'brightness(0) invert(1)' }}
         />
         <div style={{ fontWeight: 600, fontSize: '1.05rem', color: '#fff' }}>
           GearSphere

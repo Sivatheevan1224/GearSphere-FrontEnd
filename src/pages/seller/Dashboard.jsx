@@ -35,12 +35,15 @@ function SellerDashboard() {
         <Container className="py-0 position-relative" style={{ zIndex: 2 }}>
           <Row className="align-items-center">
             <Col lg={6} className="mb-5 mb-lg-0">
-              <h1 className="display-3 fw-bold mb-4">
+              <h1 className="display-3 fw-bold mb-4 rise-up" style={{ animationDelay: '0s' }}>
                 Welcome to Your Dashboard, <span className="text-primary">GearSphere Seller</span>
               </h1>
-              <p className="lead mb-5">
+              <p className="lead mb-5 rise-up" style={{ animationDelay: '0.3s' }}>
                 Manage your products, orders, revenue, and more. Grow your business with GearSphere!
               </p>
+              <div className="d-flex gap-3 rise-up" style={{ animationDelay: '0.6s' }}>
+                {/* Add dashboard-specific buttons here if needed */}
+              </div>
             </Col>
           </Row>
         </Container>

@@ -22,7 +22,7 @@ import pcpic1 from '../images/pcpic1.png';
 import pcpic2 from '../images/pcpic2.jpeg';
 import pcpic3 from '../images/pcpic3.jpg';
 import aboutus from '../images/aboutus2.png';
-import serviceimg from '../images/services.png';
+import serviceimg from '../images/services1.png';
 
 const ourValuesCardHoverStyle = `
 .our-values-card {
@@ -531,7 +531,7 @@ function HomePage() {
               <img 
                 src={serviceimg} 
                 alt="PC Building Service" 
-                className="img-fluid rounded shadow"
+                className="img-fluid rounded"
               />
             </Col>
           </Row>
