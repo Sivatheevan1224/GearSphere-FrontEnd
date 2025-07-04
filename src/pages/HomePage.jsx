@@ -311,609 +311,611 @@ function HomePage() {
 
   return (
     <div className="homepage-root">
-      <main style={{ flex: 1 }}>
-        <style>{ourValuesCardHoverStyle}</style>
-        <style>{serviceCardBorderStyle}</style>
-        <style>{productSliderStyle}</style>
-        {/* Hero Section */}
-        <section id="hero" className="py-5 bg-black text-white position-relative overflow-hidden mb-5" style={{borderTopLeftRadius: 0, borderTopRightRadius: 0, borderBottomLeftRadius: '2rem', borderBottomRightRadius: '2rem', boxShadow: '0 4px 32px rgba(0,0,0,0.10)', marginTop: 0, marginBottom: '2rem'}}>
-          {/* Blurred background image */}
-          <div
-            className="position-absolute top-0 start-0 w-100 h-100"
-            style={{
-              backgroundImage: `url(${pcpic2})`,
-              backgroundSize: 'cover',
-              backgroundPosition: 'center',
-              filter: 'blur(12px)',
-              zIndex: 0,
-              opacity: 0.7
-            }}
-          ></div>
-          {/* Overlay for darkening and contrast */}
-          <div
-            className="position-absolute top-0 start-0 w-100 h-100"
-            style={{
-              background: "radial-gradient(circle at 30% 50%, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0) 70%)",
-              zIndex: 1,
-            }}
-          ></div>
-          <Container className="py-5 position-relative" style={{ zIndex: 2 }}>
-            <Row className="align-items-center">
-              <Col lg={6} className="mb-5 mb-lg-0">
-                <h1 className="display-3 fw-bold mb-4 rise-up" style={{ animationDelay: '0s' }}>
-                  Build Your Dream Tech <span className="text-primary">With GearSphere</span>
-                </h1>
-                <p className="lead mb-5 rise-up" style={{ animationDelay: '0.3s' }}>
-                  Create your perfect custom PC with our expert builders and premium components. From gaming rigs to
-                  professional workstations, we've got you covered.
-                </p>
-                <div className="d-flex gap-3 rise-up" style={{ animationDelay: '0.6s' }}>
-                  <Button 
-                    size="lg" 
-                    variant="primary" 
-                    onClick={() => setShowLoginModal(true)}
-                  >
-                    Start Building
-                  </Button>
-                  <Button 
-                    size="lg" 
-                    variant="outline-light"
-                    onClick={() => scrollToSection('products')}
-                  >
-                    Explore Products <ChevronRight />
-                  </Button>
-                </div>
-              </Col>
-              <Col lg={6} className="text-lg-end" style={{backgroundBlendMode: 'darken'}}>
-                {/* <div className="d-inline-block rounded shadow-lg" >
-                  <img
-                    src={pcGif}
-                    alt="PC Building Animation"
-                    className="img-fluid rounded pc-gif-img"
-                  />
-                </div> */}
-              </Col>
-            </Row>
-          </Container>
-          {/* Blurred background image */}
-          <div
-            className="position-absolute top-0 start-0 w-100 h-100"
-            style={{
-              backgroundImage: `url(${pcpic2})`,
-              backgroundSize: 'cover',
-              backgroundPosition: 'center',
-              backgroundColor: 'rgba(0, 0, 0, 0.5)', // black overlay
-              backgroundBlendMode: 'darken',         // or try 'multiply'
-              //filter: 'blur(0px)',
-              zIndex: 0,
-              opacity: 1
-            }}
-          ></div>
-          {/* Overlay for darkening and contrast */}
-          <div
-            className="position-absolute top-0 start-0 w-100 h-100"
-            style={{
-              background: "radial-gradient(circle at 30% 50%, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0) 70%)",
-              zIndex: 1,
-            }}
-          ></div>
-        </section>
-
-        {/* About Section */}
-        <section id="about" className="py-5 about-section-custom position-relative mb-5" style={{overflow: 'hidden', borderRadius: '2rem', boxShadow: '0 4px 32px rgba(0,0,0,0.10)', background: 'transparent', marginTop: '2rem', marginBottom: '2rem'}}>
-          <Container>
-            <h1 className="text-center mb-5 about-title-custom">About GearSphere</h1>
-            <Row className="mb-5">
-              <Col md={6} style={{display: 'flex', flexDirection: 'column', justifyContent: 'center'}}>
-                <h2 className="about-heading-custom">Our Story</h2>
-                <p className="about-text-custom" style={{textAlign: 'justify'}}>
-                <strong>GearSphere</strong> was founded in 2020 by a group of passionate PC enthusiasts to make custom PC building accessible to everyone. What began as a small effort has grown into a trusted platform connecting customers with expert PC builders across the country.
-                </p>
-                <p className="about-text-custom" style={{textAlign: 'justify'}}>
-                Our mission is to make custom PC building easy, affordable, and accessible whether you're a beginner or an experienced user. GearSphere bridges the gap between customers and skilled technicians, offering guided tools to select compatible parts, compare options, and get budget-friendly suggestions. We work only with verified technicians and sellers to ensure quality, clear pricing, and honest reviews. We also provide lifetime technical support, upgrade options, and empower technicians by giving them a professional platform to grow.
-                </p>
-              </Col>
-              <Col md={6} style={{display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%'}}>
-                <div style={{width: '100%', height: '100%', minHeight: 340, borderRadius: '2rem', overflow: 'hidden'}}>
-                  <img 
-                    src={aboutus} 
-                    alt="GearSphere Team" 
-                    style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '2rem' }}
-                  />
-                </div>
-              </Col>
-            </Row>
-            
-            <Row className="mb-5">
-              <Col md={12}>
-                <h2 className="text-center mb-4">Our Values</h2>
-                <Row>
-                  <Col md={4} className="mb-4">
-                    <div className="our-values-card text-center p-4 h-100 border rounded shadow-sm">
-                      <h4>Quality</h4>
-                      <p style={{textAlign: 'justify'}}>We never compromise on component quality and build standards.</p>
-                    </div>
-                  </Col>
-                  <Col md={4} className="mb-4">
-                    <div className="our-values-card text-center p-4 h-100 border rounded shadow-sm">
-                      <h4>Transparency</h4>
-                      <p style={{textAlign: 'justify'}}>Clear pricing, honest advice, and no hidden fees.</p>
-                    </div>
-                  </Col>
-                  <Col md={4} className="mb-4">
-                    <div className="our-values-card text-center p-4 h-100 border rounded shadow-sm">
-                      <h4>Support</h4>
-                      <p style={{textAlign: 'justify'}}>Lifetime technical support for all our custom builds.</p>
-                    </div>
-                  </Col>
-                </Row>
-              </Col>
-            </Row>
-            
-            <Row>
-              <Col md={12}>
-                <h2 className="text-center mb-4">Meet Our Team</h2>
-                <Row>
-                  <Col md={3} className="mb-4">
-                    <div className="text-center">
-                      <img 
-                        src={sivatheevanImg}
-                        alt="Team Member" 
-                        className="rounded-circle mb-3"
-                        width="150"
-                        height="155"
-                      />
-                      <h4>Sivatheevan</h4>
-                      <p className="text-muted">Founder & CEO</p>
-                    </div>
-                  </Col>
-                  <Col md={3} className="mb-4">
-                    <div className="text-center">
-                      <img 
-                        src={makinthanImg} 
-                        alt="Team Member" 
-                        className="rounded-circle mb-3"
-                        width="150"
-                        height="155"
-                      />
-                      <h4>Makinthan</h4>
-                      <p className="text-muted">Head of Operations</p>
-                    </div>
-                  </Col>
-                  <Col md={3} className="mb-4">
-                    <div className="text-center">
-                      <img 
-                        src={pugazhImg}
-                        alt="Team Member" 
-                        className="rounded-circle mb-3"
-                        width="150"
-                        height="155"
-                      />
-                      <h4>Pukaliny</h4>
-                      <p className="text-muted">Lead PC Builder</p>
-                    </div>
-                  </Col>
-                  <Col md={3} className="mb-4">
-                    <div className="text-center">
-                      <img 
-                        src={kowsiImg}
-                        alt="Team Member" 
-                        className="rounded-circle mb-3"
-                        width="150"
-                        height="155"
-                      />
-                      <h4>Kowsika</h4>
-                      <p className="text-muted">Customer Support</p>
-                    </div>
-                  </Col>
-                </Row>
-              </Col>
-            </Row>
-          </Container>
-        </section>
-
-        {/* Services Section */}
-        <section id="services" className="py-5 bg-white mb-5" style={{borderRadius: '2rem', boxShadow: '0 4px 32px rgba(0,0,0,0.10)', marginTop: '2rem', marginBottom: '2rem'}}>
-          <Container className="py-5">
-            <h1 className="text-center mb-5">Our Services</h1>
-            
-            <Row className="mb-5">
-              <Col md={6} className="mb-4 mb-md-0">
-                <h2>Expert PC Building Services</h2>
-                <p style={{textAlign: 'justify'}}>
-                  At GearSphere, we offer comprehensive PC building services tailored to your specific needs. Whether you're a gamer, content creator, or professional, our expert builders will craft the perfect system for you.
-                </p>
-                <p style={{textAlign: 'justify'}}>
-                  We handle everything from component selection to assembly, testing, and delivery, ensuring you receive a high-performance, reliable system.
-                </p>
-                <Button variant="primary" className="mt-3" onClick={() => setShowLoginModal(true)}>Get Started</Button>
-              </Col>
-              <Col md={6}>
-                <img 
-                  src={serviceimg} 
-                  alt="PC Building Service" 
-                  className="img-fluid rounded"
-                />
-              </Col>
-            </Row>
-            
-            {/* Service Offerings Section */}
-            <Row className="mb-5">
-              <Col md={12}>
-                <h2 className="text-center mb-4">Our Service Offerings</h2>
-                <Row>
-                  <Col md={3} className="mb-4">
-                    <Card className="service-card modern-border h-100">
-                      <Card.Body className="text-center">
-                        <div className="service-icon mb-3">
-                          <Cpu size={40} style={{color: '#4361ee'}} />
-                        </div>
-                        <Card.Title>Custom PC Building</Card.Title><br/>
-                        <Card.Text style={{textAlign: 'justify'}}>
-                          Personalized systems built to your specifications with premium components and expert assembly.
-                        </Card.Text>
-                      </Card.Body>
-                    </Card>
-                  </Col>
-                  <Col md={3} className="mb-4">
-                    <Card className="service-card modern-border h-100">
-                      <Card.Body className="text-center">
-                        <div className="service-icon mb-3">
-                          <Tools size={40} style={{color: '#00b894'}} />
-                        </div>
-                        <Card.Title>Budget-Based PC Build Recommendation</Card.Title>
-                        <Card.Text style={{textAlign: 'justify'}}>
-                          Get personalized PC build recommendations based on your budget and needs, ensuring the best value for your money.
-                        </Card.Text>
-                      </Card.Body>
-                    </Card>
-                  </Col>
-                  <Col md={3} className="mb-4">
-                    <Card className="service-card modern-border h-100">
-                      <Card.Body className="text-center">
-                        <div className="service-icon mb-3">
-                          <PersonCheck size={40} style={{color: '#fd7e14'}} />
-                        </div>
-                        <Card.Title>Assign Technician for PC Build</Card.Title><br/>
-                        <Card.Text style={{textAlign: 'justify'}}>
-                          Easily assign a verified technician to build your custom PC, ensuring professional assembly and support.
-                        </Card.Text>
-                      </Card.Body>
-                    </Card>
-                  </Col>
-                  <Col md={3} className="mb-4">
-                    <Card className="service-card modern-border h-100">
-                      <Card.Body className="text-center">
-                        <div className="service-icon mb-3">
-                          <Cart size={40} style={{color: '#6c5ce7'}} />
-                        </div>
-                        <Card.Title>Buy PC Parts</Card.Title><br/>
-                        <Card.Text style={{textAlign: 'justify'}}>
-                          Purchase high-quality PC parts and components directly from trusted sellers through our marketplace.
-                        </Card.Text>
-                      </Card.Body>
-                    </Card>
-                  </Col>
-                </Row>
-              </Col>
-            </Row>
-
-            {/* Process Section */}
-            <Row className="mb-5">
-              <Col md={12}>
-                <h2 className="text-center mb-4">Our Process</h2>
-                <Row className="justify-content-center">
-                  <Col md={10}>
-                    <div className="d-flex flex-column flex-md-row justify-content-between mb-5">
-                      <div className="process-step">
-                        <div className="process-number">1</div>
-                        <div className="process-content">
-                          <h5>Consultation</h5>
-                          <p className="text-muted mb-0">Discuss your needs and budget</p>
-                        </div>
-                      </div>
-                      <div className="process-step">
-                        <div className="process-number">2</div>
-                        <div className="process-content">
-                          <h5>Component Selection</h5>
-                          <p className="text-muted mb-0">Choose the perfect parts</p>
-                        </div>
-                      </div>
-                      <div className="process-step">
-                        <div className="process-number">3</div>
-                        <div className="process-content">
-                          <h5>Assembly</h5>
-                          <p className="text-muted mb-0">Expert building and cable management</p>
-                        </div>
-                      </div>
-                      <div className="process-step">
-                        <div className="process-number">4</div>
-                        <div className="process-content">
-                          <h5>Testing</h5>
-                          <p className="text-muted mb-0">Rigorous quality assurance</p>
-                        </div>
-                      </div>
-                      <div className="process-step">
-                        <div className="process-number">5</div>
-                        <div className="process-content">
-                          <h5>Delivery</h5>
-                          <p className="text-muted mb-0">Safe shipping and setup assistance</p>
-                        </div>
-                      </div>
-                    </div>
-                  </Col>
-                </Row>
-              </Col>
-            </Row>
-
-            <Row>
-              <Col md={12}>
-                <h2 className="text-center mb-4">Frequently Asked Questions</h2>
-                <Accordion>
-                  <Accordion.Item eventKey="0">
-                    <Accordion.Header>How long does it take to build a custom PC?</Accordion.Header>
-                    <Accordion.Body>
-                      Typically, our build process takes 5-7 business days from order confirmation to shipping. This includes component procurement, assembly, extensive testing, and quality control.
-                    </Accordion.Body>
-                  </Accordion.Item>
-                  <Accordion.Item eventKey="1">
-                    <Accordion.Header>Do you offer warranties on custom builds?</Accordion.Header>
-                    <Accordion.Body>
-                      Yes, all our custom builds come with a 2-year warranty covering assembly and labor. Individual components are covered by their respective manufacturer warranties, which we help you manage if needed.
-                    </Accordion.Body>
-                  </Accordion.Item>
-                  <Accordion.Item eventKey="2">
-                    <Accordion.Header>Can I upgrade my PC in the future?</Accordion.Header>
-                    <Accordion.Body>
-                      We design our builds with future upgradability in mind. We can also provide upgrade services when you're ready to enhance your system.
-                    </Accordion.Body>
-                  </Accordion.Item>
-                  <Accordion.Item eventKey="3">
-                    <Accordion.Header>What if I have issues with my PC after delivery?</Accordion.Header>
-                    <Accordion.Body>
-                      We provide lifetime technical support for all our builds. If you encounter any issues, our support team is just a call or email away to help troubleshoot and resolve the problem.
-                    </Accordion.Body>
-                  </Accordion.Item>
-                </Accordion>
-              </Col>
-            </Row>
-          </Container>
-        </section>
-
-        {/* Products Section */}
-        <section id="products" className="py-5 bg-white mb-5" style={{borderRadius: '2rem', boxShadow: '0 4px 32px rgba(0,0,0,0.10)', marginTop: '2rem', marginBottom: '2rem'}}>
-          <Container>
-            <h1 className="text-center mb-5">Our Products</h1>
-            <Row className="mb-4">
-              <Col md={6} className="mb-3 mb-md-0">
-                <InputGroup>
-                  <Form.Control
-                    placeholder="Search PC parts..."
-                    aria-label="Search PC parts"
-                    value={searchQuery}
-                    onChange={e => setSearchQuery(e.target.value)}
-                  />
-                  <Button variant="outline-secondary">
-                    <Search />
-                  </Button>
-                </InputGroup>
-              </Col>
-              <Col md={6} className="d-flex justify-content-md-end">
-                <Form.Select style={{maxWidth: "220px"}} value={partType} onChange={e => setPartType(e.target.value)}>
-                  <option value="All">All Types</option>
-                  {[...new Set(pcParts.map(p => p.type))].map(type => (
-                    <option key={type} value={type}>{type}</option>
-                  ))}
-                </Form.Select>
-              </Col>
-            </Row>
-            <div style={{position: 'relative'}}>
-              <div className="product-slider-arrow left" onClick={() => {
-                const row = document.getElementById('product-slider-row');
-                if (row) row.scrollBy({left: -240, behavior: 'smooth'});
-              }}>
-                <ChevronLeft size={24} />
-              </div>
-              <div className="product-slider-arrow right" onClick={() => {
-                const row = document.getElementById('product-slider-row');
-                if (row) row.scrollBy({left: 240, behavior: 'smooth'});
-              }}>
-                <ChevronRight size={24} />
-              </div>
-              <div id="product-slider-row" className="product-slider-row" style={{display: 'flex', flexDirection: 'column', gap: 24, minWidth: 320, overflowX: 'auto', WebkitOverflowScrolling: 'touch', paddingBottom: 8}}>
-                {[0, 1, 2].map(rowIdx => {
-                  const itemsPerRow = 6;
-                  const rowParts = filteredParts.slice(rowIdx * itemsPerRow, (rowIdx + 1) * itemsPerRow);
-                  return (
-                    <div key={rowIdx} style={{display: 'flex', gap: 24, minWidth: 320}}>
-                      {rowParts.length === 0 && rowIdx === 0 ? (
-                        <div className="text-center text-muted py-5 w-100">No parts found.</div>
-                      ) : (
-                        rowParts.map((part, idx) => (
-                          <div key={idx} style={{flex: '0 0 220px', maxWidth: 220}}>
-                            <Card className="h-100 shadow-sm text-center">
-                              <Card.Body>
-                                <div className="mb-3">
-                                  {part.image
-                                    ? <img src={part.image} alt={part.name} style={{width: 60, height: 60, objectFit: 'contain'}} />
-                                    : part.icon}
-                                </div>
-                                <Card.Title>{part.name}</Card.Title>
-                                <Card.Text className="text-muted">{part.type}</Card.Text>
-                                <h5 className="text-primary mb-0">LKR {part.price.toLocaleString()}</h5>
-                              </Card.Body>
-                            </Card>
-                          </div>
-                        ))
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          </Container>
-        </section>
-
-        {/* Reviews Section */}
-        <section id="reviews" className="py-5 bg-white mb-5" style={{borderRadius: '2rem', boxShadow: '0 4px 32px rgba(0,0,0,0.10)', marginTop: '2rem', marginBottom: '2rem'}}>
-          <Container>
-            <h1 className="text-center mb-5">Customer Reviews</h1>
-            
-            <Row className="mb-4">
-              <Col md={6} className="mb-3 mb-md-0">
-                <div className="d-flex align-items-center">
-                  <h4 className="mb-0 me-3">Overall Rating:</h4>
-                  <div className="d-flex align-items-center">
-                    <div className="me-2">
-                      {renderStars(4.5)}
-                    </div>
-                    <span className="fw-bold">4.5/5</span>
+      <div style={{ marginTop: 80 }}>
+        <main style={{ flex: 1 }}>
+          <style>{ourValuesCardHoverStyle}</style>
+          <style>{serviceCardBorderStyle}</style>
+          <style>{productSliderStyle}</style>
+          {/* Hero Section */}
+          <section id="hero" className="py-5 bg-black text-white position-relative overflow-hidden mb-5" style={{borderTopLeftRadius: 0, borderTopRightRadius: 0, borderBottomLeftRadius: '2rem', borderBottomRightRadius: '2rem', boxShadow: '0 4px 32px rgba(0,0,0,0.10)', marginTop: 0, marginBottom: '2rem'}}>
+            {/* Blurred background image */}
+            <div
+              className="position-absolute top-0 start-0 w-100 h-100"
+              style={{
+                backgroundImage: `url(${pcpic2})`,
+                backgroundSize: 'cover',
+                backgroundPosition: 'center',
+                filter: 'blur(12px)',
+                zIndex: 0,
+                opacity: 0.7
+              }}
+            ></div>
+            {/* Overlay for darkening and contrast */}
+            <div
+              className="position-absolute top-0 start-0 w-100 h-100"
+              style={{
+                background: "radial-gradient(circle at 30% 50%, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0) 70%)",
+                zIndex: 1,
+              }}
+            ></div>
+            <Container className="py-5 position-relative" style={{ zIndex: 2 }}>
+              <Row className="align-items-center">
+                <Col lg={6} className="mb-5 mb-lg-0">
+                  <h1 className="display-3 fw-bold mb-4 rise-up" style={{ animationDelay: '0s' }}>
+                    Build Your Dream Tech <span className="text-primary">With GearSphere</span>
+                  </h1>
+                  <p className="lead mb-5 rise-up" style={{ animationDelay: '0.3s' }}>
+                    Create your perfect custom PC with our expert builders and premium components. From gaming rigs to
+                    professional workstations, we've got you covered.
+                  </p>
+                  <div className="d-flex gap-3 rise-up" style={{ animationDelay: '0.6s' }}>
+                    <Button 
+                      size="lg" 
+                      variant="primary" 
+                      onClick={() => setShowLoginModal(true)}
+                    >
+                      Start Building
+                    </Button>
+                    <Button 
+                      size="lg" 
+                      variant="outline-light"
+                      onClick={() => scrollToSection('products')}
+                    >
+                      Explore Products <ChevronRight />
+                    </Button>
                   </div>
-                </div>
-              </Col>
-            </Row>
-            
-            <Row>
-              {reviews.map(review => (
-                <Col key={review.id} md={6} className="mb-4">
-                  <Card className="h-100 shadow-sm">
-                    <Card.Body>
-                      <div className="d-flex justify-content-between align-items-start mb-3">
-                        <div className="d-flex">
-                          <img 
-                            src={review.avatar} 
-                            alt={review.name} 
-                            className="rounded-circle me-3"
-                            width="50"
-                            height="50"
-                          />
-                          <div>
-                            <h5 className="mb-0">{review.name}</h5>
-                            <p className="text-muted mb-0 small">{review.date}</p>
-                          </div>
-                        </div>
-                        <div className="d-flex">
-                          {renderStars(review.rating)}
-                        </div>
-                      </div>
-                      <h5>{review.title}</h5>
-                      <p className="text-muted small mb-3">Product: {review.productName}</p>
-                      <p className="mb-0">{review.content}</p>
-                    </Card.Body>
-                  </Card>
                 </Col>
-              ))}
-            </Row>
-          </Container>
-        </section>
+                <Col lg={6} className="text-lg-end" style={{backgroundBlendMode: 'darken'}}>
+                  {/* <div className="d-inline-block rounded shadow-lg" >
+                    <img
+                      src={pcGif}
+                      alt="PC Building Animation"
+                      className="img-fluid rounded pc-gif-img"
+                    />
+                  </div> */}
+                </Col>
+              </Row>
+            </Container>
+            {/* Blurred background image */}
+            <div
+              className="position-absolute top-0 start-0 w-100 h-100"
+              style={{
+                backgroundImage: `url(${pcpic2})`,
+                backgroundSize: 'cover',
+                backgroundPosition: 'center',
+                backgroundColor: 'rgba(0, 0, 0, 0.5)', // black overlay
+                backgroundBlendMode: 'darken',         // or try 'multiply'
+                //filter: 'blur(0px)',
+                zIndex: 0,
+                opacity: 1
+              }}
+            ></div>
+            {/* Overlay for darkening and contrast */}
+            <div
+              className="position-absolute top-0 start-0 w-100 h-100"
+              style={{
+                background: "radial-gradient(circle at 30% 50%, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0) 70%)",
+                zIndex: 1,
+              }}
+            ></div>
+          </section>
 
-        {/* Contact Section */}
-        <section id="contact" className="py-5 bg-white" style={{borderRadius: '2rem', boxShadow: '0 4px 32px rgba(0,0,0,0.10)', marginTop: '2rem', marginBottom: 0}}>
-          <Container>
-            <h1 className="text-center mb-5">Contact Us</h1>
-            <Row className="mb-5">
-              <Col lg={6} className="mb-4 mb-lg-0">
-                <h2 className="mb-4">Get In Touch</h2>
-                <p className="mb-4">
-                  Have questions about our products or services? Need technical support? 
-                  Fill out the form and our team will get back to you as soon as possible.
-                </p>
-                <Form>
+          {/* About Section */}
+          <section id="about" className="py-5 about-section-custom position-relative mb-5" style={{overflow: 'hidden', borderRadius: '2rem', boxShadow: '0 4px 32px rgba(0,0,0,0.10)', background: 'transparent', marginTop: '2rem', marginBottom: '2rem'}}>
+            <Container>
+              <h1 className="text-center mb-5 about-title-custom">About GearSphere</h1>
+              <Row className="mb-5">
+                <Col md={6} style={{display: 'flex', flexDirection: 'column', justifyContent: 'center'}}>
+                  <h2 className="about-heading-custom">Our Story</h2>
+                  <p className="about-text-custom" style={{textAlign: 'justify'}}>
+                  <strong>GearSphere</strong> was founded in 2020 by a group of passionate PC enthusiasts to make custom PC building accessible to everyone. What began as a small effort has grown into a trusted platform connecting customers with expert PC builders across the country.
+                  </p>
+                  <p className="about-text-custom" style={{textAlign: 'justify'}}>
+                  Our mission is to make custom PC building easy, affordable, and accessible whether you're a beginner or an experienced user. GearSphere bridges the gap between customers and skilled technicians, offering guided tools to select compatible parts, compare options, and get budget-friendly suggestions. We work only with verified technicians and sellers to ensure quality, clear pricing, and honest reviews. We also provide lifetime technical support, upgrade options, and empower technicians by giving them a professional platform to grow.
+                  </p>
+                </Col>
+                <Col md={6} style={{display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%'}}>
+                  <div style={{width: '100%', height: '100%', minHeight: 340, borderRadius: '2rem', overflow: 'hidden'}}>
+                    <img 
+                      src={aboutus} 
+                      alt="GearSphere Team" 
+                      style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '2rem' }}
+                    />
+                  </div>
+                </Col>
+              </Row>
+              
+              <Row className="mb-5">
+                <Col md={12}>
+                  <h2 className="text-center mb-4">Our Values</h2>
                   <Row>
-                    <Col md={6}>
-                      <Form.Group className="mb-3">
-                        <Form.Label>First Name</Form.Label>
-                        <Form.Control type="text" placeholder="Enter first name" />
-                      </Form.Group>
+                    <Col md={4} className="mb-4">
+                      <div className="our-values-card text-center p-4 h-100 border rounded shadow-sm">
+                        <h4>Quality</h4>
+                        <p style={{textAlign: 'justify'}}>We never compromise on component quality and build standards.</p>
+                      </div>
                     </Col>
-                    <Col md={6}>
-                      <Form.Group className="mb-3">
-                        <Form.Label>Last Name</Form.Label>
-                        <Form.Control type="text" placeholder="Enter last name" />
-                      </Form.Group>
+                    <Col md={4} className="mb-4">
+                      <div className="our-values-card text-center p-4 h-100 border rounded shadow-sm">
+                        <h4>Transparency</h4>
+                        <p style={{textAlign: 'justify'}}>Clear pricing, honest advice, and no hidden fees.</p>
+                      </div>
+                    </Col>
+                    <Col md={4} className="mb-4">
+                      <div className="our-values-card text-center p-4 h-100 border rounded shadow-sm">
+                        <h4>Support</h4>
+                        <p style={{textAlign: 'justify'}}>Lifetime technical support for all our custom builds.</p>
+                      </div>
                     </Col>
                   </Row>
-                  <Form.Group className="mb-3">
-                    <Form.Label>Email Address</Form.Label>
-                    <Form.Control type="email" placeholder="Enter email" />
-                  </Form.Group>
-                  <Form.Group className="mb-3">
-                    <Form.Label>Phone Number</Form.Label>
-                    <Form.Control type="tel" placeholder="07X XXX XXXX" pattern="0[0-9]{2} [0-9]{3} [0-9]{4}" title="Enter a valid Sri Lankan phone number (e.g., 077 123 4567)" />
-                  </Form.Group>
-                  <Form.Group className="mb-3">
-                    <Form.Label>Subject</Form.Label>
-                    <Form.Select>
-                      <option>Select a subject</option>
-                      <option>Product Inquiry</option>
-                      <option>Technical Support</option>
-                      <option>Order Status</option>
-                      <option>Returns & Warranty</option>
-                      <option>Other</option>
-                    </Form.Select>
-                  </Form.Group>
-                  <Form.Group className="mb-3">
-                    <Form.Label>Message</Form.Label>
-                    <Form.Control as="textarea" rows={5} placeholder="Enter your message" />
-                  </Form.Group>
-                  <Button variant="primary" type="submit" className="w-100">
-                    Send Message
-                  </Button>
-                </Form>
-              </Col>
-              <Col lg={6}>
-                <Row className="mb-4">
-                  <Col md={12}>
-                    <Card className="border-0 shadow-sm">
+                </Col>
+              </Row>
+              
+              <Row>
+                <Col md={12}>
+                  <h2 className="text-center mb-4">Meet Our Team</h2>
+                  <Row>
+                    <Col md={3} className="mb-4">
+                      <div className="text-center">
+                        <img 
+                          src={sivatheevanImg}
+                          alt="Team Member" 
+                          className="rounded-circle mb-3"
+                          width="150"
+                          height="155"
+                        />
+                        <h4>Sivatheevan</h4>
+                        <p className="text-muted">Founder & CEO</p>
+                      </div>
+                    </Col>
+                    <Col md={3} className="mb-4">
+                      <div className="text-center">
+                        <img 
+                          src={makinthanImg} 
+                          alt="Team Member" 
+                          className="rounded-circle mb-3"
+                          width="150"
+                          height="155"
+                        />
+                        <h4>Makinthan</h4>
+                        <p className="text-muted">Head of Operations</p>
+                      </div>
+                    </Col>
+                    <Col md={3} className="mb-4">
+                      <div className="text-center">
+                        <img 
+                          src={pugazhImg}
+                          alt="Team Member" 
+                          className="rounded-circle mb-3"
+                          width="150"
+                          height="155"
+                        />
+                        <h4>Pukaliny</h4>
+                        <p className="text-muted">Lead PC Builder</p>
+                      </div>
+                    </Col>
+                    <Col md={3} className="mb-4">
+                      <div className="text-center">
+                        <img 
+                          src={kowsiImg}
+                          alt="Team Member" 
+                          className="rounded-circle mb-3"
+                          width="150"
+                          height="155"
+                        />
+                        <h4>Kowsika</h4>
+                        <p className="text-muted">Customer Support</p>
+                      </div>
+                    </Col>
+                  </Row>
+                </Col>
+              </Row>
+            </Container>
+          </section>
+
+          {/* Services Section */}
+          <section id="services" className="py-5 bg-white mb-5" style={{borderRadius: '2rem', boxShadow: '0 4px 32px rgba(0,0,0,0.10)', marginTop: '2rem', marginBottom: '2rem'}}>
+            <Container className="py-5">
+              <h1 className="text-center mb-5">Our Services</h1>
+              
+              <Row className="mb-5">
+                <Col md={6} className="mb-4 mb-md-0">
+                  <h2>Expert PC Building Services</h2>
+                  <p style={{textAlign: 'justify'}}>
+                    At GearSphere, we offer comprehensive PC building services tailored to your specific needs. Whether you're a gamer, content creator, or professional, our expert builders will craft the perfect system for you.
+                  </p>
+                  <p style={{textAlign: 'justify'}}>
+                    We handle everything from component selection to assembly, testing, and delivery, ensuring you receive a high-performance, reliable system.
+                  </p>
+                  <Button variant="primary" className="mt-3" onClick={() => setShowLoginModal(true)}>Get Started</Button>
+                </Col>
+                <Col md={6}>
+                  <img 
+                    src={serviceimg} 
+                    alt="PC Building Service" 
+                    className="img-fluid rounded"
+                  />
+                </Col>
+              </Row>
+              
+              {/* Service Offerings Section */}
+              <Row className="mb-5">
+                <Col md={12}>
+                  <h2 className="text-center mb-4">Our Service Offerings</h2>
+                  <Row>
+                    <Col md={3} className="mb-4">
+                      <Card className="service-card modern-border h-100">
+                        <Card.Body className="text-center">
+                          <div className="service-icon mb-3">
+                            <Cpu size={40} style={{color: '#4361ee'}} />
+                          </div>
+                          <Card.Title>Custom PC Building</Card.Title><br/>
+                          <Card.Text style={{textAlign: 'justify'}}>
+                            Personalized systems built to your specifications with premium components and expert assembly.
+                          </Card.Text>
+                        </Card.Body>
+                      </Card>
+                    </Col>
+                    <Col md={3} className="mb-4">
+                      <Card className="service-card modern-border h-100">
+                        <Card.Body className="text-center">
+                          <div className="service-icon mb-3">
+                            <Tools size={40} style={{color: '#00b894'}} />
+                          </div>
+                          <Card.Title>Budget-Based PC Build Recommendation</Card.Title>
+                          <Card.Text style={{textAlign: 'justify'}}>
+                            Get personalized PC build recommendations based on your budget and needs, ensuring the best value for your money.
+                          </Card.Text>
+                        </Card.Body>
+                      </Card>
+                    </Col>
+                    <Col md={3} className="mb-4">
+                      <Card className="service-card modern-border h-100">
+                        <Card.Body className="text-center">
+                          <div className="service-icon mb-3">
+                            <PersonCheck size={40} style={{color: '#fd7e14'}} />
+                          </div>
+                          <Card.Title>Assign Technician for PC Build</Card.Title><br/>
+                          <Card.Text style={{textAlign: 'justify'}}>
+                            Easily assign a verified technician to build your custom PC, ensuring professional assembly and support.
+                          </Card.Text>
+                        </Card.Body>
+                      </Card>
+                    </Col>
+                    <Col md={3} className="mb-4">
+                      <Card className="service-card modern-border h-100">
+                        <Card.Body className="text-center">
+                          <div className="service-icon mb-3">
+                            <Cart size={40} style={{color: '#6c5ce7'}} />
+                          </div>
+                          <Card.Title>Buy PC Parts</Card.Title><br/>
+                          <Card.Text style={{textAlign: 'justify'}}>
+                            Purchase high-quality PC parts and components directly from trusted sellers through our marketplace.
+                          </Card.Text>
+                        </Card.Body>
+                      </Card>
+                    </Col>
+                  </Row>
+                </Col>
+              </Row>
+
+              {/* Process Section */}
+              <Row className="mb-5">
+                <Col md={12}>
+                  <h2 className="text-center mb-4">Our Process</h2>
+                  <Row className="justify-content-center">
+                    <Col md={10}>
+                      <div className="d-flex flex-column flex-md-row justify-content-between mb-5">
+                        <div className="process-step">
+                          <div className="process-number">1</div>
+                          <div className="process-content">
+                            <h5>Consultation</h5>
+                            <p className="text-muted mb-0">Discuss your needs and budget</p>
+                          </div>
+                        </div>
+                        <div className="process-step">
+                          <div className="process-number">2</div>
+                          <div className="process-content">
+                            <h5>Component Selection</h5>
+                            <p className="text-muted mb-0">Choose the perfect parts</p>
+                          </div>
+                        </div>
+                        <div className="process-step">
+                          <div className="process-number">3</div>
+                          <div className="process-content">
+                            <h5>Assembly</h5>
+                            <p className="text-muted mb-0">Expert building and cable management</p>
+                          </div>
+                        </div>
+                        <div className="process-step">
+                          <div className="process-number">4</div>
+                          <div className="process-content">
+                            <h5>Testing</h5>
+                            <p className="text-muted mb-0">Rigorous quality assurance</p>
+                          </div>
+                        </div>
+                        <div className="process-step">
+                          <div className="process-number">5</div>
+                          <div className="process-content">
+                            <h5>Delivery</h5>
+                            <p className="text-muted mb-0">Safe shipping and setup assistance</p>
+                          </div>
+                        </div>
+                      </div>
+                    </Col>
+                  </Row>
+                </Col>
+              </Row>
+
+              <Row>
+                <Col md={12}>
+                  <h2 className="text-center mb-4">Frequently Asked Questions</h2>
+                  <Accordion>
+                    <Accordion.Item eventKey="0">
+                      <Accordion.Header>How long does it take to build a custom PC?</Accordion.Header>
+                      <Accordion.Body>
+                        Typically, our build process takes 5-7 business days from order confirmation to shipping. This includes component procurement, assembly, extensive testing, and quality control.
+                      </Accordion.Body>
+                    </Accordion.Item>
+                    <Accordion.Item eventKey="1">
+                      <Accordion.Header>Do you offer warranties on custom builds?</Accordion.Header>
+                      <Accordion.Body>
+                        Yes, all our custom builds come with a 2-year warranty covering assembly and labor. Individual components are covered by their respective manufacturer warranties, which we help you manage if needed.
+                      </Accordion.Body>
+                    </Accordion.Item>
+                    <Accordion.Item eventKey="2">
+                      <Accordion.Header>Can I upgrade my PC in the future?</Accordion.Header>
+                      <Accordion.Body>
+                        We design our builds with future upgradability in mind. We can also provide upgrade services when you're ready to enhance your system.
+                      </Accordion.Body>
+                    </Accordion.Item>
+                    <Accordion.Item eventKey="3">
+                      <Accordion.Header>What if I have issues with my PC after delivery?</Accordion.Header>
+                      <Accordion.Body>
+                        We provide lifetime technical support for all our builds. If you encounter any issues, our support team is just a call or email away to help troubleshoot and resolve the problem.
+                      </Accordion.Body>
+                    </Accordion.Item>
+                  </Accordion>
+                </Col>
+              </Row>
+            </Container>
+          </section>
+
+          {/* Products Section */}
+          <section id="products" className="py-5 bg-white mb-5" style={{borderRadius: '2rem', boxShadow: '0 4px 32px rgba(0,0,0,0.10)', marginTop: '2rem', marginBottom: '2rem'}}>
+            <Container>
+              <h1 className="text-center mb-5">Our Products</h1>
+              <Row className="mb-4">
+                <Col md={6} className="mb-3 mb-md-0">
+                  <InputGroup>
+                    <Form.Control
+                      placeholder="Search PC parts..."
+                      aria-label="Search PC parts"
+                      value={searchQuery}
+                      onChange={e => setSearchQuery(e.target.value)}
+                    />
+                    <Button variant="outline-secondary">
+                      <Search />
+                    </Button>
+                  </InputGroup>
+                </Col>
+                <Col md={6} className="d-flex justify-content-md-end">
+                  <Form.Select style={{maxWidth: "220px"}} value={partType} onChange={e => setPartType(e.target.value)}>
+                    <option value="All">All Types</option>
+                    {[...new Set(pcParts.map(p => p.type))].map(type => (
+                      <option key={type} value={type}>{type}</option>
+                    ))}
+                  </Form.Select>
+                </Col>
+              </Row>
+              <div style={{position: 'relative'}}>
+                <div className="product-slider-arrow left" onClick={() => {
+                  const row = document.getElementById('product-slider-row');
+                  if (row) row.scrollBy({left: -240, behavior: 'smooth'});
+                }}>
+                  <ChevronLeft size={24} />
+                </div>
+                <div className="product-slider-arrow right" onClick={() => {
+                  const row = document.getElementById('product-slider-row');
+                  if (row) row.scrollBy({left: 240, behavior: 'smooth'});
+                }}>
+                  <ChevronRight size={24} />
+                </div>
+                <div id="product-slider-row" className="product-slider-row" style={{display: 'flex', flexDirection: 'column', gap: 24, minWidth: 320, overflowX: 'auto', WebkitOverflowScrolling: 'touch', paddingBottom: 8}}>
+                  {[0, 1, 2].map(rowIdx => {
+                    const itemsPerRow = 6;
+                    const rowParts = filteredParts.slice(rowIdx * itemsPerRow, (rowIdx + 1) * itemsPerRow);
+                    return (
+                      <div key={rowIdx} style={{display: 'flex', gap: 24, minWidth: 320}}>
+                        {rowParts.length === 0 && rowIdx === 0 ? (
+                          <div className="text-center text-muted py-5 w-100">No parts found.</div>
+                        ) : (
+                          rowParts.map((part, idx) => (
+                            <div key={idx} style={{flex: '0 0 220px', maxWidth: 220}}>
+                              <Card className="h-100 shadow-sm text-center">
+                                <Card.Body>
+                                  <div className="mb-3">
+                                    {part.image
+                                      ? <img src={part.image} alt={part.name} style={{width: 60, height: 60, objectFit: 'contain'}} />
+                                      : part.icon}
+                                  </div>
+                                  <Card.Title>{part.name}</Card.Title>
+                                  <Card.Text className="text-muted">{part.type}</Card.Text>
+                                  <h5 className="text-primary mb-0">LKR {part.price.toLocaleString()}</h5>
+                                </Card.Body>
+                              </Card>
+                            </div>
+                          ))
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            </Container>
+          </section>
+
+          {/* Reviews Section */}
+          <section id="reviews" className="py-5 bg-white mb-5" style={{borderRadius: '2rem', boxShadow: '0 4px 32px rgba(0,0,0,0.10)', marginTop: '2rem', marginBottom: '2rem'}}>
+            <Container>
+              <h1 className="text-center mb-5">Customer Reviews</h1>
+              
+              <Row className="mb-4">
+                <Col md={6} className="mb-3 mb-md-0">
+                  <div className="d-flex align-items-center">
+                    <h4 className="mb-0 me-3">Overall Rating:</h4>
+                    <div className="d-flex align-items-center">
+                      <div className="me-2">
+                        {renderStars(4.5)}
+                      </div>
+                      <span className="fw-bold">4.5/5</span>
+                    </div>
+                  </div>
+                </Col>
+              </Row>
+              
+              <Row>
+                {reviews.map(review => (
+                  <Col key={review.id} md={6} className="mb-4">
+                    <Card className="h-100 shadow-sm">
                       <Card.Body>
-                        <h3 className="mb-4">Contact Information</h3>
-                        <div className="d-flex mb-3">
-                          <div className="me-3">
-                            <Envelope size={24} className="text-primary" />
-                          </div>
-                          <div>
-                            <h5 className="mb-1">Email</h5>
-                            <p className="mb-0">info@gearsphere.com</p>
-                            <p className="mb-0">support@gearsphere.com</p>
-                          </div>
-                        </div>
-                        <div className="d-flex mb-3">
-                          <div className="me-3">
-                            <Telephone size={24} className="text-primary" />
-                          </div>
-                          <div>
-                            <h5 className="mb-1">Phone</h5>
-                            <p className="mb-0">+1 (555) 123-4567</p>
-                            <p className="mb-0">+1 (555) 987-6543</p>
-                          </div>
-                        </div>
-                        <div className="d-flex mb-3">
-                          <div className="me-3">
-                            <GeoAlt size={24} className="text-primary" />
-                          </div>
-                          <div>
-                            <h5 className="mb-1">Address</h5>
-                            <p className="mb-0">Street Address, City (e.g., Colombo)</p>
-                          </div>
-                        </div>
-                          <div className="d-flex justify-content-center">
+                        <div className="d-flex justify-content-between align-items-start mb-3">
+                          <div className="d-flex">
                             <img 
-                              src="/src/images/logo.PNG" 
-                              alt="GearSphere Logo" 
-                              className="me-2" 
-                              style={{ height: '300px', width: '300px' }}
+                              src={review.avatar} 
+                              alt={review.name} 
+                              className="rounded-circle me-3"
+                              width="50"
+                              height="50"
                             />
+                            <div>
+                              <h5 className="mb-0">{review.name}</h5>
+                              <p className="text-muted mb-0 small">{review.date}</p>
+                            </div>
                           </div>
+                          <div className="d-flex">
+                            {renderStars(review.rating)}
+                          </div>
+                        </div>
+                        <h5>{review.title}</h5>
+                        <p className="text-muted small mb-3">Product: {review.productName}</p>
+                        <p className="mb-0">{review.content}</p>
                       </Card.Body>
                     </Card>
                   </Col>
-                </Row>
-              </Col>
-            </Row>
-          </Container>
-        </section>
-      </main>
-      <Footer />
+                ))}
+              </Row>
+            </Container>
+          </section>
+
+          {/* Contact Section */}
+          <section id="contact" className="py-5 bg-white" style={{borderRadius: '2rem', boxShadow: '0 4px 32px rgba(0,0,0,0.10)', marginTop: '2rem', marginBottom: 0}}>
+            <Container>
+              <h1 className="text-center mb-5">Contact Us</h1>
+              <Row className="mb-5">
+                <Col lg={6} className="mb-4 mb-lg-0">
+                  <h2 className="mb-4">Get In Touch</h2>
+                  <p className="mb-4">
+                    Have questions about our products or services? Need technical support? 
+                    Fill out the form and our team will get back to you as soon as possible.
+                  </p>
+                  <Form>
+                    <Row>
+                      <Col md={6}>
+                        <Form.Group className="mb-3">
+                          <Form.Label>First Name</Form.Label>
+                          <Form.Control type="text" placeholder="Enter first name" />
+                        </Form.Group>
+                      </Col>
+                      <Col md={6}>
+                        <Form.Group className="mb-3">
+                          <Form.Label>Last Name</Form.Label>
+                          <Form.Control type="text" placeholder="Enter last name" />
+                        </Form.Group>
+                      </Col>
+                    </Row>
+                    <Form.Group className="mb-3">
+                      <Form.Label>Email Address</Form.Label>
+                      <Form.Control type="email" placeholder="Enter email" />
+                    </Form.Group>
+                    <Form.Group className="mb-3">
+                      <Form.Label>Phone Number</Form.Label>
+                      <Form.Control type="tel" placeholder="07X XXX XXXX" pattern="0[0-9]{2} [0-9]{3} [0-9]{4}" title="Enter a valid Sri Lankan phone number (e.g., 077 123 4567)" />
+                    </Form.Group>
+                    <Form.Group className="mb-3">
+                      <Form.Label>Subject</Form.Label>
+                      <Form.Select>
+                        <option>Select a subject</option>
+                        <option>Product Inquiry</option>
+                        <option>Technical Support</option>
+                        <option>Order Status</option>
+                        <option>Returns & Warranty</option>
+                        <option>Other</option>
+                      </Form.Select>
+                    </Form.Group>
+                    <Form.Group className="mb-3">
+                      <Form.Label>Message</Form.Label>
+                      <Form.Control as="textarea" rows={5} placeholder="Enter your message" />
+                    </Form.Group>
+                    <Button variant="primary" type="submit" className="w-100">
+                      Send Message
+                    </Button>
+                  </Form>
+                </Col>
+                <Col lg={6}>
+                  <Row className="mb-4">
+                    <Col md={12}>
+                      <Card className="border-0 shadow-sm">
+                        <Card.Body>
+                          <h3 className="mb-4">Contact Information</h3>
+                          <div className="d-flex mb-3">
+                            <div className="me-3">
+                              <Envelope size={24} className="text-primary" />
+                            </div>
+                            <div>
+                              <h5 className="mb-1">Email</h5>
+                              <p className="mb-0">info@gearsphere.com</p>
+                              <p className="mb-0">support@gearsphere.com</p>
+                            </div>
+                          </div>
+                          <div className="d-flex mb-3">
+                            <div className="me-3">
+                              <Telephone size={24} className="text-primary" />
+                            </div>
+                            <div>
+                              <h5 className="mb-1">Phone</h5>
+                              <p className="mb-0">+1 (555) 123-4567</p>
+                              <p className="mb-0">+1 (555) 987-6543</p>
+                            </div>
+                          </div>
+                          <div className="d-flex mb-3">
+                            <div className="me-3">
+                              <GeoAlt size={24} className="text-primary" />
+                            </div>
+                            <div>
+                              <h5 className="mb-1">Address</h5>
+                              <p className="mb-0">Street Address, City (e.g., Colombo)</p>
+                            </div>
+                          </div>
+                            <div className="d-flex justify-content-center">
+                              <img 
+                                src="/src/images/logo.PNG" 
+                                alt="GearSphere Logo" 
+                                className="me-2" 
+                                style={{ height: '300px', width: '300px' }}
+                              />
+                            </div>
+                        </Card.Body>
+                      </Card>
+                    </Col>
+                  </Row>
+                </Col>
+              </Row>
+            </Container>
+          </section>
+        </main>
+        <Footer />
+      </div>
     </div>
   );
 }

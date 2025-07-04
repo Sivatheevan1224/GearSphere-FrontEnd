@@ -64,7 +64,7 @@ function MainNavbar() {
   };
 
   return (
-    < >
+    <>
     <div className="fixed-top">
       <Navbar 
         expand="lg" 
