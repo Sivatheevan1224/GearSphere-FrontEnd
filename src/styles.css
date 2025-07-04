@@ -626,3 +626,45 @@ section {
   animation: riseUp 3.5s cubic-bezier(0.16, 1, 0.3, 1) both;
   will-change: opacity, transform, clip-path;
 }
+
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+#root {
+  flex: 1 0 auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.homepage-root {
+  flex: 1 0 auto;
+  display: flex;
+  flex-direction: column;
+}
+
+footer {
+  flex-shrink: 0;
+}
+
+.Toastify__toast-container {
+  position: fixed !important;
+  z-index: 9999;
+  pointer-events: none;
+}
+
+.Toastify__toast-container:empty {
+  display: none !important;
+}
+
+section.Toastify:empty {
+  display: none !important;
+}

@@ -64,7 +64,8 @@ function MainNavbar() {
   };
 
   return (
-    <>
+    < >
+    <div className="fixed-top">
       <Navbar 
         expand="lg" 
         className={`navbar-custom sticky-top shadow-sm ${expanded ? 'expanded' : ''}`}
@@ -198,6 +199,7 @@ function MainNavbar() {
           loginClose={setShowLoginModal}
         />
       )}
+      </div>
     </>
   );
 }

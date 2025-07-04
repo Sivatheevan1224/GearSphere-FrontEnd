@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react"
 import { Modal, Button, Form, Alert, InputGroup } from "react-bootstrap"
-import { useNavigate } from "react-router-dom"
+import { useNavigate, useLocation } from "react-router-dom"
 import { BsEye, BsEyeSlash } from "react-icons/bs"
 import loginImage from "../../images/login.jpg"
 import { ToastContainer, toast } from "react-toastify";
@@ -25,6 +25,7 @@ function LoginModal({ show, onHide, switchToRegister }) {
   const [confirmPassword, setConfirmPassword] = useState("");  
   const [checkOTP,setCheckOTP] = useState("");
   const [step, setStep] = useState(1);
+  const location = useLocation();
 
   //Handle login 
   const handleLogin = async (e) => {
@@ -65,6 +66,9 @@ function LoginModal({ show, onHide, switchToRegister }) {
             navigate("/seller");
           }
         }, 2000);
+      }
+      else if (response.data.message) {
+        toast.error(response.data.message);
       }
       else {
         toast.error(response.data.message);
@@ -190,7 +194,6 @@ function LoginModal({ show, onHide, switchToRegister }) {
             <Modal.Header closeButton className="border-0 pb-0" />
             <Modal.Title className="mb-3">Login to GearSphere</Modal.Title>
             <Modal.Body className="px-0">
-              {error && <Alert variant="danger">{error}</Alert>}
               <Form onSubmit={handleLogin}>
                 <Form.Group className="mb-3">
                   <Form.Label>Email address</Form.Label>
@@ -333,9 +336,6 @@ function LoginModal({ show, onHide, switchToRegister }) {
           </Button>
         </Modal.Footer>
       </Modal>
-      <ToastContainer />
-      
-      
     </>
   )
 }

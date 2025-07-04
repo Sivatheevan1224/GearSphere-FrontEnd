@@ -7,6 +7,8 @@ import MainNavbar from './components/navbar/MainNavbar';
 import HomePage from './pages/HomePage';
 import Signup from './components/signup/Signup';
 import TechnicianManagement from './pages/admin/TechnicianManagement';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 // Customer Pages
 import Marketplace from './pages/customer/Marketplace';
@@ -104,6 +106,7 @@ function AppContent() {
           <Route path="/seller/dashboard" element={<Dashboard />} />
         </Route>
       </Routes>
+      <ToastContainer />
     </>
   );
 }
@@ -116,6 +119,19 @@ function App() {
         v7_relativeSplatPath: true,
       }}
     >
+      <ToastContainer
+        position="top-right"
+        autoClose={2000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="colored"  // Optional: 'dark' or 'light' or 'colored'
+        style={{ zIndex: 99999 }}
+      />
       <AuthProvider>
         <CartProvider>
           <OrdersProvider>
