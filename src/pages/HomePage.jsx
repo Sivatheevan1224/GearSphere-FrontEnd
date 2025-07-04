@@ -339,14 +339,14 @@ function HomePage() {
         <Container className="py-5 position-relative" style={{ zIndex: 2 }}>
           <Row className="align-items-center">
             <Col lg={6} className="mb-5 mb-lg-0">
-              <h1 className="display-3 fw-bold mb-4">
+              <h1 className="display-3 fw-bold mb-4 rise-up" style={{ animationDelay: '0s' }}>
                 Build Your Dream Tech <span className="text-primary">With GearSphere</span>
               </h1>
-              <p className="lead mb-5">
+              <p className="lead mb-5 rise-up" style={{ animationDelay: '0.3s' }}>
                 Create your perfect custom PC with our expert builders and premium components. From gaming rigs to
                 professional workstations, we've got you covered.
               </p>
-              <div className="d-flex gap-3">
+              <div className="d-flex gap-3 rise-up" style={{ animationDelay: '0.6s' }}>
                 <Button 
                   size="lg" 
                   variant="primary" 
@@ -364,13 +364,13 @@ function HomePage() {
               </div>
             </Col>
             <Col lg={6} className="text-lg-end" style={{backgroundBlendMode: 'darken'}}>
-              <div className="d-inline-block rounded shadow-lg" >
+              {/* <div className="d-inline-block rounded shadow-lg" >
                 <img
                   src={pcGif}
                   alt="PC Building Animation"
                   className="img-fluid rounded pc-gif-img"
                 />
-              </div>
+              </div> */}
             </Col>
           </Row>
         </Container>
