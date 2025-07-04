@@ -15,7 +15,7 @@ function TechnicianLayout() {
   return (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
       <TechnicianNavbar fixed="top" />
-      <div style={{ flex: '1 0 auto' }}>
+      <div style={{ flex: '1 0 auto', marginTop: 80 }}>
         <Outlet />
       </div>
       <DashboardFooter />
