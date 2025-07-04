@@ -13,11 +13,13 @@ function SellerLayout() {
     }
   }, [navigate]);
   return (
-    <>
+    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
       <SellerNavbar fixed="top" />
-      <div style={{ marginTop: 80 }}><Outlet /></div>
+      <div style={{ flex: '1 0 auto', marginTop: 80 }}>
+        <Outlet />
+      </div>
       <DashboardFooter />
-    </>
+    </div>
   );
 }
 
