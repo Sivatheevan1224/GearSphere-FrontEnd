@@ -7,15 +7,15 @@ import ClearIcon from "@mui/icons-material/Clear";
 import EmailIcon from "@mui/icons-material/Email";
 import LockIcon from "@mui/icons-material/Lock";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
-import registerimg from "../images/register.png";
-import TechnicianInstruction from "../components/TechnicianInstruction";
+import registerimg from "../../images/register.png";
+import TechnicianInstruction from "../technicianInstruction/TechnicianInstruction";
 import PersonIcon from '@mui/icons-material/Person';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import { Button, Modal } from "react-bootstrap";
 import PhoneIcon from "@mui/icons-material/Phone";
-import providerImg from "../images/provider_img.jpg";
-import TechnicianRegistration from './TechnicianRegistration';
-import techStyles from './TechnicianRegistration.module.css';
+import providerImg from "../../images/provider_img.jpg";
+import TechnicianRegistration from "../technicianRegister/TechnicianRegistration";
+import techStyles from '../technicianRegister/TechnicianRegistration.module.css';
 
 const Signup = ({ signupClose, loginClose, setShowTechnicianInstruction }) => {
   const [firstName, setFirstName] = useState("");

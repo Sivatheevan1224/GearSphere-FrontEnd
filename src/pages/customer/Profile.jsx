@@ -1,61 +1,25 @@
 import React, { useState, useRef } from 'react';
-import { Container, Row, Col, Card, Form, Button, Nav, Tab, Alert, Modal } from 'react-bootstrap';
-import axios from 'axios';
+import { Container, Row, Col, Card, Form, Button } from 'react-bootstrap';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import 'bootstrap-icons/font/bootstrap-icons.css';
 
 const CustomerProfile = () => {
   const [formData, setFormData] = useState({
     firstName: 'John',
     lastName: 'Doe',
     email: 'john.doe@example.com',
-    phone: '+1 (555) 123-4567',
-    address: '123 Main St',
-    city: 'New York',
-    state: 'NY',
-    zipCode: '10001',
-    country: 'USA'
+    phone: '0771234567',
+    address: 'Colombo',
+    profilePic: 'https://via.placeholder.com/150'
   });
-
-  const [passwordData, setPasswordData] = useState({
-    currentPassword: '',
-    newPassword: '',
-    confirmPassword: ''
-  });
-
-  const [notificationSettings, setNotificationSettings] = useState({
-    orderUpdates: true,
-    promotions: false,
-    newsletter: true,
-    serviceAlerts: true
-  });
-
-  const [showSuccess, setShowSuccess] = useState(false);
-
-  const [profilePicFile, setProfilePicFile] = useState(null);
   const [profilePicPreview, setProfilePicPreview] = useState(null);
+  const [profilePicFile, setProfilePicFile] = useState(null);
   const fileInputRef = useRef();
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
-  };
-
-  const handlePasswordChange = (e) => {
-    const { name, value } = e.target;
-    setPasswordData(prev => ({
-      ...prev,
-      [name]: value
-    }));
-  };
-
-  const handleNotificationChange = (e) => {
-    const { name, checked } = e.target;
-    setNotificationSettings(prev => ({
-      ...prev,
-      [name]: checked
-    }));
+    setFormData(prev => ({ ...prev, [name]: value }));
   };
 
   const handleProfilePicChange = (e) => {
@@ -68,286 +32,142 @@ const CustomerProfile = () => {
 
   const handleProfileUpdate = async (e) => {
     e.preventDefault();
-    const formData = new FormData();
-    formData.append('firstName', formData.firstName);
-    formData.append('lastName', formData.lastName);
-    formData.append('email', formData.email);
-    formData.append('phone', formData.phone);
-    formData.append('address', formData.address);
-    formData.append('city', formData.city);
-    formData.append('state', formData.state);
-    formData.append('zipCode', formData.zipCode);
-    formData.append('country', formData.country);
-    formData.append('district', formData.district);
-    if (profilePicFile) {
-      formData.append('profile_image', profilePicFile);
+    toast.success('Profile updated successfully!');
+    if (profilePicPreview) {
+      setFormData(prev => ({
+        ...prev,
+        profilePic: profilePicPreview
+      }));
+      setProfilePicPreview(null);
+      setProfilePicFile(null);
     }
-    // TODO: Implement profile update logic with axios POST
-    // await axios.post('YOUR_BACKEND_ENDPOINT', formData);
-    setShowSuccess(true);
-    setTimeout(() => setShowSuccess(false), 3000);
-  };
-
-  const handlePasswordUpdate = (e) => {
-    e.preventDefault();
-    // TODO: Implement password update logic
-    console.log('Password update:', passwordData);
   };
 
   return (
-    <Container className="py-5">
-      <Modal show={showSuccess} onHide={() => setShowSuccess(false)} centered backdrop="static" keyboard={false}>
-        <Modal.Body className="text-center">
-          <h5 className="mb-0">Profile updated successfully!</h5>
-        </Modal.Body>
-      </Modal>
-      <h1 className="text-center mb-5">My Profile</h1>
-      <Tab.Container defaultActiveKey="personal">
+    <Container className="">
+      <div className="profile-border-wrapper">
         <Row>
-          <Col lg={3} className="mb-4">
+          {/* Left: Read-only details card */}
+          <Col md={5}>
             <Card className="shadow-sm">
-              <Card.Body>
-                <div className="text-center mb-4">
-                  <img
-                    src={profilePicPreview || "https://via.placeholder.com/150"}
-                    alt="Profile"
-                    className="rounded-circle mb-3"
-                    style={{ width: '150px', height: '150px', objectFit: 'cover' }}
-                  />
-                  <div>
-                    <input
-                      type="file"
-                      accept="image/*"
-                      style={{ display: 'none' }}
-                      ref={fileInputRef}
-                      onChange={handleProfilePicChange}
-                    />
-                    <Button variant="outline-primary" size="sm" onClick={() => fileInputRef.current.click()}>
-                      Change Photo
-                    </Button>
-                  </div>
-                  <h5>{formData.firstName} {formData.lastName}</h5>
-                  <p className="text-muted">Customer</p>
-                </div>
-                <Nav variant="pills" className="flex-column">
-                  <Nav.Item>
-                    <Nav.Link eventKey="personal">Personal Information</Nav.Link>
-                  </Nav.Item>
-                  <Nav.Item>
-                    <Nav.Link eventKey="security">Security</Nav.Link>
-                  </Nav.Item>
-                  <Nav.Item>
-                    <Nav.Link eventKey="notifications">Notifications</Nav.Link>
-                  </Nav.Item>
-                </Nav>
+              <Card.Body className="text-center">
+                <img
+                  src={formData.profilePic}
+                  alt="Profile"
+                  className="rounded-circle mb-3"
+                  style={{ width: '120px', height: '120px', objectFit: 'cover' }}
+                />
+                <h5>{formData.firstName} {formData.lastName}</h5>
+                <p className="text-muted">{formData.email}</p>
+                <p><b>Contact:</b> {formData.phone}</p>
+                <p><b>Address:</b> {formData.address}</p>
               </Card.Body>
             </Card>
           </Col>
-          <Col lg={9}>
-            <Card className="shadow-sm">
+          {/* Right: Update form */}
+          <Col md={7}>
+            <Card className="shadow-sm profile-update-card">
               <Card.Body>
-                <Tab.Content>
-                  {/* Personal Information Tab */}
-                  <Tab.Pane eventKey="personal">
-                    <h4 className="mb-4">Personal Information</h4>
-                    <Form onSubmit={handleProfileUpdate}>
-                      <Row>
-                        <Col md={6}>
-                          <Form.Group className="mb-3">
-                            <Form.Label>First Name</Form.Label>
-                            <Form.Control
-                              type="text"
-                              name="firstName"
-                              value={formData.firstName}
-                              onChange={handleInputChange}
-                            />
-                          </Form.Group>
-                        </Col>
-                        <Col md={6}>
-                          <Form.Group className="mb-3">
-                            <Form.Label>Last Name</Form.Label>
-                            <Form.Control
-                              type="text"
-                              name="lastName"
-                              value={formData.lastName}
-                              onChange={handleInputChange}
-                            />
-                          </Form.Group>
-                        </Col>
-                      </Row>
-                      <Row>
-                        <Col md={6}>
-                          <Form.Group className="mb-3">
-                            <Form.Label>Email</Form.Label>
-                            <Form.Control
-                              type="email"
-                              name="email"
-                              value={formData.email}
-                              onChange={handleInputChange}
-                            />
-                          </Form.Group>
-                        </Col>
-                        <Col md={6}>
-                          <Form.Group className="mb-3">
-                            <Form.Label>Phone</Form.Label>
-                            <Form.Control
-                              type="tel"
-                              name="phone"
-                              value={formData.phone}
-                              onChange={handleInputChange}
-                              placeholder="07X XXX XXXX"
-                              pattern="0[0-9]{2} [0-9]{3} [0-9]{4}"
-                              title="Enter a valid Sri Lankan phone number (e.g., 077 123 4567)"
-                            />
-                          </Form.Group>
-                        </Col>
-                      </Row>
-                      <Form.Group className="mb-3">
-                        <Form.Label>Address</Form.Label>
-                        <Form.Control
-                          type="text"
-                          name="address"
-                          value={formData.address}
-                          onChange={handleInputChange}
-                          placeholder="Street Address"
-                        />
-                      </Form.Group>
-                      <Row>
-                        <Col md={6}>
-                          <Form.Group className="mb-3">
-                            <Form.Label>City</Form.Label>
-                            <Form.Control
-                              type="text"
-                              name="city"
-                              value={formData.city}
-                              onChange={handleInputChange}
-                              placeholder="City (e.g., Colombo)"
-                            />
-                          </Form.Group>
-                        </Col>
-                        <Col md={6}>
-                          <Form.Group className="mb-3">
-                            <Form.Label>District</Form.Label>
-                            <Form.Control
-                              type="text"
-                              name="district"
-                              value={formData.district || ''}
-                              onChange={handleInputChange}
-                              placeholder="District (e.g., Colombo)"
-                            />
-                          </Form.Group>
-                        </Col>
-                      </Row>
-                      <Button variant="primary" type="submit">
-                        Update Profile
+                <h4>Edit Profile</h4>
+                <Form onSubmit={handleProfileUpdate}>
+                <div className="text-center mb-4">
+                    <img
+                      src={profilePicPreview || formData.profilePic || 'https://via.placeholder.com/150'}
+                      alt="Profile"
+                      className="rounded-circle mb-3"
+                      style={{ width: '150px', height: '150px', objectFit: 'cover' }}
+                    />
+                    <div>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        style={{ display: 'none' }}
+                        ref={fileInputRef}
+                        onChange={handleProfilePicChange}
+                      />
+                      <Button variant="outline-primary" size="sm" onClick={() => fileInputRef.current.click()}>
+                        Change Photo
                       </Button>
-                    </Form>
-                  </Tab.Pane>
-                  {/* Security Tab */}
-                  <Tab.Pane eventKey="security">
-                    <h4 className="mb-4">Security Settings</h4>
-                    <Form onSubmit={handlePasswordUpdate}>
-                      <Form.Group className="mb-3">
-                        <Form.Label>Current Password</Form.Label>
-                        <Form.Control
-                          type="password"
-                          name="currentPassword"
-                          value={passwordData.currentPassword}
-                          onChange={handlePasswordChange}
-                        />
-                      </Form.Group>
-                      <Form.Group className="mb-3">
-                        <Form.Label>New Password</Form.Label>
-                        <Form.Control
-                          type="password"
-                          name="newPassword"
-                          value={passwordData.newPassword}
-                          onChange={handlePasswordChange}
-                        />
-                      </Form.Group>
-                      <Form.Group className="mb-3">
-                        <Form.Label>Confirm New Password</Form.Label>
-                        <Form.Control
-                          type="password"
-                          name="confirmPassword"
-                          value={passwordData.confirmPassword}
-                          onChange={handlePasswordChange}
-                        />
-                      </Form.Group>
-                      <Button variant="primary" type="submit">
-                        Update Password
-                      </Button>
-                    </Form>
-                  </Tab.Pane>
-                  {/* Notifications Tab */}
-                  <Tab.Pane eventKey="notifications">
-                    <h4 className="mb-4">Notification Preferences</h4>
-                    <Form>
-                      <Form.Group className="mb-3">
-                        <Form.Check
-                          type="switch"
-                          id="orderUpdates"
-                          name="orderUpdates"
-                          label="Order Updates"
-                          checked={notificationSettings.orderUpdates}
-                          onChange={handleNotificationChange}
-                        />
-                        <Form.Text className="text-muted">
-                          Receive notifications about your order status and shipping updates
-                        </Form.Text>
-                      </Form.Group>
-                      <Form.Group className="mb-3">
-                        <Form.Check
-                          type="switch"
-                          id="promotions"
-                          name="promotions"
-                          label="Promotions and Deals"
-                          checked={notificationSettings.promotions}
-                          onChange={handleNotificationChange}
-                        />
-                        <Form.Text className="text-muted">
-                          Get notified about special offers and discounts
-                        </Form.Text>
-                      </Form.Group>
-                      <Form.Group className="mb-3">
-                        <Form.Check
-                          type="switch"
-                          id="newsletter"
-                          name="newsletter"
-                          label="Newsletter"
-                          checked={notificationSettings.newsletter}
-                          onChange={handleNotificationChange}
-                        />
-                        <Form.Text className="text-muted">
-                          Receive our monthly newsletter with tech tips and industry news
-                        </Form.Text>
-                      </Form.Group>
-                      <Form.Group className="mb-3">
-                        <Form.Check
-                          type="switch"
-                          id="serviceAlerts"
-                          name="serviceAlerts"
-                          label="Service Alerts"
-                          checked={notificationSettings.serviceAlerts}
-                          onChange={handleNotificationChange}
-                        />
-                        <Form.Text className="text-muted">
-                          Get notified about service appointments and technician updates
-                        </Form.Text>
-                      </Form.Group>
-                      <Button variant="primary">
-                        Save Preferences
-                      </Button>
-                    </Form>
-                  </Tab.Pane>
-                </Tab.Content>
+                    </div>
+                    <h5>{formData.firstName} {formData.lastName}</h5>
+                    <p className="text-muted">Customer</p>
+                  </div>
+                  <Form.Group className="mb-3">
+                    <Form.Label>First Name</Form.Label>
+                    <Form.Control
+                      type="text"
+                      name="firstName"
+                      value={formData.firstName}
+                      onChange={handleInputChange}
+                    />
+                  </Form.Group>
+                  <Form.Group className="mb-3">
+                    <Form.Label>Last Name</Form.Label>
+                    <Form.Control
+                      type="text"
+                      name="lastName"
+                      value={formData.lastName}
+                      onChange={handleInputChange}
+                    />
+                  </Form.Group>
+                  <Form.Group className="mb-3">
+                    <Form.Label>Email</Form.Label>
+                    <Form.Control
+                      type="email"
+                      name="email"
+                      value={formData.email}
+                      onChange={handleInputChange}
+                    />
+                  </Form.Group>
+                  <Form.Group className="mb-3">
+                    <Form.Label>Contact Number</Form.Label>
+                    <Form.Control
+                      type="text"
+                      name="phone"
+                      value={formData.phone}
+                      onChange={handleInputChange}
+                    />
+                  </Form.Group>
+                  <Form.Group className="mb-3">
+                    <Form.Label>Address</Form.Label>
+                    <Form.Control
+                      type="text"
+                      name="address"
+                      value={formData.address}
+                      onChange={handleInputChange}
+                    />
+                  </Form.Group>
+                  <Button type="submit" variant="primary">Update</Button>
+                </Form>
               </Card.Body>
             </Card>
           </Col>
         </Row>
-      </Tab.Container>
+      </div>
+      <ToastContainer position="top-right" autoClose={3000} />
+      <style dangerouslySetInnerHTML={{__html: `
+        .profile-border-wrapper {
+          border: 1.5px solid #dee2e6;
+          border-radius: 18px;
+          padding: 2rem 1.5rem;
+          background: #fff;
+          box-shadow: 0 2px 12px rgba(0,0,0,0.03);
+          margin-bottom: 2rem;
+        }
+        .profile-update-card {
+          border: 1.5px solid #b6c2ce;
+          border-radius: 14px;
+          background: #f8f9fa;
+        }
+        .profile-upload-icon {
+          transition: color 0.2s;
+        }
+        .profile-upload-icon:hover {
+          color: #0056b3 !important;
+        }
+      `}} />
     </Container>
   );
 };
 
-export default CustomerProfile; 
+export default CustomerProfile;

@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
-import AdminNavbar from "../../components/AdminNavbar";
+import AdminNavbar from "../pageNavbars/AdminNavbar";
 import { Outlet, useNavigate } from "react-router-dom";
+import DashboardFooter from '../pagefooter/DashboardFooter';
 
 function AdminLayout() {
   const navigate = useNavigate();
@@ -15,6 +16,7 @@ function AdminLayout() {
     <>
       <AdminNavbar fixed="top" />
       <div style={{ marginTop: 80 }}><Outlet /></div>
+      <DashboardFooter />
     </>
   );
 }

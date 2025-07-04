@@ -2,24 +2,22 @@ import React, { useState } from "react";
 import { Navbar, Container, Nav, Button, Modal } from "react-bootstrap";
 import { Link, useNavigate } from "react-router-dom";
 import { Bell } from "react-bootstrap-icons";
-import profile3 from '../images/profile/pp3.jpg';
+import profile2 from '../../images/profile/pp2.png';
 
-function SellerNavbar({ fixed = "top" }) {
+function TechnicianNavbar({ fixed = "top" }) {
   const navigate = useNavigate();
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [expanded, setExpanded] = useState(false);
-
   const handleLogout = () => {
     sessionStorage.clear();
     navigate("/", { replace: true });
     window.location.reload();
   };
-
   return (
     <>
-      <Navbar bg="light" expand="lg" className="mb-4" fixed={fixed} expanded={expanded} onToggle={setExpanded}>
+      <Navbar bg="light" expand="lg" className="" fixed={fixed} expanded={expanded} onToggle={setExpanded} style={{ borderBottom: 'none' }}>
         <Container>
-          <Navbar.Brand as={Link} to="/seller/dashboard" onClick={() => setExpanded(false)}>
+          <Navbar.Brand as={Link} to="/technician/dashboard" onClick={() => setExpanded(false)}>
             <img
               src="/src/images/logo.PNG"
               alt="GearSphere Logo"
@@ -27,20 +25,21 @@ function SellerNavbar({ fixed = "top" }) {
             />
             <span className="fw-bold">GearSphere</span>
           </Navbar.Brand>
-          <Navbar.Toggle aria-controls="seller-navbar-nav" />
-          <Navbar.Collapse id="seller-navbar-nav">
+          <Navbar.Toggle aria-controls="technician-navbar-nav" />
+          <Navbar.Collapse id="technician-navbar-nav">
             <Nav className="me-auto">
-              <Nav.Link as={Link} to="/seller/dashboard" onClick={() => setExpanded(false)}>Dashboard</Nav.Link>
-              <Nav.Link as={Link} to="/seller/products" onClick={() => setExpanded(false)}>Products</Nav.Link>
-              <Nav.Link as={Link} to="/seller/inventory" onClick={() => setExpanded(false)}>Inventory</Nav.Link>
-              <Nav.Link as={Link} to="/seller/orders" onClick={() => setExpanded(false)}>Orders</Nav.Link>
-              <Nav.Link as={Link} to="/seller/analytics" onClick={() => setExpanded(false)}>Analytics</Nav.Link>
+              <Nav.Link as={Link} to="/technician/dashboard" onClick={() => setExpanded(false)}>Dashboard</Nav.Link>
+              <Nav.Link as={Link} to="/technician/services" onClick={() => setExpanded(false)}>Services</Nav.Link>
+              <Nav.Link as={Link} to="/technician/build-requests" onClick={() => setExpanded(false)}>Build Requests</Nav.Link>
+              <Nav.Link as={Link} to="/technician/appointments" onClick={() => setExpanded(false)}>Appointments</Nav.Link>
+              <Nav.Link as={Link} to="/technician/earnings" onClick={() => setExpanded(false)}>Earnings</Nav.Link>
+              <Nav.Link as={Link} to="/technician/reviews" onClick={() => setExpanded(false)}>Reviews</Nav.Link>
             </Nav>
             <div className="d-flex align-items-center">
               <Bell size={22} className="me-3 cursor-pointer text-secondary" style={{ verticalAlign: 'middle' }} />
-              <Nav.Link as={Link} to="/seller/profile" className="d-flex align-items-center p-0 ms-2">
+              <Nav.Link as={Link} to="/technician/profile" className="d-flex align-items-center p-0 ms-2">
                 <img
-                  src={profile3}
+                  src={profile2}
                   alt="Profile"
                   className="rounded-circle"
                   style={{ width: 40, height: 40, objectFit: 'cover', border: '2px solid #4361ee' }}
@@ -74,4 +73,4 @@ function SellerNavbar({ fixed = "top" }) {
   );
 }
 
-export default SellerNavbar; 
+export default TechnicianNavbar; 

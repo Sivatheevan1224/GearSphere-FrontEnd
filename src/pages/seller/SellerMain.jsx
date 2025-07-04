@@ -1,5 +1,5 @@
 import React from "react";
-import SellerNavbar from "../../components/SellerNavbar";
+import SellerNavbar from "../pageNavbars/SellerNavbar";
 import SellerDashboard from "./Dashboard";
 
 function SellerMain() {

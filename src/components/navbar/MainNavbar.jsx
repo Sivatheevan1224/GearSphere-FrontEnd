@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Navbar, Container, Nav, Button, Modal } from 'react-bootstrap';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
-import LoginModal from './LoginModal';
-import Signup from './Signup';
-import profile1 from '../images/profile/pp1.png';
+import { useAuth } from '../../context/AuthContext';
+import LoginModal from '../login/LoginModal';
+import Signup from '../signup/Signup';
+import profile1 from '../../images/profile/pp1.png';
 
 function MainNavbar() {
   const [expanded, setExpanded] = useState(false);

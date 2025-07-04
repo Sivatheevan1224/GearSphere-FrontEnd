@@ -153,3 +153,9 @@ footer a {
     display: none;
   }
 }
+
+/* Remove any margin or padding above the hero section in dashboards */
+section.bg-black {
+  margin-top: 0 !important;
+  padding-top: 0 !important;
+}
