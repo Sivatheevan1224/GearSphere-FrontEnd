@@ -567,28 +567,32 @@ section {
   height: 500px;
   object-fit: cover;
 }
-  
-  /* Custom: Make 'Activate' button green on hover in admin user management */
-  .btn-outline-secondary.activate-btn {
-    color: #198754;
-    border-color: #198754;
-  }
-  .btn-outline-secondary.activate-btn:hover, .btn-outline-secondary.activate-btn:focus {
-    background-color: #198754;
-    color: #fff;
-    border-color: #198754;
-  }
-  
+
+/* Custom: Make 'Activate' button green on hover in admin user management */
+.btn-outline-secondary.activate-btn {
+  color: #198754;
+  border-color: #198754;
+}
+
+.btn-outline-secondary.activate-btn:hover,
+.btn-outline-secondary.activate-btn:focus {
+  background-color: #198754;
+  color: #fff;
+  border-color: #198754;
+}
+
 .btn-darkblue {
   background-color: #1a237e !important;
   color: #fff !important;
   border: none;
 }
-.btn-darkblue:hover, .btn-darkblue:focus {
+
+.btn-darkblue:hover,
+.btn-darkblue:focus {
   background-color: #0d1331 !important;
   color: #fff !important;
 }
-  
+
 section.Toastify {
   min-height: 0 !important;
   height: auto !important;
@@ -596,9 +600,33 @@ section.Toastify {
   margin: 0 !important;
   display: block !important;
 }
-  
+
 .homepage-root {
   font-size: 1.18rem;
   font-weight: 500;
 }
-  
+
+@keyframes riseUp {
+  0% {
+    opacity: 0;
+    transform: translateX(-60px);
+    clip-path: inset(0 100% 0 0);
+  }
+
+  80% {
+    opacity: 1;
+    clip-path: inset(0 0 0 0);
+    transform: translateX(5px);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+.rise-up {
+  animation: riseUp 3.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+  will-change: opacity, transform, clip-path;
+}
