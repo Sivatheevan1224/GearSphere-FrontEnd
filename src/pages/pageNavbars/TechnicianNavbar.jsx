@@ -1,13 +1,26 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Navbar, Container, Nav, Button, Modal } from "react-bootstrap";
 import { Link, useNavigate } from "react-router-dom";
 import { Bell } from "react-bootstrap-icons";
-import profile2 from '../../images/profile/pp2.png';
 
 function TechnicianNavbar({ fixed = "top" }) {
   const navigate = useNavigate();
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [expanded, setExpanded] = useState(false);
+  const [profilePic, setProfilePic] = useState(sessionStorage.getItem('technician_profile_pic') || 'https://via.placeholder.com/150');
+
+  useEffect(() => {
+    const updateProfilePic = () => {
+      setProfilePic(sessionStorage.getItem('technician_profile_pic') || 'https://via.placeholder.com/150');
+    };
+    window.addEventListener('storage', updateProfilePic);
+    window.addEventListener('profilePicUpdated', updateProfilePic);
+    return () => {
+      window.removeEventListener('storage', updateProfilePic);
+      window.removeEventListener('profilePicUpdated', updateProfilePic);
+    };
+  }, []);
+
   const handleLogout = () => {
     sessionStorage.clear();
     navigate("/", { replace: true });
@@ -39,7 +52,7 @@ function TechnicianNavbar({ fixed = "top" }) {
               <Bell size={22} className="me-3 cursor-pointer text-secondary" style={{ verticalAlign: 'middle' }} />
               <Nav.Link as={Link} to="/technician/profile" className="d-flex align-items-center p-0 ms-2">
                 <img
-                  src={profile2}
+                  src={profilePic}
                   alt="Profile"
                   className="rounded-circle"
                   style={{ width: 40, height: 40, objectFit: 'cover', border: '2px solid #4361ee' }}
