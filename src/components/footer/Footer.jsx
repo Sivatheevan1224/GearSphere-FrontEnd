@@ -1,6 +1,6 @@
 import React from 'react';
 import { Container, Row, Col } from 'react-bootstrap';
-import logo from '../images/logo.PNG';
+import logo from '../../images/logo.PNG';
 
 function Footer() {
   const scrollToSection = (sectionId) => {

@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
-import TechnicianNavbar from "../../components/TechnicianNavbar";
+import TechnicianNavbar from "../pageNavbars/TechnicianNavbar";
 import { Outlet, useNavigate } from "react-router-dom";
+import DashboardFooter from '../pagefooter/DashboardFooter';
 
 function TechnicianLayout() {
   const navigate = useNavigate();
@@ -12,10 +13,13 @@ function TechnicianLayout() {
     }
   }, [navigate]);
   return (
-    <>
+    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
       <TechnicianNavbar fixed="top" />
-      <div style={{ marginTop: 80 }}><Outlet /></div>
-    </>
+      <div style={{ flex: '1 0 auto', marginTop: 80 }}>
+        <Outlet />
+      </div>
+      <DashboardFooter />
+    </div>
   );
 }
 

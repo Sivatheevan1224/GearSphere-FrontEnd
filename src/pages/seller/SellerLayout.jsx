@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
-import SellerNavbar from "../../components/SellerNavbar";
+import SellerNavbar from "../pageNavbars/SellerNavbar";
 import { Outlet, useNavigate } from "react-router-dom";
+import DashboardFooter from '../pagefooter/DashboardFooter';
 
 function SellerLayout() {
   const navigate = useNavigate();
@@ -15,6 +16,7 @@ function SellerLayout() {
     <>
       <SellerNavbar fixed="top" />
       <div style={{ marginTop: 80 }}><Outlet /></div>
+      <DashboardFooter />
     </>
   );
 }

@@ -2,9 +2,9 @@ import React, { useState, useContext } from "react";
 import { Navbar, Container, Nav, Button, Modal, Badge, ListGroup, Form } from "react-bootstrap";
 import { Link, useNavigate } from "react-router-dom";
 import { Bell, Cart } from "react-bootstrap-icons";
-import { CartContext } from "../pages/customer/CartContext";
-import Checkout from "../pages/customer/Checkout";
-import profile1 from '../images/profile/pp1.png';
+import { CartContext } from "../customer/CartContext";
+import Checkout from "../customer/Checkout";
+import profile1 from '../../images/profile/pp1.png';
 
 function CustomerNavbar({ fixed = "top" }) {
   const navigate = useNavigate();
@@ -37,7 +37,7 @@ function CustomerNavbar({ fixed = "top" }) {
 
   return (
     <>
-      <Navbar bg="light" expand="lg" className="mb-4" fixed={fixed} expanded={expanded} onToggle={setExpanded}>
+      <Navbar bg="light" expand="lg" className="" fixed={fixed} expanded={expanded} onToggle={setExpanded} style={{ borderBottom: 'none' }}>
         <Container>
           <Navbar.Brand as={Link} to="/customer/dashboard" onClick={() => setExpanded(false)}>
             <img

@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { Modal, Button, Form } from 'react-bootstrap';
-import pcGif from '../images/pc_video.gif';
+import pcGif from '../../images/pc_video.gif';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import './Signup.css'; // ✅ Importing styles with blur and buttons
+import '../signup/Signup.css'; // ✅ Importing styles with blur and buttons
 
 function TechnicianInstruction({ show, onHide, onAgree, imgSrc }) {
   const [isChecked, setIsChecked] = useState(false);

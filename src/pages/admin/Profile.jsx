@@ -1,8 +1,3 @@
-/**
- * TechnicianProfile.jsx - Minimal working example for profile photo update icon
- * - Left: read-only details card
- * - Right: update form with current photo, large blue upload icon (bi bi-upload), and hidden file input
- */
 import React, { useState, useRef } from 'react';
 import { Container, Row, Col, Card, Form, Button } from 'react-bootstrap';
 import { ToastContainer, toast } from 'react-toastify';
@@ -10,19 +5,18 @@ import 'react-toastify/dist/ReactToastify.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import DashboardFooter from '../pagefooter/DashboardFooter';
 
-
-const TechnicianProfile = () => {
+const AdminProfile = () => {
   const [formData, setFormData] = useState({
-    firstName: 'John',
-    lastName: 'Doe',
-    email: 'john.doe@example.com',
+    firstName: 'Admin',
+    lastName: 'User',
+    email: 'admin01@gmail.com',
     phone: '0764111147',
     address: 'Point Pedro | Jaffna',
     profilePic: 'https://via.placeholder.com/150'
   });
-  const fileInputRef = useRef();
   const [profilePicPreview, setProfilePicPreview] = useState(null);
   const [profilePicFile, setProfilePicFile] = useState(null);
+  const fileInputRef = useRef();
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -39,24 +33,8 @@ const TechnicianProfile = () => {
 
   const handleProfileUpdate = async (e) => {
     e.preventDefault();
-    const formDataToSend = new FormData();
-    formDataToSend.append('firstName', formData.firstName);
-    formDataToSend.append('lastName', formData.lastName);
-    formDataToSend.append('email', formData.email);
-    formDataToSend.append('phone', formData.phone);
-    formDataToSend.append('address', formData.address);
-    formDataToSend.append('city', formData.city);
-    formDataToSend.append('state', formData.state);
-    formDataToSend.append('zipCode', formData.zipCode);
-    formDataToSend.append('country', formData.country);
-    formDataToSend.append('district', formData.district);
-    if (profilePicFile) {
-      formDataToSend.append('profile_image', profilePicFile);
-    }
-    // TODO: Implement profile update logic with axios POST
-    // await axios.post('YOUR_BACKEND_ENDPOINT', formDataToSend);
+    // Simulate backend update
     toast.success('Profile updated successfully!');
-    // Update left card with new photo (and reset preview)
     if (profilePicPreview) {
       setFormData(prev => ({
         ...prev,
@@ -89,9 +67,12 @@ const TechnicianProfile = () => {
             </Card>
           </Col>
           {/* Right: Update form */}
-          <Col md={7} className="border rounded p-4 shadow-sm bg-white">
-            <h1 className="text-center mb-5">My Profile</h1>
-            <div className="text-center mb-4">
+          <Col md={7}>
+            <Card className="shadow-sm profile-update-card">
+              <Card.Body>
+                <h4>Edit Profile</h4>
+                <Form onSubmit={handleProfileUpdate}>
+                <div className="text-center mb-4">
                     <img
                       src={profilePicPreview || formData.profilePic || 'https://via.placeholder.com/150'}
                       alt="Profile"
@@ -111,11 +92,8 @@ const TechnicianProfile = () => {
                       </Button>
                     </div>
                     <h5>{formData.firstName} {formData.lastName}</h5>
-                    <p className="text-muted">Technician</p>
+                    <p className="text-muted">Admin</p>
                   </div>
-            <Form onSubmit={handleProfileUpdate}>
-              <Row>
-                <Col md={6}>
                   <Form.Group className="mb-3">
                     <Form.Label>First Name</Form.Label>
                     <Form.Control
@@ -125,8 +103,6 @@ const TechnicianProfile = () => {
                       onChange={handleInputChange}
                     />
                   </Form.Group>
-                </Col>
-                <Col md={6}>
                   <Form.Group className="mb-3">
                     <Form.Label>Last Name</Form.Label>
                     <Form.Control
@@ -136,10 +112,6 @@ const TechnicianProfile = () => {
                       onChange={handleInputChange}
                     />
                   </Form.Group>
-                </Col>
-              </Row>
-              <Row>
-                <Col md={6}>
                   <Form.Group className="mb-3">
                     <Form.Label>Email</Form.Label>
                     <Form.Control
@@ -149,65 +121,32 @@ const TechnicianProfile = () => {
                       onChange={handleInputChange}
                     />
                   </Form.Group>
-                </Col>
-                <Col md={6}>
                   <Form.Group className="mb-3">
-                    <Form.Label>Phone</Form.Label>
+                    <Form.Label>Contact Number</Form.Label>
                     <Form.Control
-                      type="tel"
+                      type="text"
                       name="phone"
                       value={formData.phone}
                       onChange={handleInputChange}
-                      placeholder="07X XXX XXXX"
-                      pattern="0[0-9]{2} [0-9]{3} [0-9]{4}"
-                      title="Enter a valid Sri Lankan phone number (e.g., 077 123 4567)"
                     />
                   </Form.Group>
-                </Col>
-              </Row>
-              <Form.Group className="mb-3">
-                <Form.Label>Address</Form.Label>
-                <Form.Control
-                  type="text"
-                  name="address"
-                  value={formData.address}
-                  onChange={handleInputChange}
-                  placeholder="Street Address"
-                />
-              </Form.Group>
-              <Row>
-                <Col md={6}>
                   <Form.Group className="mb-3">
-                    <Form.Label>City</Form.Label>
+                    <Form.Label>Address</Form.Label>
                     <Form.Control
                       type="text"
-                      name="city"
-                      value={formData.city}
+                      name="address"
+                      value={formData.address}
                       onChange={handleInputChange}
-                      placeholder="City (e.g., Colombo)"
                     />
                   </Form.Group>
-                </Col>
-                <Col md={6}>
-                  <Form.Group className="mb-3">
-                    <Form.Label>District</Form.Label>
-                    <Form.Control
-                      type="text"
-                      name="district"
-                      value={formData.district || ''}
-                      onChange={handleInputChange}
-                      placeholder="District (e.g., Colombo)"
-                    />
-                  </Form.Group>
-                </Col>
-              </Row>
-              <Button variant="primary" type="submit">
-                Update Profile
-              </Button>
-            </Form>
+                  <Button type="submit" variant="primary">Update</Button>
+                </Form>
+              </Card.Body>
+            </Card>
           </Col>
         </Row>
       </div>
+      <ToastContainer position="top-right" autoClose={3000} />
       <style dangerouslySetInnerHTML={{__html: `
         .profile-border-wrapper {
           border: 1.5px solid #dee2e6;
@@ -229,10 +168,9 @@ const TechnicianProfile = () => {
           color: #0056b3 !important;
         }
       `}} />
-      <ToastContainer position="top-right" autoClose={3000} />
       
     </Container>
   );
 };
 
-export default TechnicianProfile; 
+export default AdminProfile;

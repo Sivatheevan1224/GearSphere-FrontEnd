@@ -2,7 +2,7 @@ import { useState, useEffect } from "react"
 import { Modal, Button, Form, Alert, InputGroup } from "react-bootstrap"
 import { useNavigate } from "react-router-dom"
 import { BsEye, BsEyeSlash } from "react-icons/bs"
-import loginImage from "../images/login.jpg"
+import loginImage from "../../images/login.jpg"
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "./loginmodal.css"

@@ -3,9 +3,9 @@ import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-route
 import { AuthProvider } from './context/AuthContext';
 import { CartProvider } from './pages/customer/CartContext';
 import { OrdersProvider } from './pages/customer/OrdersContext';
-import MainNavbar from './components/MainNavbar';
+import MainNavbar from './components/navbar/MainNavbar';
 import HomePage from './pages/HomePage';
-import Signup from './components/Signup';
+import Signup from './components/signup/Signup';
 import TechnicianManagement from './pages/admin/TechnicianManagement';
 
 // Customer Pages
@@ -29,10 +29,10 @@ import Appointments from './pages/technician/Appointments';
 import CustomerManagement from './pages/admin/CustomerManagement';
 import OrderManagement from './pages/admin/OrderManagement';
 import Analytics from './pages/admin/Analytics';
-import SystemSettings from './pages/admin/SystemSettings';
 import AdminMain from './pages/admin/AdminMain';
 import SellerVerification from './pages/admin/SellerVerification';
 import Reports from './pages/admin/Reports';
+import AdminProfile from './pages/admin/Profile';
 
 // Seller Pages
 import ProductManagement from './pages/seller/ProductManagement';
@@ -91,7 +91,7 @@ function AppContent() {
           <Route path="/admin/order-management" element={<OrderManagement />} />
           <Route path="/admin/analytics" element={<Analytics />} />
           <Route path="/admin/reports" element={<Reports />} />
-          <Route path="/admin/system-settings" element={<SystemSettings />} />
+          <Route path="/admin/profile" element={<AdminProfile />} />
         </Route>
         {/* Seller Layout for all seller pages */}
         <Route element={<SellerLayout />}>

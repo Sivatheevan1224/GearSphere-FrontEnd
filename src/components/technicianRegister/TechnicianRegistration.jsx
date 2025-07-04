@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import provider_img from '../images/provider_img.jpg';
+import provider_img from '../../images/provider_img.jpg';
 import styles from './TechnicianRegistration.module.css';
 
 const specializationOptions = [

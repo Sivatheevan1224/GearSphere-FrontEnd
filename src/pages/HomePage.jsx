@@ -3,8 +3,8 @@ import { Container, Row, Col, Button, Card, Badge, Carousel, Navbar, Nav, Accord
 import { Cpu, People, Lightning, Shield, ChevronRight, Star, Grid3x3Gap, Tools, Award, Wrench, Headset, Search, Filter, SortDown, StarFill, Envelope, Telephone, GeoAlt, Clock, Person, Display, Motherboard, Memory, Hdd, Power, PcDisplay, Fan, PersonCheck, Cart, CameraVideo, Mic, Printer, BatteryFull, Wifi, Tablet, Camera, CameraReels, ChevronLeft } from "react-bootstrap-icons";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "../styles.css";
-import LoginModal from "../components/LoginModal";
-import Footer from "../components/Footer";
+import LoginModal from "../components/login/LoginModal";
+import Footer from "../components/footer/Footer";
 import pcGif from '../images/pc_video1.gif';
 import { Link, useNavigate } from "react-router-dom";
 import sivatheevanImg from '../images/sivatheevan.png';
