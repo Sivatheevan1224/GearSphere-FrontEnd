@@ -1,10 +1,10 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { Navbar, Container, Nav, Button, Modal, Badge, ListGroup, Form } from "react-bootstrap";
 import { Link, useNavigate } from "react-router-dom";
 import { Bell, Cart } from "react-bootstrap-icons";
 import { CartContext } from "../customer/CartContext";
 import Checkout from "../customer/Checkout";
-import profile1 from '../../images/profile/pp1.png';
+import axios from 'axios';
 
 function CustomerNavbar({ fixed = "top" }) {
   const navigate = useNavigate();
@@ -12,9 +12,54 @@ function CustomerNavbar({ fixed = "top" }) {
   const [showCartModal, setShowCartModal] = useState(false);
   const [showCheckoutModal, setShowCheckoutModal] = useState(false);
   const [expanded, setExpanded] = useState(false);
+  const [customerData, setCustomerData] = useState({
+    name: '',
+    profile_image: 'https://via.placeholder.com/150'
+  });
   const { cartItems, removeFromCart, updateQuantity, getCartTotal, getCartCount } = useContext(CartContext);
 
   const formatLKR = (amount) => 'LKR ' + Number(amount).toLocaleString('en-LK');
+
+  useEffect(() => {
+    const fetchCustomerData = async () => {
+      try {
+        const userId = sessionStorage.getItem('user_id');
+        if (!userId) return;
+
+        const token = localStorage.getItem('token');
+        const response = await axios.get(
+          `http://localhost/gearsphere_api/GearSphere-Backend/getCustomer.php?user_id=${userId}`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+        const data = response.data;
+
+        if (data) {
+          const profilePicUrl = data.profile_image
+            ? `http://localhost/gearsphere_api/GearSphere-Backend/profile_images/${data.profile_image}`
+            : 'https://via.placeholder.com/150';
+
+          setCustomerData({
+            name: data.name || '',
+            profile_image: profilePicUrl,
+          });
+        }
+      } catch (err) {
+        console.error('Failed to fetch customer data:', err);
+      }
+    };
+
+    fetchCustomerData();
+
+    // Listen for profile updates
+    const handleProfileUpdate = () => {
+      fetchCustomerData();
+    };
+
+    window.addEventListener('profilePicUpdated', handleProfileUpdate);
+    return () => window.removeEventListener('profilePicUpdated', handleProfileUpdate);
+  }, []);
 
   const handleLogout = () => {
     sessionStorage.clear();
@@ -76,7 +121,7 @@ function CustomerNavbar({ fixed = "top" }) {
               </div>
               <Nav.Link as={Link} to="/profile" className="d-flex align-items-center p-0 ms-2">
                 <img
-                  src={profile1}
+                  src={customerData.profile_image}
                   alt="Profile"
                   className="rounded-circle"
                   style={{ width: 40, height: 40, objectFit: 'cover', border: '2px solid #4361ee' }}

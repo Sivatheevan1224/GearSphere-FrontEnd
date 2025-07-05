@@ -1,22 +1,58 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Container, Row, Col, Card, Form, Button } from 'react-bootstrap';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import 'bootstrap-icons/font/bootstrap-icons.css';
-import DashboardFooter from '../pagefooter/DashboardFooter';
+import axios from 'axios';
 
 const AdminProfile = () => {
   const [formData, setFormData] = useState({
-    firstName: 'Admin',
-    lastName: 'User',
-    email: 'admin01@gmail.com',
-    phone: '0764111147',
-    address: 'Point Pedro | Jaffna',
-    profilePic: 'https://via.placeholder.com/150'
+    name: '',
+    contact_number: '',
+    address: '',
+    profilePic: 'https://via.placeholder.com/150',
   });
-  const [profilePicPreview, setProfilePicPreview] = useState(null);
   const [profilePicFile, setProfilePicFile] = useState(null);
+  const [profilePicPreview, setProfilePicPreview] = useState(null);
   const fileInputRef = useRef();
+
+  useEffect(() => {
+    const fetchAdminData = async () => {
+      try {
+        const userId = sessionStorage.getItem('user_id');
+        if (!userId) return toast.error('Session expired. Please log in.');
+
+        const token = localStorage.getItem('token');
+        const response = await axios.get(
+          `http://localhost/gearsphere_api/GearSphere-BackEnd/getAdmin.php?user_id=${userId}`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+        const data = response.data;
+
+        if (data) {
+          const profilePicUrl = data.profile_image
+            ? `http://localhost/gearsphere_api/GearSphere-BackEnd/profile_images/${data.profile_image}`
+            : 'https://via.placeholder.com/150';
+
+          setFormData({
+            name: data.name || '',
+            contact_number: data.contact_number || '',
+            address: data.address || '',
+            profilePic: profilePicUrl,
+          });
+
+          sessionStorage.setItem('admin_profile_pic', profilePicUrl);
+          window.dispatchEvent(new Event('profilePicUpdated'));
+        }
+      } catch (err) {
+        console.error('Fetch failed:', err);
+        toast.error('Failed to fetch profile');
+      }
+    };
+
+    fetchAdminData();
+  }, []);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -33,23 +69,62 @@ const AdminProfile = () => {
 
   const handleProfileUpdate = async (e) => {
     e.preventDefault();
-    // Simulate backend update
-    toast.success('Profile updated successfully!');
-    if (profilePicPreview) {
-      setFormData(prev => ({
-        ...prev,
-        profilePic: profilePicPreview
-      }));
-      setProfilePicPreview(null);
-      setProfilePicFile(null);
+
+    const userId = sessionStorage.getItem('user_id');
+    if (!userId) return toast.error('Session expired. Please log in.');
+
+    const payload = new FormData();
+    payload.append('user_id', userId);
+    payload.append('name', formData.name);
+    payload.append('contact_number', formData.contact_number);
+    payload.append('address', formData.address);
+
+    if (profilePicFile) {
+      payload.append('profile_image', profilePicFile);
+    }
+
+    try {
+      const token = localStorage.getItem('token');
+      const response = await axios.post(
+        'http://localhost/gearsphere_api/GearSphere-BackEnd/updateAdminProfile.php',
+        payload,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      if (response.data.success) {
+        toast.success('Profile updated successfully');
+
+        const profileRes = await axios.get(
+          `http://localhost/gearsphere_api/GearSphere-BackEnd/getAdmin.php?user_id=${userId}`,
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+        const data = profileRes.data;
+        const profilePicUrl = data.profile_image
+          ? `http://localhost/gearsphere_api/GearSphere-BackEnd/profile_images/${data.profile_image}`
+          : 'https://via.placeholder.com/150';
+
+        setFormData(prev => ({
+          ...prev,
+          profilePic: profilePicUrl,
+        }));
+        sessionStorage.setItem('admin_profile_pic', profilePicUrl);
+        window.dispatchEvent(new Event('profilePicUpdated'));
+        setProfilePicFile(null);
+        setProfilePicPreview(null);
+      } else {
+        toast.error('Update failed: ' + (response.data.message || 'Unknown error'));
+      }
+    } catch (err) {
+      console.error('Update error:', err);
+      toast.error('An error occurred during update');
     }
   };
 
   return (
-    <Container className="">
+    <Container>
+      <br /><br /><br /><br /><br />
       <div className="profile-border-wrapper">
         <Row>
-          {/* Left: Read-only details card */}
           <Col md={5}>
             <Card className="shadow-sm">
               <Card.Body className="text-center">
@@ -59,95 +134,80 @@ const AdminProfile = () => {
                   className="rounded-circle mb-3"
                   style={{ width: '120px', height: '120px', objectFit: 'cover' }}
                 />
-                <h5>{formData.firstName} {formData.lastName}</h5>
-                <p className="text-muted">{formData.email}</p>
-                <p><b>Contact:</b> {formData.phone}</p>
+                <h5>{formData.name}</h5>
+                <p><b>Contact:</b> {formData.contact_number}</p>
                 <p><b>Address:</b> {formData.address}</p>
               </Card.Body>
             </Card>
           </Col>
-          {/* Right: Update form */}
-          <Col md={7}>
-            <Card className="shadow-sm profile-update-card">
-              <Card.Body>
-                <h4>Edit Profile</h4>
-                <Form onSubmit={handleProfileUpdate}>
-                <div className="text-center mb-4">
-                    <img
-                      src={profilePicPreview || formData.profilePic || 'https://via.placeholder.com/150'}
-                      alt="Profile"
-                      className="rounded-circle mb-3"
-                      style={{ width: '150px', height: '150px', objectFit: 'cover' }}
-                    />
-                    <div>
-                      <input
-                        type="file"
-                        accept="image/*"
-                        style={{ display: 'none' }}
-                        ref={fileInputRef}
-                        onChange={handleProfilePicChange}
-                      />
-                      <Button variant="outline-primary" size="sm" onClick={() => fileInputRef.current.click()}>
-                        Change Photo
-                      </Button>
-                    </div>
-                    <h5>{formData.firstName} {formData.lastName}</h5>
-                    <p className="text-muted">Admin</p>
-                  </div>
-                  <Form.Group className="mb-3">
-                    <Form.Label>First Name</Form.Label>
-                    <Form.Control
-                      type="text"
-                      name="firstName"
-                      value={formData.firstName}
-                      onChange={handleInputChange}
-                    />
-                  </Form.Group>
-                  <Form.Group className="mb-3">
-                    <Form.Label>Last Name</Form.Label>
-                    <Form.Control
-                      type="text"
-                      name="lastName"
-                      value={formData.lastName}
-                      onChange={handleInputChange}
-                    />
-                  </Form.Group>
-                  <Form.Group className="mb-3">
-                    <Form.Label>Email</Form.Label>
-                    <Form.Control
-                      type="email"
-                      name="email"
-                      value={formData.email}
-                      onChange={handleInputChange}
-                    />
-                  </Form.Group>
-                  <Form.Group className="mb-3">
-                    <Form.Label>Contact Number</Form.Label>
-                    <Form.Control
-                      type="text"
-                      name="phone"
-                      value={formData.phone}
-                      onChange={handleInputChange}
-                    />
-                  </Form.Group>
-                  <Form.Group className="mb-3">
-                    <Form.Label>Address</Form.Label>
-                    <Form.Control
-                      type="text"
-                      name="address"
-                      value={formData.address}
-                      onChange={handleInputChange}
-                    />
-                  </Form.Group>
-                  <Button type="submit" variant="primary">Update</Button>
-                </Form>
-              </Card.Body>
-            </Card>
+
+          <Col md={7} className="border rounded p-4 shadow-sm bg-white">
+            <h1 className="text-center mb-5">My Profile</h1>
+            <div className="text-center mb-4">
+              <img
+                src={profilePicPreview || formData.profilePic}
+                alt="Profile"
+                className="rounded-circle mb-3"
+                style={{ width: '150px', height: '150px', objectFit: 'cover' }}
+              />
+              <div>
+                <input
+                  type="file"
+                  accept="image/*"
+                  style={{ display: 'none' }}
+                  ref={fileInputRef}
+                  onChange={handleProfilePicChange}
+                />
+                <Button variant="outline-primary" size="sm" onClick={() => fileInputRef.current.click()}>
+                  Change Photo
+                </Button>
+              </div>
+              <h5 className="mt-3">{formData.name}</h5>
+              <p className="text-muted">Admin</p>
+            </div>
+
+            <Form onSubmit={handleProfileUpdate}>
+              <Form.Group className="mb-3">
+                <Form.Label>Full Name</Form.Label>
+                <Form.Control
+                  type="text"
+                  name="name"
+                  value={formData.name}
+                  onChange={handleInputChange}
+                />
+              </Form.Group>
+
+              <Form.Group className="mb-3">
+                <Form.Label>Contact Number</Form.Label>
+                <Form.Control
+                  type="tel"
+                  name="contact_number"
+                  value={formData.contact_number}
+                  onChange={handleInputChange}
+                  placeholder="07X XXX XXXX"
+                  pattern="0[0-9]{9}"
+                  title="Enter a valid Sri Lankan phone number"
+                />
+              </Form.Group>
+
+              <Form.Group className="mb-3">
+                <Form.Label>Address</Form.Label>
+                <Form.Control
+                  type="text"
+                  name="address"
+                  value={formData.address}
+                  onChange={handleInputChange}
+                  placeholder="e.g., Point Pedro | Jaffna"
+                />
+              </Form.Group>
+
+              <Button variant="primary" type="submit">Update Profile</Button>
+            </Form>
           </Col>
         </Row>
       </div>
-      <ToastContainer position="top-right" autoClose={3000} />
-      <style dangerouslySetInnerHTML={{__html: `
+
+      <style dangerouslySetInnerHTML={{ __html: `
         .profile-border-wrapper {
           border: 1.5px solid #dee2e6;
           border-radius: 18px;
@@ -156,19 +216,8 @@ const AdminProfile = () => {
           box-shadow: 0 2px 12px rgba(0,0,0,0.03);
           margin-bottom: 2rem;
         }
-        .profile-update-card {
-          border: 1.5px solid #b6c2ce;
-          border-radius: 14px;
-          background: #f8f9fa;
-        }
-        .profile-upload-icon {
-          transition: color 0.2s;
-        }
-        .profile-upload-icon:hover {
-          color: #0056b3 !important;
-        }
-      `}} />
-      
+      ` }} />
+      <ToastContainer position="top-right" autoClose={3000} />
     </Container>
   );
 };

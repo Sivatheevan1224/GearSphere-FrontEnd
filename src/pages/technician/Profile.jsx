@@ -9,7 +9,7 @@ const TechnicianProfile = () => {
     name: '',
     contact_number: '',
     address: '',
-    chargePerDay: '',
+    charge_per_day: '',
     profilePic: 'https://via.placeholder.com/150',
   });
   const [profilePicFile, setProfilePicFile] = useState(null);
@@ -27,9 +27,7 @@ const TechnicianProfile = () => {
         const response = await axios.get(
           `http://localhost/gearsphere_api/GearSphere-Backend/getTechnicianDetail.php?user_id=${userId}`,
           {
-            headers: {
-              'Authorization': `Bearer ${token}`
-            }
+            headers: { Authorization: `Bearer ${token}` },
           }
         );
         const data = response.data;
@@ -38,13 +36,15 @@ const TechnicianProfile = () => {
           const profilePicUrl = data.profile_image
             ? `http://localhost/gearsphere_api/GearSphere-Backend/profile_images/${data.profile_image}`
             : 'https://via.placeholder.com/150';
+
           setFormData({
             name: data.name || '',
             contact_number: data.contact_number || '',
             address: data.address || '',
-            chargePerDay: data.charge_per_day || '',
+            charge_per_day: data.charge_per_day || '',
             profilePic: profilePicUrl,
           });
+
           sessionStorage.setItem('technician_profile_pic', profilePicUrl);
           window.dispatchEvent(new Event('profilePicUpdated'));
         }
@@ -75,11 +75,7 @@ const TechnicianProfile = () => {
 
     const userId = sessionStorage.getItem('user_id');
     const technicianId = sessionStorage.getItem('technician_id');
-
-    if (!userId || !technicianId) {
-      toast.error('Missing session data. Please log in again.');
-      return;
-    }
+    if (!userId || !technicianId) return toast.error('Session expired. Please log in.');
 
     const payload = new FormData();
     payload.append('user_id', userId);
@@ -87,7 +83,7 @@ const TechnicianProfile = () => {
     payload.append('name', formData.name);
     payload.append('contact_number', formData.contact_number);
     payload.append('address', formData.address);
-    payload.append('chargesPerDay', formData.chargePerDay);
+    payload.append('charge_per_day', formData.charge_per_day);
 
     if (profilePicFile) {
       payload.append('profile_image', profilePicFile);
@@ -98,45 +94,29 @@ const TechnicianProfile = () => {
       const response = await axios.post(
         'http://localhost/gearsphere_api/GearSphere-BackEnd/updateTechnicianProfile.php',
         payload,
-        {
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
-        }
+        { headers: { Authorization: `Bearer ${token}` } }
       );
+
       if (response.data.success) {
         toast.success('Profile updated successfully');
-        // Fetch the updated profile from backend
-        const userId = sessionStorage.getItem('user_id');
-        const token = localStorage.getItem('token');
-        try {
-          const profileRes = await axios.get(
-            `http://localhost/gearsphere_api/GearSphere-Backend/getTechnicianDetail.php?user_id=${userId}`,
-            { headers: { 'Authorization': `Bearer ${token}` } }
-          );
-          const data = profileRes.data;
-          const profilePicUrl = data.profile_image
-            ? `http://localhost/gearsphere_api/GearSphere-Backend/profile_images/${data.profile_image}`
-            : 'https://via.placeholder.com/150';
-          setFormData(prev => ({
-            ...prev,
-            profilePic: profilePicUrl,
-          }));
-          sessionStorage.setItem('technician_profile_pic', profilePicUrl);
-          window.dispatchEvent(new Event('profilePicUpdated'));
-        } catch (err) {
-          // fallback: just use preview if fetch fails
-          if (profilePicPreview) {
-            setFormData(prev => ({
-              ...prev,
-              profilePic: profilePicPreview,
-            }));
-            sessionStorage.setItem('technician_profile_pic', profilePicPreview);
-            window.dispatchEvent(new Event('profilePicUpdated'));
-          }
-        }
-        setProfilePicPreview(null);
+
+        const profileRes = await axios.get(
+          `http://localhost/gearsphere_api/GearSphere-Backend/getTechnicianDetail.php?user_id=${userId}`,
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+        const data = profileRes.data;
+        const profilePicUrl = data.profile_image
+          ? `http://localhost/gearsphere_api/GearSphere-Backend/profile_images/${data.profile_image}`
+          : 'https://via.placeholder.com/150';
+
+        setFormData(prev => ({
+          ...prev,
+          profilePic: profilePicUrl,
+        }));
+        sessionStorage.setItem('technician_profile_pic', profilePicUrl);
+        window.dispatchEvent(new Event('profilePicUpdated'));
         setProfilePicFile(null);
+        setProfilePicPreview(null);
       } else {
         toast.error('Update failed: ' + (response.data.message || 'Unknown error'));
       }
@@ -163,7 +143,7 @@ const TechnicianProfile = () => {
                 <h5>{formData.name}</h5>
                 <p><b>Contact:</b> {formData.contact_number}</p>
                 <p><b>Address:</b> {formData.address}</p>
-                <p><b>Charge/Day:</b> Rs. {formData.chargePerDay}</p>
+                <p><b>Charge/Day:</b> Rs. {formData.charge_per_day}</p>
               </Card.Body>
             </Card>
           </Col>
@@ -205,7 +185,7 @@ const TechnicianProfile = () => {
               </Form.Group>
 
               <Form.Group className="mb-3">
-                <Form.Label>contact_number</Form.Label>
+                <Form.Label>Contact Number</Form.Label>
                 <Form.Control
                   type="tel"
                   name="contact_number"
@@ -232,8 +212,8 @@ const TechnicianProfile = () => {
                 <Form.Label>Charge Per Day (Rs.)</Form.Label>
                 <Form.Control
                   type="number"
-                  name="chargePerDay"
-                  value={formData.chargePerDay}
+                  name="charge_per_day"
+                  value={formData.charge_per_day}
                   onChange={handleInputChange}
                   min="0"
                 />

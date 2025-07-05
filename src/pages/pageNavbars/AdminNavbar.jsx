@@ -1,13 +1,58 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Navbar, Container, Nav, Button, Modal } from "react-bootstrap";
 import { Link, useNavigate } from "react-router-dom";
 import { Bell } from "react-bootstrap-icons";
-import profile4 from '../../images/profile/pp4.jpg';
+import axios from 'axios';
 
 function AdminNavbar({ fixed = "top" }) {
   const navigate = useNavigate();
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [expanded, setExpanded] = useState(false);
+  const [adminData, setAdminData] = useState({
+    name: '',
+    profile_image: 'https://via.placeholder.com/150'
+  });
+
+  useEffect(() => {
+    const fetchAdminData = async () => {
+      try {
+        const userId = sessionStorage.getItem('user_id');
+        if (!userId) return;
+
+        const token = localStorage.getItem('token');
+        const response = await axios.get(
+          `http://localhost/gearsphere_api/GearSphere-BackEnd/getAdmin.php?user_id=${userId}`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+        const data = response.data;
+
+        if (data) {
+          const profilePicUrl = data.profile_image
+            ? `http://localhost/gearsphere_api/GearSphere-BackEnd/profile_images/${data.profile_image}`
+            : 'https://via.placeholder.com/150';
+
+          setAdminData({
+            name: data.name || '',
+            profile_image: profilePicUrl,
+          });
+        }
+      } catch (err) {
+        console.error('Failed to fetch admin data:', err);
+      }
+    };
+
+    fetchAdminData();
+
+    // Listen for profile updates
+    const handleProfileUpdate = () => {
+      fetchAdminData();
+    };
+
+    window.addEventListener('profilePicUpdated', handleProfileUpdate);
+    return () => window.removeEventListener('profilePicUpdated', handleProfileUpdate);
+  }, []);
 
   const handleLogout = () => {
     sessionStorage.clear();
@@ -41,7 +86,7 @@ function AdminNavbar({ fixed = "top" }) {
               <Bell size={22} className="me-3 cursor-pointer text-secondary" style={{ verticalAlign: 'middle' }} />
               <Nav.Link as={Link} to="/admin/profile" className="d-flex align-items-center p-0 ms-2">
                 <img
-                  src={profile4}
+                  src={adminData.profile_image}
                   alt="Profile"
                   className="rounded-circle"
                   style={{ width: 40, height: 40, objectFit: 'cover', border: '2px solid #4361ee' }}

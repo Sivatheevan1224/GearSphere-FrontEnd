@@ -1,13 +1,58 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Navbar, Container, Nav, Button, Modal } from "react-bootstrap";
 import { Link, useNavigate } from "react-router-dom";
 import { Bell } from "react-bootstrap-icons";
-import profile3 from '../../images/profile/pp3.jpg';
+import axios from 'axios';
 
 function SellerNavbar({ fixed = "top" }) {
   const navigate = useNavigate();
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [expanded, setExpanded] = useState(false);
+  const [sellerData, setSellerData] = useState({
+    name: '',
+    profile_image: 'https://via.placeholder.com/150'
+  });
+
+  useEffect(() => {
+    const fetchSellerData = async () => {
+      try {
+        const userId = sessionStorage.getItem('user_id');
+        if (!userId) return;
+
+        const token = localStorage.getItem('token');
+        const response = await axios.get(
+          `http://localhost/gearsphere_api/GearSphere-BackEnd/getSeller.php?user_id=${userId}`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+        const data = response.data;
+
+        if (data) {
+          const profilePicUrl = data.profile_image
+            ? `http://localhost/gearsphere_api/GearSphere-BackEnd/profile_images/${data.profile_image}`
+            : 'https://via.placeholder.com/150';
+
+          setSellerData({
+            name: data.name || '',
+            profile_image: profilePicUrl,
+          });
+        }
+      } catch (err) {
+        console.error('Failed to fetch seller data:', err);
+      }
+    };
+
+    fetchSellerData();
+
+    // Listen for profile updates
+    const handleProfileUpdate = () => {
+      fetchSellerData();
+    };
+
+    window.addEventListener('profilePicUpdated', handleProfileUpdate);
+    return () => window.removeEventListener('profilePicUpdated', handleProfileUpdate);
+  }, []);
 
   const handleLogout = () => {
     sessionStorage.clear();
@@ -40,7 +85,7 @@ function SellerNavbar({ fixed = "top" }) {
               <Bell size={22} className="me-3 cursor-pointer text-secondary" style={{ verticalAlign: 'middle' }} />
               <Nav.Link as={Link} to="/seller/profile" className="d-flex align-items-center p-0 ms-2">
                 <img
-                  src={profile3}
+                  src={sellerData.profile_image}
                   alt="Profile"
                   className="rounded-circle"
                   style={{ width: 40, height: 40, objectFit: 'cover', border: '2px solid #4361ee' }}
