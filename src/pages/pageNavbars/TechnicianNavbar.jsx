@@ -2,23 +2,56 @@ import React, { useState, useEffect } from "react";
 import { Navbar, Container, Nav, Button, Modal } from "react-bootstrap";
 import { Link, useNavigate } from "react-router-dom";
 import { Bell } from "react-bootstrap-icons";
+import axios from 'axios';
 
 function TechnicianNavbar({ fixed = "top" }) {
   const navigate = useNavigate();
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [expanded, setExpanded] = useState(false);
-  const [profilePic, setProfilePic] = useState(sessionStorage.getItem('technician_profile_pic') || 'https://via.placeholder.com/150');
+  const [technicianData, setTechnicianData] = useState({
+    name: '',
+    profile_image: 'https://via.placeholder.com/150'
+  });
 
   useEffect(() => {
-    const updateProfilePic = () => {
-      setProfilePic(sessionStorage.getItem('technician_profile_pic') || 'https://via.placeholder.com/150');
+    const fetchTechnicianData = async () => {
+      try {
+        const userId = sessionStorage.getItem('user_id');
+        if (!userId) return;
+
+        const token = localStorage.getItem('token');
+        const response = await axios.get(
+          `http://localhost/gearsphere_api/GearSphere-BackEnd/getTechnicianDetail.php?user_id=${userId}`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+        const data = response.data;
+
+        if (data) {
+          const profilePicUrl = data.profile_image
+            ? `http://localhost/gearsphere_api/GearSphere-BackEnd/profile_images/${data.profile_image}`
+            : 'https://via.placeholder.com/150';
+
+          setTechnicianData({
+            name: data.name || '',
+            profile_image: profilePicUrl,
+          });
+        }
+      } catch (err) {
+        console.error('Failed to fetch technician data:', err);
+      }
     };
-    window.addEventListener('storage', updateProfilePic);
-    window.addEventListener('profilePicUpdated', updateProfilePic);
-    return () => {
-      window.removeEventListener('storage', updateProfilePic);
-      window.removeEventListener('profilePicUpdated', updateProfilePic);
+
+    fetchTechnicianData();
+
+    // Listen for profile updates
+    const handleProfileUpdate = () => {
+      fetchTechnicianData();
     };
+
+    window.addEventListener('profilePicUpdated', handleProfileUpdate);
+    return () => window.removeEventListener('profilePicUpdated', handleProfileUpdate);
   }, []);
 
   const handleLogout = () => {
@@ -26,6 +59,7 @@ function TechnicianNavbar({ fixed = "top" }) {
     navigate("/", { replace: true });
     window.location.reload();
   };
+
   return (
     <>
       <Navbar bg="light" expand="lg" className="" fixed={fixed} expanded={expanded} onToggle={setExpanded} style={{ borderBottom: 'none' }}>
@@ -52,7 +86,7 @@ function TechnicianNavbar({ fixed = "top" }) {
               <Bell size={22} className="me-3 cursor-pointer text-secondary" style={{ verticalAlign: 'middle' }} />
               <Nav.Link as={Link} to="/technician/profile" className="d-flex align-items-center p-0 ms-2">
                 <img
-                  src={profilePic}
+                  src={technicianData.profile_image}
                   alt="Profile"
                   className="rounded-circle"
                   style={{ width: 40, height: 40, objectFit: 'cover', border: '2px solid #4361ee' }}

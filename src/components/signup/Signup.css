@@ -1,6 +1,6 @@
 .signup-container{
     width: 900px !important;
-    height: 650px !important;
+    height: 655px !important;
     border-radius: 16px;
     background-color: white;
     box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 25px;
@@ -294,4 +294,18 @@ font-size: 12px;
     width: 95vw;
     margin: 1rem;
   }
+}
+.login_signup {
+  font-size: 16px;       /* Space above the line */
+  text-align: center;
+  font-weight: 500;
+  color: #333;
+}
+
+.login_signup span {
+  color: #007bff;
+  cursor: pointer;
+  font-weight: bold;
+  margin-left: 5px;
+  text-decoration: underline;
 }
