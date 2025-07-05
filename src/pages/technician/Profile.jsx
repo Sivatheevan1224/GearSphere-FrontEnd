@@ -21,8 +21,8 @@ const TechnicianProfile = () => {
     const fetchTechnicianData = async () => {
       try {
         const userId = sessionStorage.getItem("user_id");
-        const technicianId = sessionStorage.getItem("technician_id");
-        if (!userId || !technicianId)
+        const technician_id = sessionStorage.getItem("technician_id");
+        if (!userId || !technician_id)
           return toast.error("Session expired. Please log in.");
 
         const token = localStorage.getItem("token");
@@ -79,13 +79,13 @@ const TechnicianProfile = () => {
     e.preventDefault();
 
     const userId = sessionStorage.getItem("user_id");
-    const technicianId = sessionStorage.getItem("technician_id");
-    if (!userId || !technicianId)
+    const technician_id = sessionStorage.getItem("technician_id");
+    if (!userId || !technician_id)
       return toast.error("Session expired. Please log in.");
 
     const payload = new FormData();
     payload.append("user_id", userId);
-    payload.append("technician_id", technicianId);
+    payload.append("technician_id", technician_id);
     payload.append("name", formData.name);
     payload.append("contact_number", formData.contact_number);
     payload.append("address", formData.address);
@@ -94,7 +94,6 @@ const TechnicianProfile = () => {
     if (profilePicFile) {
       payload.append("profile_image", profilePicFile);
     }
-
     try {
       const token = localStorage.getItem("token");
       const response = await axios.post(
@@ -157,7 +156,7 @@ const TechnicianProfile = () => {
                   }}
                 />
                 <h5>{formData.name}</h5>
-                <p> 
+                <p>
                   <b>Email:</b> {formData.email}
                 </p>
                 <p>
@@ -169,10 +168,10 @@ const TechnicianProfile = () => {
                 <p>
                   <b>Charge/Day:</b> Rs. {formData.charge_per_day}
                 </p>
-                <p> 
+                <p>
                   <b>specialization:</b> {formData.specialization}
                 </p>
-                <p> 
+                <p>
                   <b>Experience:</b> {formData.experience}
                 </p>
               </Card.Body>
