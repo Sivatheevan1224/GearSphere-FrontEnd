@@ -39,6 +39,7 @@ const AdminProfile = () => {
             name: data.name || '',
             contact_number: data.contact_number || '',
             address: data.address || '',
+            email: data.email || "",
             profilePic: profilePicUrl,
           });
 
@@ -135,6 +136,9 @@ const AdminProfile = () => {
                   style={{ width: '120px', height: '120px', objectFit: 'cover' }}
                 />
                 <h5>{formData.name}</h5>
+                <p> 
+                  <b>Email:</b> {formData.email}
+                </p>
                 <p><b>Contact:</b> {formData.contact_number}</p>
                 <p><b>Address:</b> {formData.address}</p>
               </Card.Body>

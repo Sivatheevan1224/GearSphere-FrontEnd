@@ -145,9 +145,9 @@ function TechnicianManagement() {
                   </td>
                   <td>{tech.joinDate}</td>
                   <td>
-                    <Button
-                      variant="outline-primary"
-                      size="sm"
+                    <Button 
+                      variant="outline-primary" 
+                      size="sm" 
                       className="me-2"
                       onClick={() => {
                         setSelectedUser(tech);
@@ -172,10 +172,10 @@ function TechnicianManagement() {
         <Modal.Body>
           {selectedUser && (
             <>
-              <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                <img
+                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                  <img
                   src={`http://localhost/gearsphere_api/GearSphere-BackEnd/profile_images/${selectedUser.profile_image}`}
-                  alt="Profile"
+                    alt="Profile"
                   style={{
                     width: '100px',
                     height: '100px',
