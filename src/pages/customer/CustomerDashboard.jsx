@@ -134,28 +134,7 @@ function CustomerDashboard() {
 
         <Row className="mt-4">
           <Col>
-            <Card>
-              <Card.Body>
-                <h4>Quick Actions</h4>
-                <div className="d-flex gap-3 mt-3">
-                  <Link to="/orders" className="btn btn-primary">
-                    <Cart className="me-2" /> My Orders
-                  </Link>
-                  <Link to="/marketplace" className="btn btn-success">
-                    <Heart className="me-2" /> Wishlist
-                  </Link>
-                  <Link to="/profile" className="btn btn-info text-white">
-                    <Person className="me-2" /> My Profile
-                  </Link>
-                  <Link to="/support" className="btn btn-warning">
-                    <Headset className="me-2" /> Support
-                  </Link>
-                  <Link to="/reviews" className="btn btn-secondary">
-                    <Star className="me-2" /> My Reviews
-                  </Link>
-                </div>
-              </Card.Body>
-            </Card>
+            
           </Col>
         </Row>
       </Container>

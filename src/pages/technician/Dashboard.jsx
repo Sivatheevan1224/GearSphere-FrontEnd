@@ -150,25 +150,7 @@ function TechnicianDashboard() {
 
         <Row className="mt-4">
           <Col>
-            <Card>
-              <Card.Body>
-                <h4>Quick Actions</h4>
-                <div className="d-flex gap-3 mt-3">
-                  <Link to="/technician/appointments" className="btn btn-primary">
-                    <Calendar className="me-2" /> View Appointments
-                  </Link>
-                  <Link to="/technician/services" className="btn btn-success">
-                    <Tools className="me-2" /> Manage Services
-                  </Link>
-                  <Link to="/technician/earnings" className="btn btn-info text-white">
-                    <CurrencyDollar className="me-2" /> View Earnings
-                  </Link>
-                  <Link to="/technician/reviews" className="btn btn-warning">
-                    <Star className="me-2" /> Check Reviews
-                  </Link>
-                </div>
-              </Card.Body>
-            </Card>
+            
           </Col>
         </Row>
       </Container>

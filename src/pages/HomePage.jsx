@@ -319,6 +319,29 @@ function HomePage() {
             <style>{ourValuesCardHoverStyle}</style>
             <style>{serviceCardBorderStyle}</style>
             <style>{productSliderStyle}</style>
+            <style>{`
+              .customer-review-card {
+                transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+                border: 1.5px solid #f0f0f0;
+              }
+              .customer-review-card:hover {
+                transform: translateY(-6px) scale(1.03);
+                box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+                border-color: #0d6efd;
+                z-index: 2;
+              }
+              .team-member-card {
+                transition: transform 0.2s, box-shadow 0.2s;
+                background: #fff;
+                border-radius: 2rem;
+                box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+              }
+              .team-member-card:hover {
+                transform: translateY(-6px) scale(1.04);
+                box-shadow: 0 8px 32px rgba(67,97,238,0.18), 0 1.5px 8px rgba(0,0,0,0.10);
+                z-index: 2;
+              }
+            `}</style>
             {/* Hero Section */}
             <section id="hero" className="py-5 bg-black text-white position-relative overflow-hidden mb-5" style={{borderTopLeftRadius: 0, borderTopRightRadius: 0, borderBottomLeftRadius: '2rem', borderBottomRightRadius: '2rem', boxShadow: '0 4px 32px rgba(0,0,0,0.10)', marginTop: 0, marginBottom: '2rem'}}>
               {/* Blurred background image */}
@@ -462,7 +485,7 @@ function HomePage() {
                     <h2 className="text-center mb-4">Meet Our Team</h2>
                     <Row>
                       <Col md={3} className="mb-4">
-                        <div className="text-center">
+                        <div className="text-center team-member-card p-3 h-100">
                           <img 
                             src={sivatheevanImg}
                             alt="Team Member" 
@@ -475,7 +498,7 @@ function HomePage() {
                         </div>
                       </Col>
                       <Col md={3} className="mb-4">
-                        <div className="text-center">
+                        <div className="text-center team-member-card p-3 h-100">
                           <img 
                             src={makinthanImg} 
                             alt="Team Member" 
@@ -488,7 +511,7 @@ function HomePage() {
                         </div>
                       </Col>
                       <Col md={3} className="mb-4">
-                        <div className="text-center">
+                        <div className="text-center team-member-card p-3 h-100">
                           <img 
                             src={pugazhImg}
                             alt="Team Member" 
@@ -501,7 +524,7 @@ function HomePage() {
                         </div>
                       </Col>
                       <Col md={3} className="mb-4">
-                        <div className="text-center">
+                        <div className="text-center team-member-card p-3 h-100">
                           <img 
                             src={kowsiImg}
                             alt="Team Member" 
@@ -783,7 +806,7 @@ function HomePage() {
                 <Row>
                   {reviews.map(review => (
                     <Col key={review.id} md={6} className="mb-4">
-                      <Card className="h-100 shadow-sm">
+                      <Card className="h-100 shadow-sm customer-review-card">
                         <Card.Body>
                           <div className="d-flex justify-content-between align-items-start mb-3">
                             <div className="d-flex">
