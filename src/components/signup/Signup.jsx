@@ -290,24 +290,25 @@ const Signup = ({ signupClose, loginClose, setShowTechnicianInstruction }) => {
                     />
                     <PhoneIcon className="icon" />
                   </div>
-                  {/* City and District */}
+                  {/* City field (in its own row) */}
+                  <div className="input_box">
+                    <input
+                      type="text"
+                      placeholder="City"
+                      value={city}
+                      onChange={(e) => setCity(e.target.value)}
+                      required
+                    />
+                    <LocationOnIcon className="icon" />
+                  </div>
+
+                  {/* District and Postal Code in one row */}
                   <div className="input_row">
-                    <div className="input_box small_input">
-                      <input
-                        type="text"
-                        placeholder="City"
-                        value={city}
-                        onChange={(e) => setCity(e.target.value)}
-                        required
-                      />
-                      <LocationOnIcon className="icon" />
-                    </div>
                     <div className="input_box small_input">
                       <select
                         value={district}
                         onChange={(e) => setDistrict(e.target.value)}
                         required
-                        placeholder='district'
                       >
                         <option value="">District</option>
                         {districts.map((district, index) => (
@@ -318,6 +319,7 @@ const Signup = ({ signupClose, loginClose, setShowTechnicianInstruction }) => {
                       </select>
                       <LocationOnIcon className="icon" />
                     </div>
+
                     <div className="input_box small_input">
                       <input
                         type="text"
@@ -329,6 +331,7 @@ const Signup = ({ signupClose, loginClose, setShowTechnicianInstruction }) => {
                       <LocationOnIcon className="icon" />
                     </div>
                   </div>
+
                   {/* Password and Confirm Password */}
                   <div className="input_box">
                     <input
