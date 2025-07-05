@@ -10,7 +10,7 @@ function AdminNavbar({ fixed = "top" }) {
   const [expanded, setExpanded] = useState(false);
   const [adminData, setAdminData] = useState({
     name: '',
-    profile_image: 'https://via.placeholder.com/150'
+    profile_image: '/src/images/profile/default_admin.png'
   });
 
   useEffect(() => {
@@ -31,7 +31,7 @@ function AdminNavbar({ fixed = "top" }) {
         if (data) {
           const profilePicUrl = data.profile_image
             ? `http://localhost/gearsphere_api/GearSphere-BackEnd/profile_images/${data.profile_image}`
-            : 'https://via.placeholder.com/150';
+            : '/src/images/profile/default_admin.png';
 
           setAdminData({
             name: data.name || '',
@@ -78,7 +78,6 @@ function AdminNavbar({ fixed = "top" }) {
               <Nav.Link as={Link} to="/admin" onClick={() => setExpanded(false)}>Dashboard</Nav.Link>
               <Nav.Link as={Link} to="/admin/customers" onClick={() => setExpanded(false)}>Customer Management</Nav.Link>
               <Nav.Link as={Link} to="/admin/technicians" onClick={() => setExpanded(false)}>Technician Management</Nav.Link>
-              <Nav.Link as={Link} to="/admin/orders" onClick={() => setExpanded(false)}>Order Management</Nav.Link>
               <Nav.Link as={Link} to="/admin/analytics" onClick={() => setExpanded(false)}>Analytics</Nav.Link>
               <Nav.Link as={Link} to="/admin/reports" onClick={() => setExpanded(false)}>Reports</Nav.Link>
             </Nav>

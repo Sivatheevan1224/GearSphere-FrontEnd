@@ -154,28 +154,7 @@ function AdminDashboard() {
 
         <Row className="mt-4">
           <Col>
-            <Card>
-              <Card.Body>
-                <h4>Quick Actions</h4>
-                <div className="d-flex gap-3 mt-3">
-                  <a href="/admin/users" className="btn btn-primary">
-                    <People className="me-2" /> Manage Users
-                  </a>
-                  <a href="/admin/orders" className="btn btn-success">
-                    <ClipboardCheck className="me-2" /> View Orders
-                  </a>
-                  <a href="/admin/technician-verification" className="btn btn-warning">
-                    <Award className="me-2" /> Technician Verification
-                  </a>
-                  <a href="/admin/analytics" className="btn btn-info text-white">
-                    <GraphUp className="me-2" /> Analytics
-                  </a>
-                  <a href="/admin/settings" className="btn btn-secondary">
-                    <Tools className="me-2" /> Settings
-                  </a>
-                </div>
-              </Card.Body>
-            </Card>
+           
           </Col>
         </Row>
       </Container>

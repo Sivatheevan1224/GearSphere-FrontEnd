@@ -43,6 +43,7 @@ function MainNavbar() {
   }, []);
 
   const scrollToSection = (sectionId) => {
+    setExpanded(false);
     setTimeout(() => {
       const element = document.getElementById(sectionId);
       if (element) {
@@ -55,8 +56,7 @@ function MainNavbar() {
           behavior: 'smooth'
         });
       }
-      setExpanded(false);
-    }, 100);
+    }, 350);
   };
 
   const handleLogout = () => {

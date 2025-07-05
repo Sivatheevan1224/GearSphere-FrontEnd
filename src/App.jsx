@@ -29,7 +29,6 @@ import Appointments from './pages/technician/Appointments';
 
 // Admin Pages
 import CustomerManagement from './pages/admin/CustomerManagement';
-import OrderManagement from './pages/admin/OrderManagement';
 import Analytics from './pages/admin/Analytics';
 import AdminMain from './pages/admin/AdminMain';
 import SellerVerification from './pages/admin/SellerVerification';
@@ -89,8 +88,6 @@ function AppContent() {
           <Route path="/admin/customers" element={<CustomerManagement />} />
           <Route path="/admin/technicians" element={<TechnicianManagement />} />
           <Route path="/admin/seller-verification" element={<SellerVerification />} />
-          <Route path="/admin/orders" element={<OrderManagement />} />
-          <Route path="/admin/order-management" element={<OrderManagement />} />
           <Route path="/admin/analytics" element={<Analytics />} />
           <Route path="/admin/reports" element={<Reports />} />
           <Route path="/admin/profile" element={<AdminProfile />} />
