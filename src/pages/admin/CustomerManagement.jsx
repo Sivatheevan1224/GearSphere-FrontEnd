@@ -22,7 +22,7 @@ function CustomerManagement() {
       const response = await axios.get('http://localhost/gearsphere_api/GearSphere-BackEnd/getAllCustomers.php?action=getAll');
       const transformedData = response.data.map((customer) => ({
         id: customer.user_id,
-        profile: customer.profile_image,
+        profile_image: customer.profile_image,
         name: customer.name,
         email: customer.email,
         phone: customer.contact_number,
@@ -113,42 +113,52 @@ function CustomerManagement() {
               </tr>
             </thead>
             <tbody>
-              {customers.map(customer => (
-                <tr key={customer.id}>
-                  <td>
-                    <img
-                      src={`http://localhost/gearsphere_api/GearSphere-BackEnd/profile_images/${customer.profile}`}
-                      alt="Profile"
-                      style={{ width: '40px', height: '40px', objectFit: 'cover', borderRadius: '50%' }}
-                    />
-                  </td>
-                  <td>{customer.name}</td>
-                  <td>{customer.email}</td>
-                  <td>{customer.phone}</td>
-                  <td>{customer.district}</td>
-                  <td>
-                    <Badge bg={customer.status === 'active' ? 'success' : 'danger'}>
-                      {customer.status}
-                    </Badge>
-                  </td>
-                  <td>{customer.joinDate}</td>
-                  <td>
-                    <Button 
-                      variant="outline-primary" 
-                      size="sm" 
-                      className="me-2"
-                      onClick={() => {
-                        setSelectedUser(customer);
-                        setIsDisabled(customer.status === 'disabled');
-                        setShowDetailsModal(true);
-                      }}
-                    >
-                      View Details
-                    </Button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
+  {customers.map(customer => (
+    <tr key={customer.id}>
+      <td>
+        <img
+          src={`http://localhost/gearsphere_api/GearSphere-BackEnd/profile_images/${customer.profile_image}`}
+          alt="Profile"
+          style={{
+            width: '40px',
+            height: '40px',
+            objectFit: 'cover',
+            borderRadius: '50%',
+          }}
+          onError={(e) => {
+            e.target.onerror = null;
+            e.target.src = '/default-profile.png'; // optional fallback
+          }}
+        />
+      </td>
+      <td>{customer.name}</td>
+      <td>{customer.email}</td>
+      <td>{customer.phone}</td>
+      <td>{customer.district}</td>
+      <td>
+        <Badge bg={customer.status === 'active' ? 'success' : 'danger'}>
+          {customer.status}
+        </Badge>
+      </td>
+      <td>{customer.joinDate}</td>
+      <td>
+        <Button
+          variant="outline-primary"
+          size="sm"
+          className="me-2"
+          onClick={() => {
+            setSelectedUser(customer);
+            setIsDisabled(customer.status === 'disabled');
+            setShowDetailsModal(true);
+          }}
+        >
+          View Details
+        </Button>
+      </td>
+    </tr>
+  ))}
+</tbody>
+
           </Table>
         </Card.Body>
       </Card>
@@ -158,30 +168,35 @@ function CustomerManagement() {
           <Modal.Title>Customer Details</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          {selectedUser && (
-            <>
-              <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                <img
-                  src={`http://localhost/gearsphere_api/GearSphere-BackEnd/profile_images/${selectedUser.profile}`}
-                  alt="Profile"
-                  style={{
-                    width: '100px',
-                    height: '100px',
-                    objectFit: 'cover',
-                    borderRadius: '50%',
-                    marginBottom: '15px'
-                  }}
-                />
-              </div>
-              <h5 className="mb-3">{selectedUser.name}</h5>
-              <p><strong>Email:</strong> {selectedUser.email}</p>
-              <p><strong>Phone:</strong> {selectedUser.phone}</p>
-              {selectedUser.district && <p><strong>District:</strong> {selectedUser.district}</p>}
-              {selectedUser.status && <p><strong>Status:</strong> {selectedUser.status}</p>}
-              {selectedUser.joinDate && <p><strong>Join Date:</strong> {selectedUser.joinDate}</p>}
-            </>
-          )}
-        </Modal.Body>
+  {selectedUser && (
+    <>
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+        <img
+          src={`http://localhost/gearsphere_api/GearSphere-BackEnd/profile_images/${selectedUser.profile_image}`}
+          alt="Profile"
+          style={{
+            width: '100px',
+            height: '100px',
+            objectFit: 'cover',
+            borderRadius: '50%',
+            marginBottom: '15px',
+          }}
+          onError={(e) => {
+            e.target.onerror = null;
+            e.target.src = '/default-profile.png';
+          }}
+        />
+      </div>
+      <h5 className="mb-3 text-center">{selectedUser.name}</h5>
+      <p><strong>Email:</strong> {selectedUser.email}</p>
+      <p><strong>Phone:</strong> {selectedUser.phone}</p>
+      {selectedUser.district && <p><strong>District:</strong> {selectedUser.district}</p>}
+      {selectedUser.status && <p><strong>Status:</strong> {selectedUser.status}</p>}
+      {selectedUser.joinDate && <p><strong>Join Date:</strong> {selectedUser.joinDate}</p>}
+    </>
+  )}
+</Modal.Body>
+
         <Modal.Footer>
           <Button
             style={{ backgroundColor: isDisabled ? '#e53935' : '#00008B', border: 'none', minWidth: 170 }}
