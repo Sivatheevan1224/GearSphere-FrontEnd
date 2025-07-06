@@ -1,5 +1,19 @@
-import React, { useState } from 'react';
-import { Container, Row, Col, Card, Table, Button, Form, Modal, Badge, Pagination } from 'react-bootstrap';
+import React, { useState, useEffect } from 'react';
+import { Container, Row, Col, Card, Table, Button, Form, Modal, Badge, Pagination, Spinner, Alert } from 'react-bootstrap';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import ImagePreview from '../../components/ImagePreview';
+import CPUForm from './productForms/CPUForm';
+import CPUCoolerForm from './productForms/CPUCoolerForm';
+import MotherboardForm from './productForms/MotherboardForm';
+import MemoryForm from './productForms/MemoryForm';
+import StorageForm from './productForms/StorageForm';
+import VideoCardForm from './productForms/VideoCardForm';
+import PowerSupplyForm from './productForms/PowerSupplyForm';
+import OperatingSystemForm from './productForms/OperatingSystemForm';
+import MonitorForm from './productForms/MonitorForm';
+import PCCaseForm from './productForms/PCCaseForm';
+import GeneralProductForm from './productForms/GeneralProductForm';
 
 const ProductManagement = () => {
   const [currentPage, setCurrentPage] = useState(1);
@@ -12,184 +26,27 @@ const ProductManagement = () => {
   const [categoryFilter, setCategoryFilter] = useState('all');
   const [statusFilter, setStatusFilter] = useState('all');
   const productsPerPage = 10;
-  const [products, setProducts] = useState([
-    {
-      id: 'P001',
-      name: 'RTX 4070',
-      category: 'Graphics Card',
-      price: 599.99,
-      stock: 15,
-      status: 'Active',
-      rating: 4.5,
-      sales: 45,
-      image: 'https://example.com/rtx4070.jpg'
-    },
-    {
-      id: 'P002',
-      name: '32GB DDR5 RAM',
-      category: 'Memory',
-      price: 199.99,
-      stock: 30,
-      status: 'Active',
-      rating: 4.8,
-      sales: 60,
-      image: 'https://example.com/ddr5.jpg'
-    },
-    {
-      id: 'P003',
-      name: '1TB NVMe SSD',
-      category: 'Storage',
-      price: 129.99,
-      stock: 25,
-      status: 'Out of Stock',
-      rating: 4.6,
-      sales: 35,
-      image: 'https://example.com/nvme.jpg'
-    },
-    {
-      id: 'P004',
-      name: 'Intel Core i9-13900K',
-      category: 'CPU',
-      price: 549.99,
-      stock: 12,
-      status: 'Active',
-      rating: 4.9,
-      sales: 28,
-      image: 'https://example.com/i9-13900k.jpg'
-    },
-    {
-      id: 'P005',
-      name: 'AMD Ryzen 9 7950X',
-      category: 'CPU',
-      price: 699.99,
-      stock: 8,
-      status: 'Active',
-      rating: 4.7,
-      sales: 22,
-      image: 'https://example.com/ryzen-7950x.jpg'
-    },
-    {
-      id: 'P006',
-      name: 'ASUS ROG STRIX B760-F',
-      category: 'Motherboard',
-      price: 249.99,
-      stock: 20,
-      status: 'Active',
-      rating: 4.4,
-      sales: 18,
-      image: 'https://example.com/asus-b760f.jpg'
-    },
-    {
-      id: 'P007',
-      name: 'Corsair RM850x',
-      category: 'Power Supply',
-      price: 149.99,
-      stock: 35,
-      status: 'Active',
-      rating: 4.6,
-      sales: 42,
-      image: 'https://example.com/corsair-rm850x.jpg'
-    },
-    {
-      id: 'P008',
-      name: 'NZXT H510 Flow',
-      category: 'Case',
-      price: 89.99,
-      stock: 40,
-      status: 'Active',
-      rating: 4.3,
-      sales: 55,
-      image: 'https://example.com/nzxt-h510.jpg'
-    },
-    {
-      id: 'P009',
-      name: 'Noctua NH-D15',
-      category: 'Cooling',
-      price: 99.99,
-      stock: 25,
-      status: 'Active',
-      rating: 4.8,
-      sales: 38,
-      image: 'https://example.com/noctua-nhd15.jpg'
-    },
-    {
-      id: 'P010',
-      name: 'Samsung Odyssey G7',
-      category: 'Monitor',
-      price: 599.99,
-      stock: 15,
-      status: 'Active',
-      rating: 4.5,
-      sales: 25,
-      image: 'https://example.com/samsung-g7.jpg'
-    },
-    {
-      id: 'P011',
-      name: 'Logitech G Pro X',
-      category: 'Keyboard',
-      price: 149.99,
-      stock: 30,
-      status: 'Active',
-      rating: 4.4,
-      sales: 48,
-      image: 'https://example.com/logitech-gprox.jpg'
-    },
-    {
-      id: 'P012',
-      name: 'Razer DeathAdder V3',
-      category: 'Mouse',
-      price: 79.99,
-      stock: 50,
-      status: 'Active',
-      rating: 4.6,
-      sales: 65,
-      image: 'https://example.com/razer-deathadder.jpg'
-    },
-    {
-      id: 'P013',
-      name: 'SteelSeries Arctis Pro',
-      category: 'Headset',
-      price: 179.99,
-      stock: 22,
-      status: 'Active',
-      rating: 4.7,
-      sales: 33,
-      image: 'https://example.com/steelseries-arctis.jpg'
-    },
-    {
-      id: 'P014',
-      name: 'Blue Yeti X',
-      category: 'Microphone',
-      price: 169.99,
-      stock: 18,
-      status: 'Active',
-      rating: 4.5,
-      sales: 27,
-      image: 'https://example.com/blue-yeti-x.jpg'
-    },
-    {
-      id: 'P015',
-      name: 'Logitech C920',
-      category: 'Webcam',
-      price: 69.99,
-      stock: 45,
-      status: 'Active',
-      rating: 4.3,
-      sales: 58,
-      image: 'https://example.com/logitech-c920.jpg'
-    }
-  ]);
+  
+  // API state
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [submitting, setSubmitting] = useState(false);
+
+  // Backend API URL
+  const API_BASE_URL = 'http://localhost/gearsphere_api/GearSphere-Backend';
 
   const categories = [
-    'Graphics Card',
     'CPU',
+    'CPU Cooler',
+    'Motherboard',
     'Memory',
     'Storage',
-    'Motherboard',
+    'Video Card',
     'Power Supply',
-    'Case',
-    'Cooling',
+    'Operating System',
     'Monitor',
+    'PC Case',
     'Keyboard',
     'Mouse',
     'Headset',
@@ -203,16 +60,75 @@ const ProductManagement = () => {
     'Fans'
   ];
 
-  const [addProduct, setAddProduct] = useState({
-    name: '',
-    category: categories[0],
-    price: '',
-    stock: '',
-    status: 'Active',
-    image: '',
-    rating: 0,
-    sales: 0
-  });
+  const [selectedType, setSelectedType] = useState('');
+  const [addProductFormKey, setAddProductFormKey] = useState(0);
+
+  const productTypeOptions = [
+    { key: 'general', label: 'General Product', component: GeneralProductForm },
+    { key: 'cpu', label: 'CPU', component: CPUForm },
+    { key: 'cpu_cooler', label: 'CPU Cooler', component: CPUCoolerForm },
+    { key: 'motherboard', label: 'Motherboard', component: MotherboardForm },
+    { key: 'memory', label: 'Memory', component: MemoryForm },
+    { key: 'storage', label: 'Storage', component: StorageForm },
+    { key: 'video_card', label: 'Video Card', component: VideoCardForm },
+    { key: 'power_supply', label: 'Power Supply', component: PowerSupplyForm },
+    { key: 'operating_system', label: 'Operating System', component: OperatingSystemForm },
+    { key: 'monitor', label: 'Monitor', component: MonitorForm },
+    { key: 'pc_case', label: 'PC Case', component: PCCaseForm },
+  ];
+
+  // Fetch products from backend API
+  const fetchProducts = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      
+      console.log('Fetching products from:', `${API_BASE_URL}/getProducts.php`);
+      
+      const response = await fetch(`${API_BASE_URL}/getProducts.php`);
+      console.log('Response status:', response.status);
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      console.log('API response:', data);
+      
+      if (data.success) {
+        // Transform the data to match frontend expectations
+        const transformedProducts = data.products.map(product => ({
+          id: product.product_id,
+          name: product.name,
+          category: product.category,
+          price: parseFloat(product.price),
+          stock: product.stock || 0, // Use actual stock from database
+          status: 'Active', // You might want to add status field to your database
+          rating: 0, // You might want to add rating field to your database
+          sales: 0, // You might want to add sales field to your database
+          image: product.image_url ? `${API_BASE_URL}/${product.image_url}` : '/placeholder.svg?height=200&width=200',
+          description: product.description,
+          manufacturer: product.manufacturer,
+          specific_details: product.specific_details
+        }));
+        
+        console.log('Transformed products:', transformedProducts);
+        setProducts(transformedProducts);
+      } else {
+        setError(data.message || 'Failed to fetch products');
+      }
+    } catch (err) {
+      console.error('Error fetching products:', err);
+      setError('Error connecting to server: ' + err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Load products on component mount
+  useEffect(() => {
+    fetchProducts();
+  }, []);
 
   const getStatusBadge = (status) => {
     const variants = {
@@ -224,20 +140,217 @@ const ProductManagement = () => {
     return <Badge bg={variants[status] || 'secondary'}>{status}</Badge>;
   };
 
-  const handleAddProduct = (productData) => {
-    // TODO: Implement API call to add product
-    console.log('Adding product:', productData);
-    setShowAddModal(false);
+  const handleAddProduct = async (productData) => {
+    try {
+      setSubmitting(true);
+      
+      console.log('Adding product:', productData);
+      
+      // Create FormData for file upload
+      const formData = new FormData();
+      
+      // Add all form data
+      Object.keys(productData).forEach(key => {
+        if (key === 'image_file' && productData[key]) {
+          formData.append('image_file', productData[key]);
+          console.log('Added image file:', productData[key].name);
+        } else if (key !== 'image_file') {
+          formData.append(key, productData[key]);
+        }
+      });
+      
+      // Add product type based on category
+      const categoryToType = {
+        'CPU': 'cpu',
+        'CPU Cooler': 'cpu_cooler',
+        'Motherboard': 'motherboard',
+        'Memory': 'memory',
+        'Storage': 'storage',
+        'Video Card': 'video_card',
+        'Power Supply': 'power_supply',
+        'Operating System': 'operating_system',
+        'Monitor': 'monitor',
+        'PC Case': 'pc_case'
+      };
+      
+      const productType = categoryToType[productData.category] || 'general';
+      formData.append('type', productType);
+      
+      console.log('Sending request to:', `${API_BASE_URL}/addProduct.php`);
+      
+      const response = await fetch(`${API_BASE_URL}/addProduct.php`, {
+        method: 'POST',
+        body: formData
+      });
+      
+      console.log('Add product response status:', response.status);
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      const result = await response.json();
+      console.log('Add product result:', result);
+      
+      if (result.success) {
+        // Refresh products list
+        await fetchProducts();
+        setShowAddModal(false);
+        setSelectedType('');
+        setAddProductFormKey(prev => prev + 1);
+        
+        // Show success toast
+        toast.success(`Product "${productData.name}" added successfully!`, {
+          autoClose: 2000,
+          hideProgressBar: false
+        });
+      } else {
+        toast.error(result.message || 'Failed to add product', {
+          autoClose: 2000,
+          hideProgressBar: false
+        });
+      }
+    } catch (err) {
+      console.error('Error adding product:', err);
+      toast.error('Error adding product: ' + err.message, {
+        autoClose: 2000,
+        hideProgressBar: false
+      });
+    } finally {
+      setSubmitting(false);
+    }
   };
 
-  const handleEditProduct = (productData) => {
-    setProducts(prev => prev.map(p => p.id === productData.id ? productData : p));
-    setShowEditModal(false);
+  const handleEditProduct = async (productData) => {
+    try {
+      setSubmitting(true);
+      
+      console.log('Editing product data:', productData);
+      console.log('Edit product ID:', productData.id);
+      console.log('Edit product name:', productData.name);
+      console.log('Edit product category:', productData.category);
+      
+      // Create FormData for file upload
+      const formData = new FormData();
+      
+      // Add product ID
+      formData.append('product_id', productData.id);
+      
+      // Add all form data
+      Object.keys(productData).forEach(key => {
+        if (key === 'image_file' && productData[key]) {
+          formData.append('image_file', productData[key]);
+        } else if (key !== 'image_file' && key !== 'id') {
+          formData.append(key, productData[key]);
+        }
+      });
+      
+      // Add product type based on category
+      const categoryToType = {
+        'CPU': 'cpu',
+        'CPU Cooler': 'cpu_cooler',
+        'Motherboard': 'motherboard',
+        'Memory': 'memory',
+        'Storage': 'storage',
+        'Video Card': 'video_card',
+        'Power Supply': 'power_supply',
+        'Operating System': 'operating_system',
+        'Monitor': 'monitor',
+        'PC Case': 'pc_case'
+      };
+      
+      const productType = categoryToType[productData.category] || 'general';
+      formData.append('type', productType);
+      
+      // Debug: Log what's being sent
+      console.log('FormData contents:');
+      for (let [key, value] of formData.entries()) {
+        console.log(`${key}: ${value}`);
+      }
+      
+      console.log('Sending edit request to:', `${API_BASE_URL}/updateProduct.php`);
+      
+      const response = await fetch(`${API_BASE_URL}/updateProduct.php`, {
+        method: 'POST',
+        body: formData
+      });
+      
+      console.log('Edit response status:', response.status);
+      
+      const result = await response.json();
+      console.log('Edit result:', result);
+      
+      // Debug: Check if result has success property
+      console.log('Result success property:', result.success);
+      console.log('Result message:', result.message);
+      
+      if (result.success) {
+        console.log('✅ Edit successful - showing success toast');
+        // Refresh products list
+        await fetchProducts();
+        setShowEditModal(false);
+        
+        // Show success toast
+        toast.success(`Product "${productData.name}" updated successfully!`, {
+          autoClose: 2000,
+          hideProgressBar: false
+        });
+      } else {
+        console.log('❌ Edit failed - showing error toast');
+        toast.error(result.message || 'Failed to update product', {
+          autoClose: 2000,
+          hideProgressBar: false
+        });
+      }
+    } catch (err) {
+      console.error('Error updating product:', err);
+      toast.error('Error updating product: ' + err.message, {
+        autoClose: 2000,
+        hideProgressBar: false
+      });
+    } finally {
+      setSubmitting(false);
+    }
   };
 
-  const handleDeleteProduct = (productId) => {
-    setProducts(prev => prev.filter(p => p.id !== productId));
-    setShowDeleteModal(false);
+  const handleDeleteProduct = async (productId) => {
+    try {
+      setSubmitting(true);
+      
+      const response = await fetch(`${API_BASE_URL}/deleteProduct.php`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ product_id: productId })
+      });
+      
+      const result = await response.json();
+      
+      if (result.success) {
+        // Refresh products list
+        await fetchProducts();
+        setShowDeleteModal(false);
+        
+        // Show success toast
+        toast.success('Product deleted successfully!', {
+          autoClose: 2000,
+          hideProgressBar: false
+        });
+      } else {
+        toast.error(result.message || 'Failed to delete product', {
+          autoClose: 2000,
+          hideProgressBar: false
+        });
+      }
+    } catch (err) {
+      toast.error('Error deleting product: ' + err.message, {
+        autoClose: 2000,
+        hideProgressBar: false
+      });
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const filteredProducts = products.filter(product =>
@@ -254,48 +367,96 @@ const ProductManagement = () => {
 
   const formatLKR = (amount) => 'LKR ' + Number(amount).toLocaleString('en-LK');
 
+  if (loading) {
+    return (
+      <Container className="py-5">
+        <div className="text-center">
+          <Spinner animation="border" role="status">
+            <span className="visually-hidden">Loading...</span>
+          </Spinner>
+          <p className="mt-3">Loading products...</p>
+        </div>
+      </Container>
+    );
+  }
+
   return (
     <Container className="py-5">
       <h1 className="text-center mb-5">Product Management</h1>
+      
+     
+      
+      {error && (
+        <Alert variant="danger" dismissible onClose={() => setError(null)}>
+          {error}
+        </Alert>
+      )}
 
-      <Card className="shadow-sm">
+      {/* Filters and Search */}
+      <Card className="mb-4">
         <Card.Body>
-          <div className="d-flex justify-content-between align-items-center mb-4">
-            <div className="d-flex gap-2">
-              <Form.Select
-                style={{ width: '200px' }}
-                value={categoryFilter}
-                onChange={(e) => setCategoryFilter(e.target.value)}
+          <Row>
+            <Col md={4}>
+              <Form.Group>
+                <Form.Label>Search Products</Form.Label>
+                <Form.Control
+                  type="text"
+                  placeholder="Search by name or category..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                />
+              </Form.Group>
+            </Col>
+            <Col md={3}>
+              <Form.Group>
+                <Form.Label>Category Filter</Form.Label>
+                <Form.Select
+                  value={categoryFilter}
+                  onChange={(e) => setCategoryFilter(e.target.value)}
+                >
+                  <option value="all">All Categories</option>
+                  {categories.map(category => (
+                    <option key={category} value={category}>{category}</option>
+                  ))}
+                </Form.Select>
+              </Form.Group>
+            </Col>
+            <Col md={3}>
+              <Form.Group>
+                <Form.Label>Status Filter</Form.Label>
+                <Form.Select
+                  value={statusFilter}
+                  onChange={(e) => setStatusFilter(e.target.value)}
+                >
+                  <option value="all">All Status</option>
+                  <option value="Active">Active</option>
+                  <option value="Inactive">Inactive</option>
+                  <option value="Out of Stock">Out of Stock</option>
+                  <option value="Discontinued">Discontinued</option>
+                </Form.Select>
+              </Form.Group>
+            </Col>
+            <Col md={2} className="d-flex align-items-end">
+              <Button 
+                variant="primary" 
+                onClick={() => setShowAddModal(true)}
+                disabled={submitting}
               >
-                <option value="all">All Categories</option>
-                {categories.map(category => (
-                  <option key={category} value={category}>{category}</option>
-                ))}
-              </Form.Select>
-              <Form.Select
-                style={{ width: '200px' }}
-                value={statusFilter}
-                onChange={(e) => setStatusFilter(e.target.value)}
-              >
-                <option value="all">All Status</option>
-                <option value="Active">Active</option>
-                <option value="Inactive">Inactive</option>
-                <option value="Out of Stock">Out of Stock</option>
-                <option value="Discontinued">Discontinued</option>
-              </Form.Select>
-            </div>
-            <div className="d-flex gap-2">
-              <Form.Control
-                type="search"
-                placeholder="Search products..."
-                style={{ width: '300px' }}
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
-              <Button variant="primary" onClick={() => setShowAddModal(true)}>
-                Add Product
+                {submitting ? <Spinner animation="border" size="sm" /> : 'Add Product'}
               </Button>
-            </div>
+            </Col>
+          </Row>
+        </Card.Body>
+      </Card>
+
+      {/* Products Table */}
+      <Card>
+        <Card.Body>
+          <div className="d-flex justify-content-between align-items-center mb-3">
+            <h5 className="mb-0">Products ({filteredProducts.length})</h5>
+            <small className="text-muted">
+              Showing {indexOfFirstProduct + 1}-{Math.min(indexOfLastProduct, filteredProducts.length)} of {filteredProducts.length} products
+            </small>
           </div>
 
           <Table responsive hover>
@@ -316,11 +477,13 @@ const ProductManagement = () => {
                 <tr key={product.id}>
                   <td>
                     <div className="d-flex align-items-center">
-                      <img
+                      <ImagePreview
                         src={product.image}
                         alt={product.name}
-                        style={{ width: '40px', height: '40px', marginRight: '10px' }}
-                        className="rounded"
+                        width="40px"
+                        height="40px"
+                        className="rounded me-2"
+                        fallbackSrc="/placeholder.svg?height=40&width=40"
                       />
                       <div>
                         <div>{product.name}</div>
@@ -340,52 +503,71 @@ const ProductManagement = () => {
                   </td>
                   <td>{product.sales}</td>
                   <td>
-                    <Button
-                      variant="outline-primary"
-                      size="sm"
-                      className="me-2"
-                      onClick={() => {
-                        setSelectedProduct(product);
-                        setEditProduct({ ...product });
-                        setShowEditModal(true);
-                      }}
-                    >
-                      Edit
-                    </Button>
-                    <Button
-                      variant="outline-danger"
-                      size="sm"
-                      onClick={() => {
-                        setSelectedProduct(product);
-                        setShowDeleteModal(true);
-                      }}
-                    >
-                      Delete
-                    </Button>
+                    <div className="d-flex gap-1">
+                      <Button
+                        variant="outline-primary"
+                        size="sm"
+                        onClick={() => {
+                          setEditProduct(product);
+                          setShowEditModal(true);
+                        }}
+                        disabled={submitting}
+                      >
+                        Edit
+                      </Button>
+                      <Button
+                        variant="outline-danger"
+                        size="sm"
+                        onClick={() => {
+                          setSelectedProduct(product);
+                          setShowDeleteModal(true);
+                        }}
+                        disabled={submitting}
+                      >
+                        Delete
+                      </Button>
+                    </div>
                   </td>
                 </tr>
               ))}
             </tbody>
           </Table>
 
+          {currentProducts.length === 0 && (
+            <div className="text-center py-4">
+              <p className="text-muted">No products found matching your criteria.</p>
+            </div>
+          )}
+
+          {/* Pagination */}
           {totalPages > 1 && (
             <div className="d-flex justify-content-center mt-4">
               <Pagination>
-                <Pagination.Prev
-                  onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                <Pagination.First 
+                  onClick={() => setCurrentPage(1)}
                   disabled={currentPage === 1}
                 />
-                {[...Array(totalPages)].map((_, index) => (
+                <Pagination.Prev 
+                  onClick={() => setCurrentPage(currentPage - 1)}
+                  disabled={currentPage === 1}
+                />
+                
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
                   <Pagination.Item
-                    key={index + 1}
-                    active={index + 1 === currentPage}
-                    onClick={() => setCurrentPage(index + 1)}
+                    key={page}
+                    active={page === currentPage}
+                    onClick={() => setCurrentPage(page)}
                   >
-                    {index + 1}
+                    {page}
                   </Pagination.Item>
                 ))}
-                <Pagination.Next
-                  onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                
+                <Pagination.Next 
+                  onClick={() => setCurrentPage(currentPage + 1)}
+                  disabled={currentPage === totalPages}
+                />
+                <Pagination.Last 
+                  onClick={() => setCurrentPage(totalPages)}
                   disabled={currentPage === totalPages}
                 />
               </Pagination>
@@ -400,109 +582,47 @@ const ProductManagement = () => {
           <Modal.Title>Add New Product</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <Form>
-            <Row>
-              <Col md={6}>
-                <Form.Group className="mb-3">
-                  <Form.Label>Product Name</Form.Label>
-                  <Form.Control
-                    type="text"
-                    name="name"
-                    value={addProduct.name}
-                    onChange={e => setAddProduct({ ...addProduct, name: e.target.value })}
-                    placeholder="Enter product name"
+          {!selectedType ? (
+            <div>
+              <h6 className="mb-3">Select Product Type:</h6>
+              <Row>
+                {productTypeOptions.map(option => (
+                  <Col key={option.key} md={6} className="mb-2">
+                    <Button
+                      variant="outline-primary"
+                      className="w-100"
+                      onClick={() => setSelectedType(option.key)}
+                    >
+                      {option.label}
+                    </Button>
+                  </Col>
+                ))}
+              </Row>
+            </div>
+          ) : (
+            <div>
+              <div className="d-flex justify-content-between align-items-center mb-3">
+                <h6>Add {productTypeOptions.find(opt => opt.key === selectedType)?.label}</h6>
+                <Button
+                  variant="outline-secondary"
+                  size="sm"
+                  onClick={() => setSelectedType('')}
+                >
+                  Change Type
+                </Button>
+              </div>
+              {selectedType && (() => {
+                const FormComponent = productTypeOptions.find(opt => opt.key === selectedType)?.component;
+                return FormComponent ? (
+                  <FormComponent
+                    key={addProductFormKey + selectedType}
+                    onSubmit={handleAddProduct}
                   />
-                </Form.Group>
-              </Col>
-              <Col md={6}>
-                <Form.Group className="mb-3">
-                  <Form.Label>Category</Form.Label>
-                  <Form.Select
-                    name="category"
-                    value={addProduct.category}
-                    onChange={e => setAddProduct({ ...addProduct, category: e.target.value })}
-                  >
-                    {categories.map(category => (
-                      <option key={category} value={category}>{category}</option>
-                    ))}
-                  </Form.Select>
-                </Form.Group>
-              </Col>
-            </Row>
-            <Row>
-              <Col md={6}>
-                <Form.Group className="mb-3">
-                  <Form.Label>Price (LKR)</Form.Label>
-                  <Form.Control
-                    type="number"
-                    name="price"
-                    value={addProduct.price}
-                    onChange={e => setAddProduct({ ...addProduct, price: Number(e.target.value) })}
-                    placeholder="Enter price"
-                  />
-                </Form.Group>
-              </Col>
-              <Col md={6}>
-                <Form.Group className="mb-3">
-                  <Form.Label>Stock</Form.Label>
-                  <Form.Control
-                    type="number"
-                    name="stock"
-                    value={addProduct.stock}
-                    onChange={e => setAddProduct({ ...addProduct, stock: Number(e.target.value) })}
-                    placeholder="Enter stock quantity"
-                  />
-                </Form.Group>
-              </Col>
-            </Row>
-            <Form.Group className="mb-3">
-              <Form.Label>Status</Form.Label>
-              <Form.Select
-                name="status"
-                value={addProduct.status}
-                onChange={e => setAddProduct({ ...addProduct, status: e.target.value })}
-              >
-                <option value="Active">Active</option>
-                <option value="Inactive">Inactive</option>
-                <option value="Out of Stock">Out of Stock</option>
-                <option value="Discontinued">Discontinued</option>
-              </Form.Select>
-            </Form.Group>
-            {/* You can add more fields here as needed */}
-          </Form>
+                ) : null;
+              })()}
+            </div>
+          )}
         </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={() => setShowAddModal(false)}>
-            Cancel
-          </Button>
-          <Button variant="primary" onClick={() => {
-            setProducts(prev => [
-              ...prev,
-              {
-                ...addProduct,
-                id: 'P' + (Math.floor(Math.random() * 100000)),
-                price: Number(addProduct.price),
-                stock: Number(addProduct.stock),
-                image: '',
-                rating: 0,
-                sales: 0
-              }
-            ]);
-            setAddProduct({
-              name: '',
-              category: categories[0],
-              price: '',
-              stock: '',
-              status: 'Active',
-              image: '',
-              rating: 0,
-              sales: 0
-            });
-            setShowAddModal(false);
-          }}>
-            Add Product
-          </Button>
-        </Modal.Footer>
       </Modal>
 
       {/* Edit Product Modal */}
@@ -564,26 +684,38 @@ const ProductManagement = () => {
                   </Form.Group>
                 </Col>
               </Row>
-              <Form.Group className="mb-3">
-                <Form.Label>Status</Form.Label>
-                <Form.Select
-                  name="status"
-                  value={editProduct.status}
-                  onChange={e => setEditProduct({ ...editProduct, status: e.target.value })}
-                >
-                  <option value="Active">Active</option>
-                  <option value="Inactive">Inactive</option>
-                  <option value="Out of Stock">Out of Stock</option>
-                  <option value="Discontinued">Discontinued</option>
-                </Form.Select>
-              </Form.Group>
-              <Form.Group className="mb-3">
-                <Form.Label>Product Image</Form.Label>
-                <Form.Control type="file" accept="image/*" />
-              </Form.Group>
+              <Row>
+                <Col md={6}>
+                  <Form.Group className="mb-3">
+                    <Form.Label>Manufacturer</Form.Label>
+                    <Form.Control
+                      type="text"
+                      name="manufacturer"
+                      value={editProduct.manufacturer || ''}
+                      onChange={e => setEditProduct({ ...editProduct, manufacturer: e.target.value })}
+                    />
+                  </Form.Group>
+                </Col>
+                <Col md={6}>
+                  <Form.Group className="mb-3">
+                    <Form.Label>Product Image</Form.Label>
+                    <Form.Control 
+                      type="file" 
+                      accept="image/*"
+                      onChange={e => setEditProduct({ ...editProduct, image_file: e.target.files[0] })}
+                    />
+                  </Form.Group>
+                </Col>
+              </Row>
               <Form.Group className="mb-3">
                 <Form.Label>Description</Form.Label>
-                <Form.Control as="textarea" rows={3} />
+                <Form.Control 
+                  as="textarea" 
+                  rows={3}
+                  name="description"
+                  value={editProduct.description || ''}
+                  onChange={e => setEditProduct({ ...editProduct, description: e.target.value })}
+                />
               </Form.Group>
             </Form>
           )}
@@ -592,8 +724,12 @@ const ProductManagement = () => {
           <Button variant="secondary" onClick={() => setShowEditModal(false)}>
             Cancel
           </Button>
-          <Button variant="primary" onClick={() => handleEditProduct(editProduct)}>
-            Save Changes
+          <Button 
+            variant="primary" 
+            onClick={() => handleEditProduct(editProduct)}
+            disabled={submitting}
+          >
+            {submitting ? <Spinner animation="border" size="sm" /> : 'Save Changes'}
           </Button>
         </Modal.Footer>
       </Modal>
@@ -604,20 +740,48 @@ const ProductManagement = () => {
           <Modal.Title>Confirm Delete</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          Are you sure you want to delete this product? This action cannot be undone.
+          Are you sure you want to delete "{selectedProduct?.name}"? This action cannot be undone.
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={() => setShowDeleteModal(false)}>
             Cancel
           </Button>
-          <Button
-            variant="danger"
+          <Button 
+            variant="danger" 
             onClick={() => handleDeleteProduct(selectedProduct?.id)}
+            disabled={submitting}
           >
-            Delete
+            {submitting ? <Spinner animation="border" size="sm" /> : 'Delete'}
           </Button>
         </Modal.Footer>
       </Modal>
+
+      <ToastContainer 
+        position="top-right"
+        autoClose={2000}
+        hideProgressBar={false}
+        newestOnTop={true}
+        closeOnClick={true}
+        rtl={false}
+        pauseOnFocusLoss={false}
+        draggable={true}
+        pauseOnHover={false}
+        theme="light"
+        limit={3}
+        style={{
+          zIndex: 9999,
+          position: 'fixed',
+          top: '20px',
+          right: '20px'
+        }}
+        toastStyle={{
+          backgroundColor: 'white',
+          color: 'black',
+          boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+          borderRadius: '8px',
+          border: '1px solid #e0e0e0'
+        }}
+      />
     </Container>
   );
 };
