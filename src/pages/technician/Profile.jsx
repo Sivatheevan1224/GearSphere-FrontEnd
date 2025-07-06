@@ -48,6 +48,7 @@ const TechnicianProfile = () => {
             email: data.email || "",
             specialization: data.specialization || "",
             experience: data.experience || "",
+            technician_id: data.technician_id || "",
           });
 
           sessionStorage.setItem("technician_profile_pic", profilePicUrl);
@@ -64,6 +65,10 @@ const TechnicianProfile = () => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
+    if (name === "charge_per_day") {
+      // Allow only numbers (and optionally a decimal point)
+      if (!/^[0-9]*\.?[0-9]*$/.test(value) && value !== "") return;
+    }
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
@@ -78,10 +83,30 @@ const TechnicianProfile = () => {
   const handleProfileUpdate = async (e) => {
     e.preventDefault();
 
+    // Frontend validation for charge_per_day
+    if (formData.charge_per_day === "" || isNaN(formData.charge_per_day)) {
+      toast.error("Charge per day must be a valid number.");
+      return;
+    }
+
+    // Ensure technician_id is present
+    const technician_id =
+      formData.technician_id || sessionStorage.getItem("technician_id");
+    if (!technician_id) {
+      toast.error("Technician ID missing. Please re-login.");
+      return;
+    }
+
     const userId = sessionStorage.getItem("user_id");
-    const technician_id = sessionStorage.getItem("technician_id");
-    if (!userId || !technician_id)
-      return toast.error("Session expired. Please log in.");
+    if (!userId) return toast.error("Session expired. Please log in.");
+
+    // Debug: Print payload values
+    // console.log(
+    //   "Submitting technician_id:",
+    //   technician_id,
+    //   "charge_per_day:",
+    //   formData.charge_per_day
+    // );
 
     const payload = new FormData();
     payload.append("user_id", userId);
@@ -94,6 +119,7 @@ const TechnicianProfile = () => {
     if (profilePicFile) {
       payload.append("profile_image", profilePicFile);
     }
+
     try {
       const token = localStorage.getItem("token");
       const response = await axios.post(
@@ -245,7 +271,7 @@ const TechnicianProfile = () => {
               <Form.Group className="mb-3">
                 <Form.Label>Charge Per Day (Rs.)</Form.Label>
                 <Form.Control
-                  type="number"
+                  type="text"
                   name="charge_per_day"
                   value={formData.charge_per_day}
                   onChange={handleInputChange}
