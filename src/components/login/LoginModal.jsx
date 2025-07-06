@@ -1,36 +1,36 @@
-import { useState, useEffect } from "react"
-import { Modal, Button, Form, Alert, InputGroup } from "react-bootstrap"
-import { useNavigate, useLocation } from "react-router-dom"
-import { BsEye, BsEyeSlash } from "react-icons/bs"
-import loginImage from "../../images/login.jpg"
+import { useState, useEffect } from "react";
+import { Modal, Button, Form, Alert, InputGroup } from "react-bootstrap";
+import { useNavigate, useLocation } from "react-router-dom";
+import { BsEye, BsEyeSlash } from "react-icons/bs";
+import loginImage from "../../images/login.jpg";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import "./loginmodal.css"
+import "./loginmodal.css";
 import axios from "axios";
 
 function LoginModal({ show, onHide, switchToRegister }) {
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
-  const [error, setError] = useState("")
-  const [showPassword, setShowPassword] = useState(false)
-  const [showForgotModal, setShowForgotModal] = useState(false)
-  const [forgotStep, setForgotStep] = useState(1)
-  const [forgotEmail, setForgotEmail] = useState("")
-  const [forgotError, setForgotError] = useState("")
-  const [enteredOtp, setEnteredOtp] = useState("")
-  const [otp, setOtp] = useState("")
-  const [newPassword, setNewPassword] = useState("")
-  const navigate = useNavigate()
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [showForgotModal, setShowForgotModal] = useState(false);
+  const [forgotStep, setForgotStep] = useState(1);
+  const [forgotEmail, setForgotEmail] = useState("");
+  const [forgotError, setForgotError] = useState("");
+  const [enteredOtp, setEnteredOtp] = useState("");
+  const [otp, setOtp] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const navigate = useNavigate();
   const [forgotPasswordEmail, setForgotPasswordEmail] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");  
-  const [checkOTP,setCheckOTP] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [checkOTP, setCheckOTP] = useState("");
   const [step, setStep] = useState(1);
   const location = useLocation();
 
-  //Handle login 
+  //Handle login
   const handleLogin = async (e) => {
     e.preventDefault();
-    if (!email.includes('@gmail.com')) {
+    if (!email.includes("@gmail.com")) {
       toast.error("Please enter valid email..");
       return;
     }
@@ -49,7 +49,6 @@ function LoginModal({ show, onHide, switchToRegister }) {
         toast.success(response.data.message, { autoClose: 2000 });
 
         setTimeout(() => {
-
           sessionStorage.setItem("user_type", user_type.toLowerCase());
           sessionStorage.setItem("user_id", user_id);
           sessionStorage.setItem("email", email);
@@ -72,79 +71,69 @@ function LoginModal({ show, onHide, switchToRegister }) {
             navigate("/seller");
           }
         }, 2000);
-      }
-      else if (response.data.message) {
+      } else if (response.data.message) {
+        toast.error(response.data.message);
+      } else {
         toast.error(response.data.message);
       }
-      else {
-        toast.error(response.data.message);
-      }
-
-
     } catch (error) {
       console.log(error);
       if (error.response && error.response.data) {
         toast.error(error.response.data.message);
       } else if (error.message) {
         toast.error("Login failed: " + error.message);
-      }else {
+      } else {
         toast.error("Login failed. Try again..");
       }
-
     }
   };
 
   // Handle forgot password
   const handleForgotPassword = async () => {
-    if (!forgotPasswordEmail.includes('@gmail.com')) {
+    if (!forgotPasswordEmail.includes("@gmail.com")) {
       toast.error("Please enter valid email..");
       return;
     }
     try {
-      if(step === 1)
-      {
-        const response = await axios.post("http://localhost/gearsphere_api/GearSphere-BackEnd/generateOTP.php",
+      if (step === 1) {
+        const response = await axios.post(
+          "http://localhost/gearsphere_api/GearSphere-BackEnd/generateOTP.php",
           {
-            email: forgotPasswordEmail.trim()            //username: forgotPasswordUsername,
+            email: forgotPasswordEmail.trim(), //username: forgotPasswordUsername,
           }
         );
-       // console.log(response.data)
-        if(response.data.success)
-        {
+        // console.log(response.data)
+        if (response.data.success) {
           toast.success(response.data.message);
           setCheckOTP(response.data.otp);
           //console.log(response.data.otp);
           setStep(2);
-        }
-        else{
+        } else {
           toast.error(response.data.message);
         }
-      }
-      else if(step === 2)
-      {
+      } else if (step === 2) {
         //console.log(otp);
-        if(otp.trim() === checkOTP.toString().trim())
-        {
+        if (otp.trim() === checkOTP.toString().trim()) {
           toast.success("OTP verified successfully...");
           setCheckOTP("");
           setStep(3);
-        }
-        else{
+        } else {
           toast.error("Invalid OTP, Try again later...");
-           setStep(1); 
+          setStep(1);
         }
-      }
-      else if(step === 3)
-      {
+      } else if (step === 3) {
         if (newPassword !== confirmPassword) {
           toast.error("Passwords do not match.");
           return;
         }
-    
-        const passwordRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{6,}$/;
-    
+
+        const passwordRegex =
+          /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{6,}$/;
+
         if (!passwordRegex.test(newPassword)) {
-          toast.error("Password must be at least 6 characters long and include at least one uppercase letter, one special character, and one number.");
+          toast.error(
+            "Password must be at least 6 characters long and include at least one uppercase letter, one special character, and one number."
+          );
           return;
         }
 
@@ -156,18 +145,16 @@ function LoginModal({ show, onHide, switchToRegister }) {
           }
         );
         console.log("Change Password Response:", response.data);
-        if(response.data.success)
-        {
+        if (response.data.success) {
           toast.success(response.data.message);
           setTimeout(() => {
             setShowForgotModal(false);
-          }, 1000); 
-        }
-        else{
+          }, 1000);
+        } else {
           toast.error(response.data.message);
           setTimeout(() => {
             setShowForgotModal(false);
-          }, 1000); 
+          }, 1000);
         }
       }
     } catch (error) {
@@ -177,8 +164,7 @@ function LoginModal({ show, onHide, switchToRegister }) {
         toast.error("Password reset failed.");
       }
     }
-  }
-
+  };
 
   return (
     <>
@@ -223,7 +209,7 @@ function LoginModal({ show, onHide, switchToRegister }) {
                     />
                     <Button
                       variant="outline-secondary"
-                      onClick={() => setShowPassword(prev => !prev)}
+                      onClick={() => setShowPassword((prev) => !prev)}
                       tabIndex={-1}
                       style={{ borderLeft: 0 }}
                     >
@@ -232,10 +218,7 @@ function LoginModal({ show, onHide, switchToRegister }) {
                   </InputGroup>
                 </Form.Group>
                 <div className="d-flex justify-content-end align-items-center mb-3">
-                  <a
-                    href="#"
-                    onClick={() => setShowForgotModal(true)}
-                  >
+                  <a href="#" onClick={() => setShowForgotModal(true)}>
                     Forgot password?
                   </a>
                 </div>
@@ -250,9 +233,9 @@ function LoginModal({ show, onHide, switchToRegister }) {
                 <a
                   href="#"
                   onClick={(e) => {
-                    e.preventDefault()
-                    onHide()
-                    switchToRegister()
+                    e.preventDefault();
+                    onHide();
+                    switchToRegister();
                   }}
                 >
                   Register
@@ -262,7 +245,6 @@ function LoginModal({ show, onHide, switchToRegister }) {
           </div>
         </div>
       </Modal>
-
 
       <Modal
         show={showForgotModal}
@@ -274,22 +256,22 @@ function LoginModal({ show, onHide, switchToRegister }) {
         </Modal.Header>
         <Modal.Body>
           <Form>
-            {step === 1 &&
-             <>
-             <Form.Group controlId="formBasicEmail">
-                <Form.Label>Email address</Form.Label>
-                <Form.Control
-                  type="email"
-                  placeholder="Enter your email"
-                  value={forgotPasswordEmail}
-                  onChange={(e) => setForgotPasswordEmail(e.target.value)}
-                  required
-                />
-              </Form.Group>
-             </>
-              }
+            {step === 1 && (
+              <>
+                <Form.Group controlId="formBasicEmail">
+                  <Form.Label>Email address</Form.Label>
+                  <Form.Control
+                    type="email"
+                    placeholder="Enter your email"
+                    value={forgotPasswordEmail}
+                    onChange={(e) => setForgotPasswordEmail(e.target.value)}
+                    required
+                  />
+                </Form.Group>
+              </>
+            )}
 
-            {step === 2 &&
+            {step === 2 && (
               <Form.Group controlId="formOtp">
                 <Form.Label>OTP</Form.Label>
                 <Form.Control
@@ -300,9 +282,9 @@ function LoginModal({ show, onHide, switchToRegister }) {
                   required
                 />
               </Form.Group>
-            }
+            )}
 
-            {step === 3 &&
+            {step === 3 && (
               <>
                 <Form.Group controlId="formBasicPassword">
                   <Form.Label>New Password</Form.Label>
@@ -326,24 +308,24 @@ function LoginModal({ show, onHide, switchToRegister }) {
                   />
                 </Form.Group>
               </>
-            }
-
+            )}
           </Form>
         </Modal.Body>
         <Modal.Footer>
-          <Button
-            variant="secondary"
-            onClick={() => setShowForgotModal(false)}
-          >
+          <Button variant="secondary" onClick={() => setShowForgotModal(false)}>
             close
           </Button>
           <Button variant="primary" onClick={handleForgotPassword}>
-            {step === 1 ? "Send OTP" : step === 2 ? "Verify OTP" : "Reset Password"}
+            {step === 1
+              ? "Send OTP"
+              : step === 2
+              ? "Verify OTP"
+              : "Reset Password"}
           </Button>
         </Modal.Footer>
       </Modal>
     </>
-  )
+  );
 }
 
-export default LoginModal
+export default LoginModal;
