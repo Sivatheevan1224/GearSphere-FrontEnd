@@ -10,6 +10,7 @@ const StorageForm = ({ onSubmit }) => {
     image_url: '',
     description: '',
     manufacturer: '',
+    stock: '',
     
     // Storage specific fields
     storage_type: '',
@@ -51,6 +52,7 @@ const StorageForm = ({ onSubmit }) => {
         type: 'storage',
         ...formData,
         price: parseFloat(formData.price),
+        stock: parseInt(formData.stock) || 0,
         image_file: selectedImage // Include the actual file for upload
       };
 
@@ -64,6 +66,7 @@ const StorageForm = ({ onSubmit }) => {
         image_url: '',
         description: '',
         manufacturer: '',
+        stock: '',
         storage_type: '',
         capacity: '',
         interface: '',
@@ -131,6 +134,23 @@ const StorageForm = ({ onSubmit }) => {
             </Col>
             <Col md={6}>
               <Form.Group className="mb-3">
+                <Form.Label>Stock Quantity *</Form.Label>
+                <Form.Control
+                  type="number"
+                  name="stock"
+                  value={formData.stock}
+                  onChange={handleChange}
+                  required
+                  min="0"
+                  placeholder="Enter stock quantity"
+                />
+              </Form.Group>
+            </Col>
+          </Row>
+
+          <Row>
+            <Col md={6}>
+              <Form.Group className="mb-3">
                 <Form.Label>Storage Type *</Form.Label>
                 <Form.Select
                   name="storage_type"
@@ -145,9 +165,6 @@ const StorageForm = ({ onSubmit }) => {
                 </Form.Select>
               </Form.Group>
             </Col>
-          </Row>
-
-          <Row>
             <Col md={6}>
               <Form.Group className="mb-3">
                 <Form.Label>Product Image</Form.Label>
@@ -163,6 +180,9 @@ const StorageForm = ({ onSubmit }) => {
                 )}
               </Form.Group>
             </Col>
+          </Row>
+
+          <Row>
             <Col md={6}>
               <Form.Group className="mb-3">
                 <Form.Label>Capacity *</Form.Label>

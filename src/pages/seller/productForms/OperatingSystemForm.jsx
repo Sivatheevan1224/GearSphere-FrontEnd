@@ -10,6 +10,7 @@ const OperatingSystemForm = ({ onSubmit }) => {
     image_url: '',
     description: '',
     manufacturer: '',
+    stock: '',
     
     // Operating System specific fields
     version: '',
@@ -52,6 +53,7 @@ const OperatingSystemForm = ({ onSubmit }) => {
         type: 'operating_system',
         ...formData,
         price: parseFloat(formData.price),
+        stock: parseInt(formData.stock) || 0,
         image_file: selectedImage // Include the actual file for upload
       };
 
@@ -65,6 +67,7 @@ const OperatingSystemForm = ({ onSubmit }) => {
         image_url: '',
         description: '',
         manufacturer: '',
+        stock: '',
         version: '',
         edition: '',
         license_type: '',
@@ -133,14 +136,15 @@ const OperatingSystemForm = ({ onSubmit }) => {
             </Col>
             <Col md={6}>
               <Form.Group className="mb-3">
-                <Form.Label>Version *</Form.Label>
+                <Form.Label>Stock Quantity *</Form.Label>
                 <Form.Control
-                  type="text"
-                  name="version"
-                  value={formData.version}
+                  type="number"
+                  name="stock"
+                  value={formData.stock}
                   onChange={handleChange}
                   required
-                  placeholder="e.g., 11, 10, 22.04 LTS"
+                  min="0"
+                  placeholder="Enter stock quantity"
                 />
               </Form.Group>
             </Col>

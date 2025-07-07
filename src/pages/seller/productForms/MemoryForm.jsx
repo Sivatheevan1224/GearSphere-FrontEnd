@@ -10,6 +10,7 @@ const MemoryForm = ({ onSubmit }) => {
     image_url: '',
     description: '',
     manufacturer: '',
+    stock: '',
     
     // Memory specific fields
     memory_type: '',
@@ -53,6 +54,7 @@ const MemoryForm = ({ onSubmit }) => {
         type: 'memory',
         ...formData,
         price: parseFloat(formData.price),
+        stock: parseInt(formData.stock) || 0,
         modules: parseInt(formData.modules) || null,
         cas_latency: parseInt(formData.cas_latency) || null,
         voltage: parseFloat(formData.voltage) || null,
@@ -69,6 +71,7 @@ const MemoryForm = ({ onSubmit }) => {
         image_url: '',
         description: '',
         manufacturer: '',
+        stock: '',
         memory_type: '',
         speed: '',
         modules: '',
@@ -138,6 +141,23 @@ const MemoryForm = ({ onSubmit }) => {
             </Col>
             <Col md={6}>
               <Form.Group className="mb-3">
+                <Form.Label>Stock Quantity *</Form.Label>
+                <Form.Control
+                  type="number"
+                  name="stock"
+                  value={formData.stock}
+                  onChange={handleChange}
+                  required
+                  min="0"
+                  placeholder="Enter stock quantity"
+                />
+              </Form.Group>
+            </Col>
+          </Row>
+
+          <Row>
+            <Col md={6}>
+              <Form.Group className="mb-3">
                 <Form.Label>Memory Type *</Form.Label>
                 <Form.Select
                   name="memory_type"
@@ -151,9 +171,6 @@ const MemoryForm = ({ onSubmit }) => {
                 </Form.Select>
               </Form.Group>
             </Col>
-          </Row>
-
-          <Row>
             <Col md={6}>
               <Form.Group className="mb-3">
                 <Form.Label>Product Image</Form.Label>
@@ -169,6 +186,9 @@ const MemoryForm = ({ onSubmit }) => {
                 )}
               </Form.Group>
             </Col>
+          </Row>
+
+          <Row>
             <Col md={6}>
               <Form.Group className="mb-3">
                 <Form.Label>Speed *</Form.Label>
@@ -179,6 +199,21 @@ const MemoryForm = ({ onSubmit }) => {
                   onChange={handleChange}
                   required
                   placeholder="e.g., 3200MHz, 6000MHz"
+                />
+              </Form.Group>
+            </Col>
+            <Col md={6}>
+              <Form.Group className="mb-3">
+                <Form.Label>Modules *</Form.Label>
+                <Form.Control
+                  type="number"
+                  name="modules"
+                  value={formData.modules}
+                  onChange={handleChange}
+                  required
+                  min="1"
+                  max="8"
+                  placeholder="e.g., 2"
                 />
               </Form.Group>
             </Col>
@@ -206,21 +241,6 @@ const MemoryForm = ({ onSubmit }) => {
           <Row>
             <Col md={6}>
               <Form.Group className="mb-3">
-                <Form.Label>Modules *</Form.Label>
-                <Form.Control
-                  type="number"
-                  name="modules"
-                  value={formData.modules}
-                  onChange={handleChange}
-                  required
-                  min="1"
-                  max="8"
-                  placeholder="e.g., 2"
-                />
-              </Form.Group>
-            </Col>
-            <Col md={6}>
-              <Form.Group className="mb-3">
                 <Form.Label>CAS Latency</Form.Label>
                 <Form.Control
                   type="number"
@@ -233,9 +253,6 @@ const MemoryForm = ({ onSubmit }) => {
                 />
               </Form.Group>
             </Col>
-          </Row>
-
-          <Row>
             <Col md={6}>
               <Form.Group className="mb-3">
                 <Form.Label>Voltage</Form.Label>
@@ -251,6 +268,9 @@ const MemoryForm = ({ onSubmit }) => {
                 />
               </Form.Group>
             </Col>
+          </Row>
+
+          <Row>
             <Col md={6}>
               <Form.Group className="mb-3">
                 <Form.Check

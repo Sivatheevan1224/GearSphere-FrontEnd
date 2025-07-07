@@ -10,6 +10,7 @@ const MonitorForm = ({ onSubmit }) => {
     image_url: '',
     description: '',
     manufacturer: '',
+    stock: '',
     // Monitor specific fields
     screen_size: '',
     resolution: '',
@@ -37,6 +38,7 @@ const MonitorForm = ({ onSubmit }) => {
         type: 'monitor',
         ...formData,
         price: parseFloat(formData.price),
+        stock: parseInt(formData.stock) || 0,
         screen_size: parseFloat(formData.screen_size) || null
       };
       await onSubmit(productData);
@@ -47,6 +49,7 @@ const MonitorForm = ({ onSubmit }) => {
         image_url: '',
         description: '',
         manufacturer: '',
+        stock: '',
         screen_size: '',
         resolution: '',
         refresh_rate: '',
@@ -114,6 +117,22 @@ const MonitorForm = ({ onSubmit }) => {
             </Col>
             <Col md={6}>
               <Form.Group className="mb-3">
+                <Form.Label>Stock Quantity *</Form.Label>
+                <Form.Control
+                  type="number"
+                  name="stock"
+                  value={formData.stock}
+                  onChange={handleChange}
+                  required
+                  min="0"
+                  placeholder="Enter stock quantity"
+                />
+              </Form.Group>
+            </Col>
+          </Row>
+          <Row>
+            <Col md={6}>
+              <Form.Group className="mb-3">
                 <Form.Label>Image URL</Form.Label>
                 <Form.Control
                   type="url"
@@ -124,18 +143,20 @@ const MonitorForm = ({ onSubmit }) => {
                 />
               </Form.Group>
             </Col>
+            <Col md={6}>
+              <Form.Group className="mb-3">
+                <Form.Label>Description</Form.Label>
+                <Form.Control
+                  as="textarea"
+                  rows={3}
+                  name="description"
+                  value={formData.description}
+                  onChange={handleChange}
+                  placeholder="Enter product description"
+                />
+              </Form.Group>
+            </Col>
           </Row>
-          <Form.Group className="mb-3">
-            <Form.Label>Description</Form.Label>
-            <Form.Control
-              as="textarea"
-              rows={3}
-              name="description"
-              value={formData.description}
-              onChange={handleChange}
-              placeholder="Enter product description"
-            />
-          </Form.Group>
         </Card.Body>
       </Card>
       <Card className="mb-4">
