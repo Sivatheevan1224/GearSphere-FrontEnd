@@ -10,6 +10,7 @@ const PowerSupplyForm = ({ onSubmit }) => {
     image_url: '',
     description: '',
     manufacturer: '',
+    stock: '',
     
     // Power Supply specific fields
     wattage: '',
@@ -52,6 +53,7 @@ const PowerSupplyForm = ({ onSubmit }) => {
         type: 'power_supply',
         ...formData,
         price: parseFloat(formData.price),
+        stock: parseInt(formData.stock) || 0,
         wattage: parseInt(formData.wattage) || null,
         image_file: selectedImage // Include the actual file for upload
       };
@@ -66,6 +68,7 @@ const PowerSupplyForm = ({ onSubmit }) => {
         image_url: '',
         description: '',
         manufacturer: '',
+        stock: '',
         wattage: '',
         efficiency_rating: '',
         modular: '',
@@ -134,15 +137,15 @@ const PowerSupplyForm = ({ onSubmit }) => {
             </Col>
             <Col md={6}>
               <Form.Group className="mb-3">
-                <Form.Label>Wattage *</Form.Label>
+                <Form.Label>Stock Quantity *</Form.Label>
                 <Form.Control
                   type="number"
-                  name="wattage"
-                  value={formData.wattage}
+                  name="stock"
+                  value={formData.stock}
                   onChange={handleChange}
                   required
                   min="0"
-                  placeholder="e.g., 850"
+                  placeholder="Enter stock quantity"
                 />
               </Form.Group>
             </Col>

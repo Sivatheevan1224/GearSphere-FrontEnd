@@ -10,6 +10,7 @@ const VideoCardForm = ({ onSubmit }) => {
     image_url: '',
     description: '',
     manufacturer: '',
+    stock: '',
     
     // Video Card specific fields
     chipset: '',
@@ -56,6 +57,7 @@ const VideoCardForm = ({ onSubmit }) => {
         type: 'video_card',
         ...formData,
         price: parseFloat(formData.price),
+        stock: parseInt(formData.stock) || 0,
         core_clock: parseFloat(formData.core_clock) || null,
         boost_clock: parseFloat(formData.boost_clock) || null,
         tdp: parseFloat(formData.tdp) || null,
@@ -75,6 +77,7 @@ const VideoCardForm = ({ onSubmit }) => {
         image_url: '',
         description: '',
         manufacturer: '',
+        stock: '',
         chipset: '',
         memory: '',
         memory_type: '',
@@ -147,14 +150,15 @@ const VideoCardForm = ({ onSubmit }) => {
             </Col>
             <Col md={6}>
               <Form.Group className="mb-3">
-                <Form.Label>Chipset *</Form.Label>
+                <Form.Label>Stock Quantity *</Form.Label>
                 <Form.Control
-                  type="text"
-                  name="chipset"
-                  value={formData.chipset}
+                  type="number"
+                  name="stock"
+                  value={formData.stock}
                   onChange={handleChange}
                   required
-                  placeholder="e.g., RTX 4080, RX 7900 XTX"
+                  min="0"
+                  placeholder="Enter stock quantity"
                 />
               </Form.Group>
             </Col>

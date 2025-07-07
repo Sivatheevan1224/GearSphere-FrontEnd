@@ -137,6 +137,23 @@ const CPUCoolerForm = ({ onSubmit }) => {
             </Col>
             <Col md={6}>
               <Form.Group className="mb-3">
+                <Form.Label>Stock Quantity *</Form.Label>
+                <Form.Control
+                  type="number"
+                  name="stock"
+                  value={formData.stock}
+                  onChange={handleChange}
+                  required
+                  min="0"
+                  placeholder="Enter stock quantity"
+                />
+              </Form.Group>
+            </Col>
+          </Row>
+
+          <Row>
+            <Col md={6}>
+              <Form.Group className="mb-3">
                 <Form.Label>Color</Form.Label>
                 <Form.Control
                   type="text"
@@ -147,9 +164,6 @@ const CPUCoolerForm = ({ onSubmit }) => {
                 />
               </Form.Group>
             </Col>
-          </Row>
-
-          <Row>
             <Col md={6}>
               <Form.Group className="mb-3">
                 <Form.Label>Product Image</Form.Label>
@@ -165,6 +179,9 @@ const CPUCoolerForm = ({ onSubmit }) => {
                 )}
               </Form.Group>
             </Col>
+          </Row>
+
+          <Row>
             <Col md={6}>
               <Form.Group className="mb-3">
                 <Form.Label>Height</Form.Label>
