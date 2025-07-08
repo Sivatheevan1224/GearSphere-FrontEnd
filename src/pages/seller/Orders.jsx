@@ -43,7 +43,7 @@ const SellerOrders = () => {
         postal: '20000',
         country: 'Sri Lanka'
       },
-      paymentMethod: 'Credit Card',
+      paymentMethod: 'Visa',
       trackingNumber: 'TRK123456789',
       notes: 'Handle with care'
     },
@@ -72,7 +72,7 @@ const SellerOrders = () => {
         postal: '00300',
         country: 'Sri Lanka'
       },
-      paymentMethod: 'PayPal',
+      paymentMethod: 'Mastercard',
       trackingNumber: 'TRK987654321',
       notes: 'Express shipping'
     }

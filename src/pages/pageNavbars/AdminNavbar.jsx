@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { Navbar, Container, Nav, Button, Modal } from "react-bootstrap";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { Bell } from "react-bootstrap-icons";
 import axios from 'axios';
 
 function AdminNavbar({ fixed = "top" }) {
   const navigate = useNavigate();
+  const location = useLocation();
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [expanded, setExpanded] = useState(false);
   const [adminData, setAdminData] = useState({
@@ -75,11 +76,11 @@ function AdminNavbar({ fixed = "top" }) {
           <Navbar.Toggle aria-controls="admin-navbar-nav" />
           <Navbar.Collapse id="admin-navbar-nav">
             <Nav className="me-auto">
-              <Nav.Link as={Link} to="/admin" onClick={() => setExpanded(false)}>Dashboard</Nav.Link>
-              <Nav.Link as={Link} to="/admin/customers" onClick={() => setExpanded(false)}>Customer Management</Nav.Link>
-              <Nav.Link as={Link} to="/admin/technicians" onClick={() => setExpanded(false)}>Technician Management</Nav.Link>
-              <Nav.Link as={Link} to="/admin/analytics" onClick={() => setExpanded(false)}>Analytics</Nav.Link>
-              <Nav.Link as={Link} to="/admin/reports" onClick={() => setExpanded(false)}>Reports</Nav.Link>
+              <Nav.Link as={Link} to="/admin" onClick={() => setExpanded(false)} className={location.pathname === "/admin" ? "text-primary fw-bold" : ""}>Dashboard</Nav.Link>
+              <Nav.Link as={Link} to="/admin/customers" onClick={() => setExpanded(false)} className={location.pathname === "/admin/customers" ? "text-primary fw-bold" : ""}>Customer Management</Nav.Link>
+              <Nav.Link as={Link} to="/admin/technicians" onClick={() => setExpanded(false)} className={location.pathname === "/admin/technicians" ? "text-primary fw-bold" : ""}>Technician Management</Nav.Link>
+              <Nav.Link as={Link} to="/admin/analytics" onClick={() => setExpanded(false)} className={location.pathname === "/admin/analytics" ? "text-primary fw-bold" : ""}>Analytics</Nav.Link>
+              <Nav.Link as={Link} to="/admin/reports" onClick={() => setExpanded(false)} className={location.pathname === "/admin/reports" ? "text-primary fw-bold" : ""}>Reports</Nav.Link>
             </Nav>
             <div className="d-flex align-items-center">
               <Bell size={22} className="me-3 cursor-pointer text-secondary" style={{ verticalAlign: 'middle' }} />

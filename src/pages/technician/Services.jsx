@@ -124,7 +124,7 @@ const TechnicianServices = () => {
                     </div>
                   </td>
                   <td>{service.category}</td>
-                  <td>${service.price}</td>
+                  <td>LKR {service.price}</td>
                   <td>{service.duration}</td>
                   <td>
                     <Badge bg={service.status === 'Active' ? 'success' : 'secondary'}>
@@ -216,7 +216,7 @@ const TechnicianServices = () => {
             <Row>
               <Col md={6}>
                 <Form.Group className="mb-3">
-                  <Form.Label>Price ($)</Form.Label>
+                  <Form.Label>Price (LKR)</Form.Label>
                   <Form.Control
                     type="number"
                     value={newService.price}
@@ -296,7 +296,7 @@ const TechnicianServices = () => {
               <Row>
                 <Col md={6}>
                   <Form.Group className="mb-3">
-                    <Form.Label>Price ($)</Form.Label>
+                    <Form.Label>Price (LKR)</Form.Label>
                     <Form.Control
                       type="number"
                       value={selectedService.price}

@@ -9,7 +9,7 @@ import {
   Power, 
   PcDisplay, 
   Fan, 
-  CurrencyDollar, 
+  CashStack, 
   ArrowsAngleExpand
 } from 'react-bootstrap-icons';
 import { useOrders } from './OrdersContext';
@@ -1566,7 +1566,7 @@ function PCBuilder() {
             <Col md={6}>
               <Form.Group className="mb-3">
                 <Form.Label>
-                  <CurrencyDollar className="me-2" /> Select Budget Range
+                  <CashStack className="me-2" /> Select Budget Range
                 </Form.Label>
                 <Form.Select
                   value={selectedRange}

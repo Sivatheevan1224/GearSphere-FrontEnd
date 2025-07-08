@@ -67,6 +67,11 @@ const Inventory = () => {
       const data = await response.json();
       console.log('API response:', data);
       
+      // Extra debug: log all product statuses from backend
+      if (data.products) {
+        data.products.forEach(p => console.log(`Product: ${p.name}, Stock: ${p.stock}, Status: ${p.status}`));
+      }
+      
       if (data.success) {
         // Debug: Log raw data from backend
         console.log('Raw products data from backend:', data.products.map(p => ({
@@ -110,6 +115,9 @@ const Inventory = () => {
             calculation: `${item.currentStock} × LKR ${item.price} = LKR ${item.value}`
           }))
         });
+        
+        // Extra debug: log transformed inventory statuses
+        transformedInventory.forEach(item => console.log(`Transformed: ${item.name}, Stock: ${item.currentStock}, Status: ${item.status}`));
         
         setInventory(transformedInventory);
       } else {
@@ -180,7 +188,10 @@ const Inventory = () => {
       const formData = new FormData();
       formData.append('product_id', productId.toString());
       formData.append('stock', stockValue.toString());
-      formData.append('status', newStockData.status);
+      // Only send status if Discontinued is selected
+      if (newStockData.status === 'Discontinued') {
+        formData.append('status', 'Discontinued');
+      }
       formData.append('last_restock_date', newStockData.lastRestockDate);
       
       const response = await fetch(`${API_BASE_URL}/updateStock.php`, {
@@ -196,6 +207,11 @@ const Inventory = () => {
       
       const result = await response.json();
       console.log('Update stock result:', result);
+      
+      // Extra debug: log new status from backend
+      if (result.data) {
+        console.log(`Backend new_status: ${result.data.new_status}`);
+      }
       
       if (result.success) {
         // Refresh inventory list
