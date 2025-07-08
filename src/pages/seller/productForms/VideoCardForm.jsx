@@ -64,7 +64,7 @@ const VideoCardForm = ({ onSubmit }) => {
         length: parseFloat(formData.length) || null,
         width: parseFloat(formData.width) || null,
         height: parseFloat(formData.height) || null,
-        image_file: selectedImage // Include the actual file for upload
+        image: selectedImage // Use 'image' instead of 'image_file'
       };
 
       await onSubmit(productData);

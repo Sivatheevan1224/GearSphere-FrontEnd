@@ -55,7 +55,7 @@ const CPUCoolerForm = ({ onSubmit }) => {
         price: parseFloat(formData.price),
         stock: parseInt(formData.stock) || 0,
         fan_rpm: parseInt(formData.fan_rpm) || null,
-        image_file: selectedImage // Include the actual file for upload
+        image: selectedImage // Use 'image' instead of 'image_file'
       };
 
       await onSubmit(productData);

@@ -21,6 +21,7 @@ const MonitorForm = ({ onSubmit }) => {
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [selectedImage, setSelectedImage] = useState(null);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -28,6 +29,19 @@ const MonitorForm = ({ onSubmit }) => {
       ...prev,
       [name]: value
     }));
+  };
+
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setSelectedImage(file);
+      // Create a temporary URL for preview
+      const imageUrl = URL.createObjectURL(file);
+      setFormData(prev => ({
+        ...prev,
+        image_url: imageUrl
+      }));
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -39,7 +53,8 @@ const MonitorForm = ({ onSubmit }) => {
         ...formData,
         price: parseFloat(formData.price),
         stock: parseInt(formData.stock) || 0,
-        screen_size: parseFloat(formData.screen_size) || null
+        screen_size: parseFloat(formData.screen_size) || null,
+        image: selectedImage
       };
       await onSubmit(productData);
       setFormData({
@@ -133,14 +148,17 @@ const MonitorForm = ({ onSubmit }) => {
           <Row>
             <Col md={6}>
               <Form.Group className="mb-3">
-                <Form.Label>Image URL</Form.Label>
+                <Form.Label>Product Image</Form.Label>
                 <Form.Control
-                  type="url"
-                  name="image_url"
-                  value={formData.image_url}
-                  onChange={handleChange}
-                  placeholder="Enter product image URL"
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageChange}
                 />
+                {selectedImage && (
+                  <small className="text-muted">
+                    Selected: {selectedImage.name}
+                  </small>
+                )}
               </Form.Group>
             </Col>
             <Col md={6}>
