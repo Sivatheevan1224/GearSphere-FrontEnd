@@ -59,7 +59,7 @@ const ProductManagement = () => {
     'Fans'
   ];
 
-  const [selectedType, setSelectedType] = useState('');
+  const [selectedType, setSelectedType] = useState("");
   const [addProductFormKey, setAddProductFormKey] = useState(0);
 
   const productTypeOptions = [
@@ -316,56 +316,60 @@ const ProductManagement = () => {
   const handleDeleteProduct = async (productId) => {
     try {
       setSubmitting(true);
-      
+
       const response = await fetch(`${API_BASE_URL}/deleteProduct.php`, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify({ product_id: productId })
+        body: JSON.stringify({ product_id: productId }),
       });
-      
+
       const result = await response.json();
-      
+
       if (result.success) {
         // Refresh products list
         await fetchProducts();
         setShowDeleteModal(false);
-        
+
         // Show success toast
-        toast.success('Product deleted successfully!', {
+        toast.success("Product deleted successfully!", {
           autoClose: 2000,
-          hideProgressBar: false
+          hideProgressBar: false,
         });
       } else {
-        toast.error(result.message || 'Failed to delete product', {
+        toast.error(result.message || "Failed to delete product", {
           autoClose: 2000,
-          hideProgressBar: false
+          hideProgressBar: false,
         });
       }
     } catch (err) {
-      toast.error('Error deleting product: ' + err.message, {
+      toast.error("Error deleting product: " + err.message, {
         autoClose: 2000,
-        hideProgressBar: false
+        hideProgressBar: false,
       });
     } finally {
       setSubmitting(false);
     }
   };
 
-  const filteredProducts = products.filter(product =>
-    (product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    product.category.toLowerCase().includes(searchQuery.toLowerCase())) &&
-    (categoryFilter === 'all' || product.category === categoryFilter) &&
-    true
+  const filteredProducts = products.filter(
+    (product) =>
+      (product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        product.category.toLowerCase().includes(searchQuery.toLowerCase())) &&
+      (categoryFilter === "all" || product.category === categoryFilter) &&
+      true
   );
 
   const indexOfLastProduct = currentPage * productsPerPage;
   const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
-  const currentProducts = filteredProducts.slice(indexOfFirstProduct, indexOfLastProduct);
+  const currentProducts = filteredProducts.slice(
+    indexOfFirstProduct,
+    indexOfLastProduct
+  );
   const totalPages = Math.ceil(filteredProducts.length / productsPerPage);
 
-  const formatLKR = (amount) => 'LKR ' + Number(amount).toLocaleString('en-LK');
+  const formatLKR = (amount) => "LKR " + Number(amount).toLocaleString("en-LK");
 
   if (loading) {
     return (
@@ -383,9 +387,7 @@ const ProductManagement = () => {
   return (
     <Container className="py-5">
       <h1 className="text-center mb-5">Product Management</h1>
-      
-     
-      
+
       {error && (
         <Alert variant="danger" dismissible onClose={() => setError(null)}>
           {error}
@@ -415,19 +417,28 @@ const ProductManagement = () => {
                   onChange={(e) => setCategoryFilter(e.target.value)}
                 >
                   <option value="all">All Categories</option>
-                  {categories.map(category => (
-                    <option key={category} value={category}>{category}</option>
+                  {categories.map((category) => (
+                    <option key={category} value={category}>
+                      {category}
+                    </option>
                   ))}
                 </Form.Select>
               </Form.Group>
             </Col>
             <Col md={2} className="d-flex align-items-end ms-auto text-end">
-              <Button 
-                variant="primary" 
-                onClick={() => setShowAddModal(true)}
+              <Button
+                variant="primary"
+                onClick={() => {
+                  setSelectedType("");
+                  setShowAddModal(true);
+                }}
                 disabled={submitting}
               >
-                {submitting ? <Spinner animation="border" size="sm" /> : 'Add Product'}
+                {submitting ? (
+                  <Spinner animation="border" size="sm" />
+                ) : (
+                  "Add Product"
+                )}
               </Button>
             </Col>
           </Row>
@@ -440,7 +451,9 @@ const ProductManagement = () => {
           <div className="d-flex justify-content-between align-items-center mb-3">
             <h5 className="mb-0">Products ({filteredProducts.length})</h5>
             <small className="text-muted">
-              Showing {indexOfFirstProduct + 1}-{Math.min(indexOfLastProduct, filteredProducts.length)} of {filteredProducts.length} products
+              Showing {indexOfFirstProduct + 1}-
+              {Math.min(indexOfLastProduct, filteredProducts.length)} of{" "}
+              {filteredProducts.length} products
             </small>
           </div>
 
@@ -457,7 +470,7 @@ const ProductManagement = () => {
               </tr>
             </thead>
             <tbody>
-              {currentProducts.map(product => (
+              {currentProducts.map((product) => (
                 <tr key={product.id}>
                   <td>
                     <div className="d-flex align-items-center">
@@ -518,7 +531,9 @@ const ProductManagement = () => {
 
           {currentProducts.length === 0 && (
             <div className="text-center py-4">
-              <p className="text-muted">No products found matching your criteria.</p>
+              <p className="text-muted">
+                No products found matching your criteria.
+              </p>
             </div>
           )}
 
@@ -526,30 +541,32 @@ const ProductManagement = () => {
           {totalPages > 1 && (
             <div className="d-flex justify-content-center mt-4">
               <Pagination>
-                <Pagination.First 
+                <Pagination.First
                   onClick={() => setCurrentPage(1)}
                   disabled={currentPage === 1}
                 />
-                <Pagination.Prev 
+                <Pagination.Prev
                   onClick={() => setCurrentPage(currentPage - 1)}
                   disabled={currentPage === 1}
                 />
-                
-                {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
-                  <Pagination.Item
-                    key={page}
-                    active={page === currentPage}
-                    onClick={() => setCurrentPage(page)}
-                  >
-                    {page}
-                  </Pagination.Item>
-                ))}
-                
-                <Pagination.Next 
+
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map(
+                  (page) => (
+                    <Pagination.Item
+                      key={page}
+                      active={page === currentPage}
+                      onClick={() => setCurrentPage(page)}
+                    >
+                      {page}
+                    </Pagination.Item>
+                  )
+                )}
+
+                <Pagination.Next
                   onClick={() => setCurrentPage(currentPage + 1)}
                   disabled={currentPage === totalPages}
                 />
-                <Pagination.Last 
+                <Pagination.Last
                   onClick={() => setCurrentPage(totalPages)}
                   disabled={currentPage === totalPages}
                 />
@@ -560,7 +577,11 @@ const ProductManagement = () => {
       </Card>
 
       {/* Add Product Modal */}
-      <Modal show={showAddModal} onHide={() => setShowAddModal(false)} size="lg">
+      <Modal
+        show={showAddModal}
+        onHide={() => setShowAddModal(false)}
+        size="lg"
+      >
         <Modal.Header closeButton>
           <Modal.Title>Add New Product</Modal.Title>
         </Modal.Header>
@@ -569,7 +590,7 @@ const ProductManagement = () => {
             <div>
               <h6 className="mb-3">Select Product Type:</h6>
               <Row>
-                {productTypeOptions.map(option => (
+                {productTypeOptions.map((option) => (
                   <Col key={option.key} md={6} className="mb-2">
                     <Button
                       variant="outline-primary"
@@ -585,31 +606,49 @@ const ProductManagement = () => {
           ) : (
             <div>
               <div className="d-flex justify-content-between align-items-center mb-3">
-                <h6>Add {productTypeOptions.find(opt => opt.key === selectedType)?.label}</h6>
+                <h6>
+                  Add{" "}
+                  {
+                    productTypeOptions.find((opt) => opt.key === selectedType)
+                      ?.label
+                  }
+                </h6>
                 <Button
                   variant="outline-secondary"
                   size="sm"
-                  onClick={() => setSelectedType('')}
+                  onClick={() => setSelectedType("")}
                 >
                   Change Type
                 </Button>
               </div>
-              {selectedType && (() => {
-                const FormComponent = productTypeOptions.find(opt => opt.key === selectedType)?.component;
-                return FormComponent ? (
-                  <FormComponent
-                    key={addProductFormKey + selectedType}
-                    onSubmit={handleAddProduct}
-                  />
-                ) : null;
-              })()}
+              {selectedType &&
+                (() => {
+                  const FormComponent = productTypeOptions.find(
+                    (opt) => opt.key === selectedType
+                  )?.component;
+                  return FormComponent ? (
+                    <FormComponent
+                      key={addProductFormKey + selectedType}
+                      onSubmit={handleAddProduct}
+                    />
+                  ) : null;
+                })()}
             </div>
           )}
         </Modal.Body>
       </Modal>
 
       {/* Edit Product Modal */}
-      <Modal show={showEditModal} onHide={() => { if (!submitting) { setShowEditModal(false); setEditProduct(null); } }} size="lg">
+      <Modal
+        show={showEditModal}
+        onHide={() => {
+          if (!submitting) {
+            setShowEditModal(false);
+            setEditProduct(null);
+          }
+        }}
+        size="lg"
+      >
         <Modal.Header closeButton={!submitting}>
           <Modal.Title>Edit Product</Modal.Title>
         </Modal.Header>
@@ -624,7 +663,9 @@ const ProductManagement = () => {
                       type="text"
                       name="name"
                       value={editProduct.name}
-                      onChange={e => setEditProduct({ ...editProduct, name: e.target.value })}
+                      onChange={(e) =>
+                        setEditProduct({ ...editProduct, name: e.target.value })
+                      }
                     />
                   </Form.Group>
                 </Col>
@@ -634,10 +675,17 @@ const ProductManagement = () => {
                     <Form.Select
                       name="category"
                       value={editProduct.category}
-                      onChange={e => setEditProduct({ ...editProduct, category: e.target.value })}
+                      onChange={(e) =>
+                        setEditProduct({
+                          ...editProduct,
+                          category: e.target.value,
+                        })
+                      }
                     >
-                      {categories.map(category => (
-                        <option key={category} value={category}>{category}</option>
+                      {categories.map((category) => (
+                        <option key={category} value={category}>
+                          {category}
+                        </option>
                       ))}
                     </Form.Select>
                   </Form.Group>
@@ -651,7 +699,12 @@ const ProductManagement = () => {
                       type="number"
                       name="price"
                       value={editProduct.price}
-                      onChange={e => setEditProduct({ ...editProduct, price: Number(e.target.value) })}
+                      onChange={(e) =>
+                        setEditProduct({
+                          ...editProduct,
+                          price: Number(e.target.value),
+                        })
+                      }
                     />
                   </Form.Group>
                 </Col>
@@ -662,7 +715,12 @@ const ProductManagement = () => {
                       type="number"
                       name="stock"
                       value={editProduct.stock}
-                      onChange={e => setEditProduct({ ...editProduct, stock: Number(e.target.value) })}
+                      onChange={(e) =>
+                        setEditProduct({
+                          ...editProduct,
+                          stock: Number(e.target.value),
+                        })
+                      }
                     />
                   </Form.Group>
                 </Col>
@@ -674,45 +732,67 @@ const ProductManagement = () => {
                     <Form.Control
                       type="text"
                       name="manufacturer"
-                      value={editProduct.manufacturer || ''}
-                      onChange={e => setEditProduct({ ...editProduct, manufacturer: e.target.value })}
+                      value={editProduct.manufacturer || ""}
+                      onChange={(e) =>
+                        setEditProduct({
+                          ...editProduct,
+                          manufacturer: e.target.value,
+                        })
+                      }
                     />
                   </Form.Group>
                 </Col>
                 <Col md={6}>
                   <Form.Group className="mb-3">
                     <Form.Label>Product Image</Form.Label>
-                    <Form.Control 
-                      type="file" 
+                    <Form.Control
+                      type="file"
                       accept="image/*"
                       onChange={e => setEditProduct({ ...editProduct, image: e.target.files[0] })}
+
                     />
                   </Form.Group>
                 </Col>
               </Row>
               <Form.Group className="mb-3">
                 <Form.Label>Description</Form.Label>
-                <Form.Control 
-                  as="textarea" 
+                <Form.Control
+                  as="textarea"
                   rows={3}
                   name="description"
-                  value={editProduct.description || ''}
-                  onChange={e => setEditProduct({ ...editProduct, description: e.target.value })}
+                  value={editProduct.description || ""}
+                  onChange={(e) =>
+                    setEditProduct({
+                      ...editProduct,
+                      description: e.target.value,
+                    })
+                  }
                 />
               </Form.Group>
             </Form>
           )}
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={() => { setShowEditModal(false); setEditProduct(null); }} disabled={submitting}>
+          <Button
+            variant="secondary"
+            onClick={() => {
+              setShowEditModal(false);
+              setEditProduct(null);
+            }}
+            disabled={submitting}
+          >
             Cancel
           </Button>
-          <Button 
-            variant="primary" 
+          <Button
+            variant="primary"
             onClick={() => handleEditProduct(editProduct)}
             disabled={submitting}
           >
-            {submitting ? <Spinner animation="border" size="sm" /> : 'Save Changes'}
+            {submitting ? (
+              <Spinner animation="border" size="sm" />
+            ) : (
+              "Save Changes"
+            )}
           </Button>
         </Modal.Footer>
       </Modal>
@@ -723,23 +803,24 @@ const ProductManagement = () => {
           <Modal.Title>Confirm Delete</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          Are you sure you want to delete "{selectedProduct?.name}"? This action cannot be undone.
+          Are you sure you want to delete "{selectedProduct?.name}"? This action
+          cannot be undone.
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={() => setShowDeleteModal(false)}>
             Cancel
           </Button>
-          <Button 
-            variant="danger" 
+          <Button
+            variant="danger"
             onClick={() => handleDeleteProduct(selectedProduct?.id)}
             disabled={submitting}
           >
-            {submitting ? <Spinner animation="border" size="sm" /> : 'Delete'}
+            {submitting ? <Spinner animation="border" size="sm" /> : "Delete"}
           </Button>
         </Modal.Footer>
       </Modal>
 
-      <ToastContainer 
+      <ToastContainer
         position="top-right"
         autoClose={2000}
         hideProgressBar={false}
@@ -753,20 +834,20 @@ const ProductManagement = () => {
         limit={3}
         style={{
           zIndex: 9999,
-          position: 'fixed',
-          top: '20px',
-          right: '20px'
+          position: "fixed",
+          top: "20px",
+          right: "20px",
         }}
         toastStyle={{
-          backgroundColor: 'white',
-          color: 'black',
-          boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
-          borderRadius: '8px',
-          border: '1px solid #e0e0e0'
+          backgroundColor: "white",
+          color: "black",
+          boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
+          borderRadius: "8px",
+          border: "1px solid #e0e0e0",
         }}
       />
     </Container>
   );
 };
 
-export default ProductManagement; 
+export default ProductManagement;
