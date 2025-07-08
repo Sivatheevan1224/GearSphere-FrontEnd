@@ -58,7 +58,7 @@ const MemoryForm = ({ onSubmit }) => {
         modules: parseInt(formData.modules) || null,
         cas_latency: parseInt(formData.cas_latency) || null,
         voltage: parseFloat(formData.voltage) || null,
-        image_file: selectedImage // Include the actual file for upload
+        image: selectedImage // Use 'image' instead of 'image_file'
       };
 
       await onSubmit(productData);

@@ -150,10 +150,10 @@ const ProductManagement = () => {
       
       // Add all form data
       Object.keys(productData).forEach(key => {
-        if (key === 'image_file' && productData[key]) {
-          formData.append('image_file', productData[key]);
+        if (key === 'image' && productData[key]) {
+          formData.append('image', productData[key]);
           console.log('Added image file:', productData[key].name);
-        } else if (key !== 'image_file') {
+        } else if (key !== 'image') {
           formData.append(key, productData[key]);
         }
       });
@@ -237,9 +237,9 @@ const ProductManagement = () => {
       
       // Add all form data
       Object.keys(productData).forEach(key => {
-        if (key === 'image_file' && productData[key]) {
-          formData.append('image_file', productData[key]);
-        } else if (key !== 'image_file' && key !== 'id') {
+        if (key === 'image' && productData[key]) {
+          formData.append('image', productData[key]);
+        } else if (key !== 'image' && key !== 'id') {
           formData.append(key, productData[key]);
         }
       });
@@ -748,12 +748,8 @@ const ProductManagement = () => {
                     <Form.Control
                       type="file"
                       accept="image/*"
-                      onChange={(e) =>
-                        setEditProduct({
-                          ...editProduct,
-                          image_file: e.target.files[0],
-                        })
-                      }
+                      onChange={e => setEditProduct({ ...editProduct, image: e.target.files[0] })}
+
                     />
                   </Form.Group>
                 </Col>

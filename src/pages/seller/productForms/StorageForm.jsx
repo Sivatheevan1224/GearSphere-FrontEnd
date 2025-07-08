@@ -53,7 +53,7 @@ const StorageForm = ({ onSubmit }) => {
         ...formData,
         price: parseFloat(formData.price),
         stock: parseInt(formData.stock) || 0,
-        image_file: selectedImage // Include the actual file for upload
+        image: selectedImage // Use 'image' instead of 'image_file'
       };
 
       await onSubmit(productData);

@@ -59,7 +59,7 @@ const MotherboardForm = ({ onSubmit }) => {
         stock: parseInt(formData.stock) || 0,
         memory_slots: parseInt(formData.memory_slots) || null,
         sata_ports: parseInt(formData.sata_ports) || null,
-        image_file: selectedImage // Include the actual file for upload
+        image: selectedImage // Use 'image' instead of 'image_file'
       };
 
       await onSubmit(productData);

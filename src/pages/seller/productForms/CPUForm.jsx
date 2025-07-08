@@ -63,7 +63,7 @@ const CPUForm = ({ onSubmit }) => {
         core_boost_clock: parseFloat(formData.core_boost_clock) || null,
         tdp: parseInt(formData.tdp) || null,
         integrated_graphics: formData.integrated_graphics,
-        image_file: selectedImage // Include the actual file for upload
+        image: selectedImage // Use 'image' instead of 'image_file'
       };
 
       await onSubmit(productData);

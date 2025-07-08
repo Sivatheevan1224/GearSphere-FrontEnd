@@ -55,7 +55,7 @@ const PowerSupplyForm = ({ onSubmit }) => {
         price: parseFloat(formData.price),
         stock: parseInt(formData.stock) || 0,
         wattage: parseInt(formData.wattage) || null,
-        image_file: selectedImage // Include the actual file for upload
+        image: selectedImage // Use 'image' instead of 'image_file'
       };
 
       await onSubmit(productData);
