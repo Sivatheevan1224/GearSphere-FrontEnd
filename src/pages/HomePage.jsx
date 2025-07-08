@@ -127,6 +127,7 @@ function HomePage() {
   const [gpu, setGpu] = useState("All GPUs");
   const [sortBy, setSortBy] = useState("Featured");
   const [partType, setPartType] = useState("All");
+  const [products, setProducts] = useState([]);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -139,6 +140,17 @@ function HomePage() {
       else if (type === "technician") navigate("/technician/dashboard");
     }
   }, [navigate]);
+
+  // Fetch products from backend API
+  useEffect(() => {
+    fetch('http://localhost/gearsphere_api/GearSphere-BackEnd/getProducts.php')
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) setProducts(data.products);
+        else setProducts([]);
+      })
+      .catch(() => setProducts([]));
+  }, []);
 
   const scrollToSection = (sectionId) => {
     const element = document.getElementById(sectionId);
@@ -154,85 +166,10 @@ function HomePage() {
     }
   };
 
-
-  // PC Parts data
-  const pcParts = [
-    // CPU
-    { type: "CPU", name: "Intel Core i9-13900K", price: 125000, icon: <Cpu size={32} className="text-primary" />, image: null },
-    { type: "CPU", name: "AMD Ryzen 9 7950X", price: 120000, icon: <Cpu size={32} className="text-danger" />, image: null },
-    { type: "CPU", name: "Intel Core i7-13700K", price: 85000, icon: <Cpu size={32} className="text-primary" />, image: null },
-    { type: "CPU", name: "Intel Core i5-12600K", price: 60000, icon: <Cpu size={32} className="text-primary" />, image: null },
-    { type: "CPU", name: "AMD Ryzen 5 5600X", price: 45000, icon: <Cpu size={32} className="text-danger" />, image: null },
-    { type: "CPU", name: "Intel Core i3-12100F", price: 25000, icon: <Cpu size={32} className="text-primary" />, image: null },
-    { type: "CPU", name: "AMD Ryzen 3 4100", price: 18000, icon: <Cpu size={32} className="text-danger" />, image: null },
-    // GPU
-    { type: "GPU", name: "NVIDIA RTX 4090", price: 350000, icon: <Display size={32} className="text-success" />, image: null },
-    { type: "GPU", name: "AMD Radeon RX 7900 XTX", price: 220000, icon: <Display size={32} className="text-danger" />, image: null },
-    { type: "GPU", name: "NVIDIA RTX 4070 Ti", price: 180000, icon: <Display size={32} className="text-success" />, image: null },
-    { type: "GPU", name: "NVIDIA RTX 3060", price: 90000, icon: <Display size={32} className="text-success" />, image: null },
-    { type: "GPU", name: "AMD Radeon RX 6600", price: 70000, icon: <Display size={32} className="text-danger" />, image: null },
-    { type: "GPU", name: "NVIDIA GTX 1660 Super", price: 45000, icon: <Display size={32} className="text-success" />, image: null },
-    { type: "GPU", name: "AMD Radeon RX 6500 XT", price: 35000, icon: <Display size={32} className="text-danger" />, image: null },
-    // RAM
-    { type: "RAM", name: "64GB DDR5 6000MHz", price: 65000, icon: <Memory size={32} className="text-warning" />, image: null },
-    { type: "RAM", name: "32GB DDR5 6000MHz", price: 35000, icon: <Memory size={32} className="text-warning" />, image: null },
-    { type: "RAM", name: "16GB DDR4 3200MHz", price: 12000, icon: <Memory size={32} className="text-warning" />, image: null },
-    { type: "RAM", name: "8GB DDR4 2666MHz", price: 6000, icon: <Memory size={32} className="text-warning" />, image: null },
-    { type: "RAM", name: "8GB DDR3 1600MHz", price: 3500, icon: <Memory size={32} className="text-warning" />, image: null },
-    // Storage
-    { type: "Storage", name: "4TB NVMe SSD", price: 85000, icon: <Hdd size={32} className="text-info" />, image: null },
-    { type: "Storage", name: "2TB NVMe SSD", price: 45000, icon: <Hdd size={32} className="text-info" />, image: null },
-    { type: "Storage", name: "1TB SATA SSD", price: 18000, icon: <Hdd size={32} className="text-info" />, image: null },
-    { type: "Storage", name: "2TB HDD", price: 9000, icon: <Hdd size={32} className="text-info" />, image: null },
-    { type: "Storage", name: "1TB HDD", price: 6000, icon: <Hdd size={32} className="text-info" />, image: null },
-    // PSU
-    { type: "PSU", name: "1200W Platinum", price: 45000, icon: <Power size={32} className="text-secondary" />, image: null },
-    { type: "PSU", name: "850W Gold", price: 28000, icon: <Power size={32} className="text-secondary" />, image: null },
-    { type: "PSU", name: "650W Bronze", price: 12000, icon: <Power size={32} className="text-secondary" />, image: null },
-    { type: "PSU", name: "500W Basic", price: 7000, icon: <Power size={32} className="text-secondary" />, image: null },
-    // Case
-    { type: "Case", name: "Lian Li O11 Dynamic", price: 35000, icon: <PcDisplay size={32} className="text-dark" />, image: null },
-    { type: "Case", name: "NZXT H510", price: 15000, icon: <PcDisplay size={32} className="text-dark" />, image: null },
-    { type: "Case", name: "Cooler Master NR200", price: 18000, icon: <PcDisplay size={32} className="text-dark" />, image: null },
-    { type: "Case", name: "Corsair 4000D Airflow", price: 20000, icon: <PcDisplay size={32} className="text-dark" />, image: null },
-    // Cooling
-    { type: "Cooling", name: "360mm AIO Liquid Cooler", price: 35000, icon: <Fan size={32} className="text-primary" />, image: null },
-    { type: "Cooling", name: "Premium Air Cooler", price: 20000, icon: <Fan size={32} className="text-primary" />, image: null },
-    { type: "Cooling", name: "120mm Case Fan", price: 3000, icon: <Fan size={32} className="text-primary" />, image: null },
-    { type: "Cooling", name: "ARGB Fan Kit", price: 7000, icon: <Fan size={32} className="text-primary" />, image: null },
-    // Peripherals
-    { type: "Keyboard", name: "Mechanical Keyboard", price: 12000, icon: <Grid3x3Gap size={32} className="text-primary" />, image: null },
-    { type: "Keyboard", name: "Wireless Keyboard", price: 9000, icon: <Grid3x3Gap size={32} className="text-primary" />, image: null },
-    { type: "Mouse", name: "Gaming Mouse", price: 8000, icon: <Person size={32} className="text-success" />, image: null },
-    { type: "Mouse", name: "Wireless Mouse", price: 7000, icon: <Person size={32} className="text-success" />, image: null },
-    { type: "Speaker", name: "Stereo Speakers", price: 15000, icon: <Headset size={32} className="text-danger" />, image: null },
-    { type: "Speaker", name: "Bluetooth Speaker", price: 10000, icon: <Headset size={32} className="text-danger" />, image: null },
-    { type: "Monitor", name: "27'' 4K Monitor", price: 90000, icon: <Display size={32} className="text-info" />, image: null },
-    { type: "Monitor", name: "24'' FHD Monitor", price: 40000, icon: <Display size={32} className="text-info" />, image: null },
-    { type: "Monitor", name: "32'' QHD Curved Monitor", price: 120000, icon: <Display size={32} className="text-info" />, image: null },
-    { type: "Webcam", name: "HD Webcam", price: 7000, icon: <CameraVideo size={32} className="text-secondary" />, image: null },
-    { type: "Webcam", name: "4K Webcam", price: 15000, icon: <CameraVideo size={32} className="text-secondary" />, image: null },
-    { type: "Microphone", name: "USB Microphone", price: 9000, icon: <Mic size={32} className="text-primary" />, image: null },
-    { type: "Microphone", name: "Studio Microphone", price: 25000, icon: <Mic size={32} className="text-primary" />, image: null },
-    { type: "UPS", name: "1000VA UPS", price: 25000, icon: <BatteryFull size={32} className="text-success" />, image: null },
-    { type: "UPS", name: "600VA UPS", price: 12000, icon: <BatteryFull size={32} className="text-success" />, image: null },
-    { type: "Router", name: "WiFi Router", price: 8000, icon: <Wifi size={32} className="text-info" />, image: null },
-    { type: "Router", name: "Mesh Router", price: 18000, icon: <Wifi size={32} className="text-info" />, image: null },
-    // More peripherals
-    { type: "Mousepad", name: "RGB Mousepad", price: 3500, icon: <Grid3x3Gap size={32} className="text-primary" />, image: null },
-    { type: "Headset", name: "Gaming Headset", price: 12000, icon: <Headset size={32} className="text-danger" />, image: null },
-    { type: "Headset", name: "Wireless Headset", price: 18000, icon: <Headset size={32} className="text-danger" />, image: null },
-    { type: "Monitor Arm", name: "Dual Monitor Arm", price: 15000, icon: <PcDisplay size={32} className="text-dark" />, image: null },
-    { type: "Monitor Arm", name: "Single Monitor Arm", price: 9000, icon: <PcDisplay size={32} className="text-dark" />, image: null },
-    { type: "Controller", name: "Game Controller", price: 8000, icon: <Person size={32} className="text-success" />, image: null },
-    { type: "SSD Enclosure", name: "NVMe SSD Enclosure", price: 5000, icon: <Hdd size={32} className="text-info" />, image: null },
-    { type: "Docking Station", name: "USB-C Docking Station", price: 20000, icon: <Power size={32} className="text-secondary" />, image: null },
-  ];
-
   // Filtered and searched parts
-  const filteredParts = pcParts.filter(part => {
-    const matchesType = partType === "All" || part.type === partType;
-    const matchesSearch = part.name.toLowerCase().includes(searchQuery.toLowerCase());
+  const filteredParts = products.filter(part => {
+    const matchesType = partType === "All" || part.category === partType;
+    const matchesSearch = part.name?.toLowerCase().includes(searchQuery.toLowerCase());
     return matchesType && matchesSearch;
   });
 
@@ -479,66 +416,6 @@ function HomePage() {
                     </Row>
                   </Col>
                 </Row>
-                
-                <Row>
-                  <Col md={12}>
-                    <h2 className="text-center mb-4">Meet Our Team</h2>
-                    <Row>
-                      <Col md={3} className="mb-4">
-                        <div className="text-center team-member-card p-3 h-100">
-                          <img 
-                            src={sivatheevanImg}
-                            alt="Team Member" 
-                            className="rounded-circle mb-3"
-                            width="150"
-                            height="155"
-                          />
-                          <h4>Sivatheevan</h4>
-                          <p className="text-muted">Founder & CEO</p>
-                        </div>
-                      </Col>
-                      <Col md={3} className="mb-4">
-                        <div className="text-center team-member-card p-3 h-100">
-                          <img 
-                            src={makinthanImg} 
-                            alt="Team Member" 
-                            className="rounded-circle mb-3"
-                            width="150"
-                            height="155"
-                          />
-                          <h4>Makinthan</h4>
-                          <p className="text-muted">Head of Operations</p>
-                        </div>
-                      </Col>
-                      <Col md={3} className="mb-4">
-                        <div className="text-center team-member-card p-3 h-100">
-                          <img 
-                            src={pugazhImg}
-                            alt="Team Member" 
-                            className="rounded-circle mb-3"
-                            width="150"
-                            height="155"
-                          />
-                          <h4>Pukaliny</h4>
-                          <p className="text-muted">Lead PC Builder</p>
-                        </div>
-                      </Col>
-                      <Col md={3} className="mb-4">
-                        <div className="text-center team-member-card p-3 h-100">
-                          <img 
-                            src={kowsiImg}
-                            alt="Team Member" 
-                            className="rounded-circle mb-3"
-                            width="150"
-                            height="155"
-                          />
-                          <h4>Kowsika</h4>
-                          <p className="text-muted">Customer Support</p>
-                        </div>
-                      </Col>
-                    </Row>
-                  </Col>
-                </Row>
               </Container>
             </section>
 
@@ -731,7 +608,7 @@ function HomePage() {
                   <Col md={6} className="d-flex justify-content-md-end">
                     <Form.Select style={{maxWidth: "220px"}} value={partType} onChange={e => setPartType(e.target.value)}>
                       <option value="All">All Types</option>
-                      {[...new Set(pcParts.map(p => p.type))].map(type => (
+                      {[...new Set(products.map(p => p.category))].map(type => (
                         <option key={type} value={type}>{type}</option>
                       ))}
                     </Form.Select>
@@ -764,13 +641,20 @@ function HomePage() {
                                 <Card className="h-100 shadow-sm text-center">
                                   <Card.Body>
                                     <div className="mb-3">
-                                      {part.image
-                                        ? <img src={part.image} alt={part.name} style={{width: 60, height: 60, objectFit: 'contain'}} />
-                                        : part.icon}
+                                      {part.image_url
+                                        ? <img src={`http://localhost/gearsphere_api/GearSphere-BackEnd/${part.image_url}`} alt={part.name} style={{width: 60, height: 60, objectFit: 'contain'}} />
+                                        : part.icon || <Display size={32} className="text-info" />}
                                     </div>
                                     <Card.Title>{part.name}</Card.Title>
-                                    <Card.Text className="text-muted">{part.type}</Card.Text>
-                                    <h5 className="text-primary mb-0">LKR {part.price.toLocaleString()}</h5>
+                                    <Card.Text className="text-muted">{part.category}</Card.Text>
+                                    <h5 className="text-primary mb-0">LKR {Number(part.price).toLocaleString()}</h5>
+                                    <Button 
+                                      variant="success" 
+                                      className="mt-3 w-100"
+                                      onClick={() => setShowLoginModal(true)}
+                                    >
+                                      Buy
+                                    </Button>
                                   </Card.Body>
                                 </Card>
                               </div>

@@ -113,7 +113,7 @@ const BuildRequests = () => {
                     </div>
                   </td>
                   <td>{request.date}</td>
-                  <td>${request.budget}</td>
+                  <td>LKR {request.budget}</td>
                   <td>{request.requirements.purpose}</td>
                   <td>{getStatusBadge(request.status)}</td>
                   <td>{request.timeline}</td>
@@ -185,7 +185,7 @@ const BuildRequests = () => {
                   <p className="mb-1"><strong>Request ID:</strong> {selectedRequest.id}</p>
                   <p className="mb-1"><strong>Date:</strong> {selectedRequest.date}</p>
                   <p className="mb-1"><strong>Status:</strong> {getStatusBadge(selectedRequest.status)}</p>
-                  <p className="mb-1"><strong>Budget:</strong> ${selectedRequest.budget}</p>
+                  <p className="mb-1"><strong>Budget:</strong> LKR {selectedRequest.budget}</p>
                 </Col>
               </Row>
 
@@ -245,7 +245,7 @@ const BuildRequests = () => {
         <Modal.Body>
           <Form onSubmit={handleSubmitResponse}>
             <Form.Group className="mb-3">
-              <Form.Label>Proposed Price ($)</Form.Label>
+              <Form.Label>Proposed Price (LKR)</Form.Label>
               <Form.Control
                 type="number"
                 value={response.price}

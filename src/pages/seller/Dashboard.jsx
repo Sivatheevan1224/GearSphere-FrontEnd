@@ -1,13 +1,35 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Container, Row, Col, Card, Button, Form, InputGroup, Accordion } from 'react-bootstrap';
 import { Envelope, Telephone, GeoAlt } from 'react-bootstrap-icons';
-import { Shop, Box, CurrencyDollar, Star, People, ArrowUp } from 'react-bootstrap-icons';
+import { Shop, Box, CashStack, Star, People, ArrowUp } from 'react-bootstrap-icons';
 import pcGif from '../../images/pc_video1.gif';
 import logo from '../../images/logo.PNG';
 import pcpic2 from '../../images/pcpic2.jpeg';
 
 function SellerDashboard() {
+  const [productCount, setProductCount] = useState(0);
+  const [topProducts, setTopProducts] = useState([]);
   const formatLKR = (amount) => 'LKR ' + Number(amount).toLocaleString('en-LK');
+
+  useEffect(() => {
+    fetch('http://localhost/gearsphere_api/GearSphere-BackEnd/getProducts.php')
+      .then(res => res.json())
+      .then(data => {
+        if (data.success && Array.isArray(data.products)) {
+          setProductCount(data.products.length);
+          // Sort by price descending and take top 3
+          const sorted = [...data.products].sort((a, b) => Number(b.price) - Number(a.price));
+          setTopProducts(sorted.slice(0, 3));
+        } else {
+          setProductCount(0);
+          setTopProducts([]);
+        }
+      })
+      .catch(() => {
+        setProductCount(0);
+        setTopProducts([]);
+      });
+  }, []);
 
   return (
     <>
@@ -58,7 +80,7 @@ function SellerDashboard() {
             <Card className="text-center">
               <Card.Body>
                 <Shop size={24} className="mb-3 text-primary" />
-                <h3>156</h3>
+                <h3>{productCount}</h3>
                 <p className="text-muted mb-0">Total Products</p>
               </Card.Body>
             </Card>
@@ -75,7 +97,7 @@ function SellerDashboard() {
           <Col md={3}>
             <Card className="text-center">
               <Card.Body>
-                <CurrencyDollar size={24} className="mb-3 text-warning" />
+                <CashStack size={24} className="mb-3 text-warning" />
                 <h3>{formatLKR(12450)}</h3>
                 <p className="text-muted mb-0">Revenue This Month</p>
               </Card.Body>
@@ -135,34 +157,38 @@ function SellerDashboard() {
             <Card className="mb-4">
               <Card.Body>
                 <h4 className="mb-4">Top Products</h4>
-                {[1, 2, 3].map((item) => (
-                  <div key={item} className="mb-3 pb-3 border-bottom">
-                    <div className="d-flex align-items-center">
-                      <img
-                        src="/placeholder.svg?height=40&width=40"
-                        alt="Product"
-                        className="rounded me-2"
-                        width="40"
-                        height="40"
-                      />
-                      <div className="flex-grow-1">
-                        <h6 className="mb-0">Product Name</h6>
-                        <div className="d-flex align-items-center">
-                          <Star className="text-warning me-1" size={14} />
-                          <span>4.8</span>
-                          <span className="ms-2 text-success">
-                            <ArrowUp size={14} />
-                            +12%
-                          </span>
+                {topProducts.length === 0 ? (
+                  <div className="text-center text-muted">No products found.</div>
+                ) : (
+                  topProducts.map((product, idx) => (
+                    <div key={product.product_id || idx} className={`mb-3 pb-3${idx < topProducts.length - 1 ? ' border-bottom' : ''}`}>
+                      <div className="d-flex align-items-center">
+                        <img
+                          src={product.image_url ? `http://localhost/gearsphere_api/GearSphere-BackEnd/${product.image_url}` : '/placeholder.svg?height=40&width=40'}
+                          alt={product.name}
+                          className="rounded me-2"
+                          width="40"
+                          height="40"
+                        />
+                        <div className="flex-grow-1">
+                          <h6 className="mb-0">{product.name}</h6>
+                          <div className="d-flex align-items-center">
+                            <Star className="text-warning me-1" size={14} />
+                            <span>4.8</span>
+                            <span className="ms-2 text-success">
+                              <ArrowUp size={14} />
+                              +12%
+                            </span>
+                          </div>
+                        </div>
+                        <div className="text-end">
+                          <h6 className="mb-0">{formatLKR(product.price)}</h6>
+                          <small className="text-muted">N/A sales</small>
                         </div>
                       </div>
-                      <div className="text-end">
-                        <h6 className="mb-0">{formatLKR(item * 50)}</h6>
-                        <small className="text-muted">{item * 10} sales</small>
-                      </div>
                     </div>
-                  </div>
-                ))}
+                  ))
+                )}
               </Card.Body>
             </Card>
 

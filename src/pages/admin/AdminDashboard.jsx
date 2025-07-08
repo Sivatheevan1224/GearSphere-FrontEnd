@@ -10,16 +10,30 @@ function AdminDashboard() {
     reports: 0,
     analytics: 0
   });
+  const [customerCount, setCustomerCount] = useState(0);
+  const [technicianCount, setTechnicianCount] = useState(0);
 
   // Mock data - Replace with actual API call
   useEffect(() => {
-    setStats({
-      totalUsers: 1200,
+    // Fetch customers
+    fetch('http://localhost/gearsphere_api/GearSphere-BackEnd/getAllCustomers.php?action=getAll')
+      .then(res => res.json())
+      .then(data => setCustomerCount(Array.isArray(data) ? data.length : 0))
+      .catch(() => setCustomerCount(0));
+
+    // Fetch technicians
+    fetch('http://localhost/gearsphere_api/GearSphere-BackEnd/getAllTechnicians.php?action=getAll')
+      .then(res => res.json())
+      .then(data => setTechnicianCount(Array.isArray(data) ? data.length : 0))
+      .catch(() => setTechnicianCount(0));
+
+    setStats(prev => ({
+      ...prev,
       totalOrders: 350,
       pendingVerifications: 7,
       reports: 12,
       analytics: 1
-    });
+    }));
   }, []);
 
   const StatCard = ({ title, value, icon: Icon, color }) => (
@@ -110,7 +124,7 @@ function AdminDashboard() {
           <Col md={4}>
             <StatCard
               title="Total Users"
-              value={stats.totalUsers}
+              value={customerCount + technicianCount}
               icon={People}
               color="primary"
             />

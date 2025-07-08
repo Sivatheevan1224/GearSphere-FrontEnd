@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { Navbar, Container, Nav, Button, Modal } from "react-bootstrap";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { Bell } from "react-bootstrap-icons";
 import axios from 'axios';
 
 function SellerNavbar({ fixed = "top" }) {
   const navigate = useNavigate();
+  const location = useLocation();
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [expanded, setExpanded] = useState(false);
   const [sellerData, setSellerData] = useState({
@@ -75,11 +76,11 @@ function SellerNavbar({ fixed = "top" }) {
           <Navbar.Toggle aria-controls="seller-navbar-nav" />
           <Navbar.Collapse id="seller-navbar-nav">
             <Nav className="me-auto">
-              <Nav.Link as={Link} to="/seller/dashboard" onClick={() => setExpanded(false)}>Dashboard</Nav.Link>
-              <Nav.Link as={Link} to="/seller/products" onClick={() => setExpanded(false)}>Products</Nav.Link>
-              <Nav.Link as={Link} to="/seller/inventory" onClick={() => setExpanded(false)}>Inventory</Nav.Link>
-              <Nav.Link as={Link} to="/seller/orders" onClick={() => setExpanded(false)}>Orders</Nav.Link>
-              <Nav.Link as={Link} to="/seller/analytics" onClick={() => setExpanded(false)}>Analytics</Nav.Link>
+              <Nav.Link as={Link} to="/seller/dashboard" onClick={() => setExpanded(false)} className={location.pathname === "/seller/dashboard" ? "text-primary fw-bold" : ""}>Dashboard</Nav.Link>
+              <Nav.Link as={Link} to="/seller/products" onClick={() => setExpanded(false)} className={location.pathname === "/seller/products" ? "text-primary fw-bold" : ""}>Products</Nav.Link>
+              <Nav.Link as={Link} to="/seller/inventory" onClick={() => setExpanded(false)} className={location.pathname === "/seller/inventory" ? "text-primary fw-bold" : ""}>Inventory</Nav.Link>
+              <Nav.Link as={Link} to="/seller/orders" onClick={() => setExpanded(false)} className={location.pathname === "/seller/orders" ? "text-primary fw-bold" : ""}>Orders</Nav.Link>
+              <Nav.Link as={Link} to="/seller/analytics" onClick={() => setExpanded(false)} className={location.pathname === "/seller/analytics" ? "text-primary fw-bold" : ""}>Analytics</Nav.Link>
             </Nav>
             <div className="d-flex align-items-center">
               <Bell size={22} className="me-3 cursor-pointer text-secondary" style={{ verticalAlign: 'middle' }} />

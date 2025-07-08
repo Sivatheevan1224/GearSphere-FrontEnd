@@ -131,7 +131,7 @@ function SellerProducts() {
                 </div>
                 <p className="text-muted mb-2">{product.category}</p>
                 <div className="d-flex justify-content-between align-items-center mb-3">
-                  <h4 className="mb-0">${product.price}</h4>
+                  <h4 className="mb-0">LKR {product.price}</h4>
                   <span className="badge bg-success">{product.status}</span>
                 </div>
                 <div className="d-flex gap-2">

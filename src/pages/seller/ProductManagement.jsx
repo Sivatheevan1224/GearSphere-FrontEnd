@@ -24,7 +24,6 @@ const ProductManagement = () => {
   const [editProduct, setEditProduct] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('all');
-  const [statusFilter, setStatusFilter] = useState('all');
   const productsPerPage = 10;
   
   // API state
@@ -102,8 +101,8 @@ const ProductManagement = () => {
           name: product.name,
           category: product.category,
           price: parseFloat(product.price),
-          stock: product.stock || 0, // Use actual stock from database
-          status: 'Active', // You might want to add status field to your database
+          stock: Number(product.stock) || 0, // Ensure stock is a number
+          status: product.status,
           rating: 0, // You might want to add rating field to your database
           sales: 0, // You might want to add sales field to your database
           image: product.image_url ? `${API_BASE_URL}/${product.image_url}` : '/placeholder.svg?height=200&width=200',
@@ -289,6 +288,7 @@ const ProductManagement = () => {
         // Refresh products list
         await fetchProducts();
         setShowEditModal(false);
+        setEditProduct(null);
         
         // Show success toast
         toast.success(`Product "${productData.name}" updated successfully!`, {
@@ -357,7 +357,7 @@ const ProductManagement = () => {
     (product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
     product.category.toLowerCase().includes(searchQuery.toLowerCase())) &&
     (categoryFilter === 'all' || product.category === categoryFilter) &&
-    (statusFilter === 'all' || product.status === statusFilter)
+    true
   );
 
   const indexOfLastProduct = currentPage * productsPerPage;
@@ -421,22 +421,7 @@ const ProductManagement = () => {
                 </Form.Select>
               </Form.Group>
             </Col>
-            <Col md={3}>
-              <Form.Group>
-                <Form.Label>Status Filter</Form.Label>
-                <Form.Select
-                  value={statusFilter}
-                  onChange={(e) => setStatusFilter(e.target.value)}
-                >
-                  <option value="all">All Status</option>
-                  <option value="Active">Active</option>
-                  <option value="Inactive">Inactive</option>
-                  <option value="Out of Stock">Out of Stock</option>
-                  <option value="Discontinued">Discontinued</option>
-                </Form.Select>
-              </Form.Group>
-            </Col>
-            <Col md={2} className="d-flex align-items-end">
+            <Col md={2} className="d-flex align-items-end ms-auto text-end">
               <Button 
                 variant="primary" 
                 onClick={() => setShowAddModal(true)}
@@ -466,7 +451,6 @@ const ProductManagement = () => {
                 <th>Category</th>
                 <th>Price</th>
                 <th>Stock</th>
-                <th>Status</th>
                 <th>Rating</th>
                 <th>Sales</th>
                 <th>Actions</th>
@@ -494,7 +478,6 @@ const ProductManagement = () => {
                   <td>{product.category}</td>
                   <td>{formatLKR(product.price)}</td>
                   <td>{product.stock}</td>
-                  <td>{getStatusBadge(product.status)}</td>
                   <td>
                     <div className="d-flex align-items-center">
                       <span className="me-1">{product.rating}</span>
@@ -626,8 +609,8 @@ const ProductManagement = () => {
       </Modal>
 
       {/* Edit Product Modal */}
-      <Modal show={showEditModal} onHide={() => setShowEditModal(false)} size="lg">
-        <Modal.Header closeButton>
+      <Modal show={showEditModal} onHide={() => { if (!submitting) { setShowEditModal(false); setEditProduct(null); } }} size="lg">
+        <Modal.Header closeButton={!submitting}>
           <Modal.Title>Edit Product</Modal.Title>
         </Modal.Header>
         <Modal.Body>
@@ -721,7 +704,7 @@ const ProductManagement = () => {
           )}
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={() => setShowEditModal(false)}>
+          <Button variant="secondary" onClick={() => { setShowEditModal(false); setEditProduct(null); }} disabled={submitting}>
             Cancel
           </Button>
           <Button 
