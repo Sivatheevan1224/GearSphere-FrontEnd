@@ -11,13 +11,13 @@ const PowerSupplyForm = ({ onSubmit }) => {
     description: '',
     manufacturer: '',
     stock: '',
-    
     // Power Supply specific fields
     wattage: '',
+    type: '',
     efficiency_rating: '',
+    length: '',
     modular: '',
-    form_factor: '',
-    color: ''
+    sata_connectors: ''
   });
 
   const [selectedImage, setSelectedImage] = useState(null);
@@ -70,10 +70,11 @@ const PowerSupplyForm = ({ onSubmit }) => {
         manufacturer: '',
         stock: '',
         wattage: '',
+        type: '',
         efficiency_rating: '',
+        length: '',
         modular: '',
-        form_factor: '',
-        color: ''
+        sata_connectors: ''
       });
       setSelectedImage(null);
     } catch (error) {
@@ -169,6 +170,64 @@ const PowerSupplyForm = ({ onSubmit }) => {
             </Col>
             <Col md={6}>
               <Form.Group className="mb-3">
+                <Form.Label>Description</Form.Label>
+                <Form.Control
+                  as="textarea"
+                  rows={3}
+                  name="description"
+                  value={formData.description}
+                  onChange={handleChange}
+                  placeholder="Enter product description"
+                />
+              </Form.Group>
+            </Col>
+          </Row>
+        </Card.Body>
+      </Card>
+
+      <Card className="mb-4">
+        <Card.Header>
+          <h5 className="mb-0">Power Supply Specifications</h5>
+        </Card.Header>
+        <Card.Body>
+          <Row>
+            <Col md={6}>
+              <Form.Group className="mb-3">
+                <Form.Label>Wattage *</Form.Label>
+                <Form.Control
+                  type="number"
+                  name="wattage"
+                  value={formData.wattage}
+                  onChange={handleChange}
+                  required
+                  min="0"
+                  placeholder="e.g., 650"
+                />
+              </Form.Group>
+            </Col>
+            <Col md={6}>
+              <Form.Group className="mb-3">
+                <Form.Label>Type *</Form.Label>
+                <Form.Select
+                  name="type"
+                  value={formData.type}
+                  onChange={handleChange}
+                  required
+                >
+                  <option value="">Select type</option>
+                  <option value="ATX">ATX</option>
+                  <option value="SFX">SFX</option>
+                  <option value="SFX-L">SFX-L</option>
+                  <option value="TFX">TFX</option>
+                  <option value="Other">Other</option>
+                </Form.Select>
+              </Form.Group>
+            </Col>
+          </Row>
+
+          <Row>
+            <Col md={6}>
+              <Form.Group className="mb-3">
                 <Form.Label>Efficiency Rating</Form.Label>
                 <Form.Select
                   name="efficiency_rating"
@@ -185,71 +244,51 @@ const PowerSupplyForm = ({ onSubmit }) => {
                 </Form.Select>
               </Form.Group>
             </Col>
+            <Col md={6}>
+              <Form.Group className="mb-3">
+                <Form.Label>Length (mm)</Form.Label>
+                <Form.Control
+                  type="text"
+                  name="length"
+                  value={formData.length}
+                  onChange={handleChange}
+                  placeholder="e.g., 160"
+                />
+              </Form.Group>
+            </Col>
           </Row>
 
-          <Form.Group className="mb-3">
-            <Form.Label>Description</Form.Label>
-            <Form.Control
-              as="textarea"
-              rows={3}
-              name="description"
-              value={formData.description}
-              onChange={handleChange}
-              placeholder="Enter product description"
-            />
-          </Form.Group>
-        </Card.Body>
-      </Card>
-
-      <Card className="mb-4">
-        <Card.Header>
-          <h5 className="mb-0">Power Supply Specifications</h5>
-        </Card.Header>
-        <Card.Body>
           <Row>
             <Col md={6}>
               <Form.Group className="mb-3">
-                <Form.Label>Modular</Form.Label>
+                <Form.Label>Modular *</Form.Label>
                 <Form.Select
                   name="modular"
                   value={formData.modular}
                   onChange={handleChange}
+                  required
                 >
                   <option value="">Select modular type</option>
+                  <option value="Full">Full</option>
+                  <option value="Semi">Semi</option>
                   <option value="Non-Modular">Non-Modular</option>
-                  <option value="Semi-Modular">Semi-Modular</option>
-                  <option value="Fully Modular">Fully Modular</option>
                 </Form.Select>
               </Form.Group>
             </Col>
             <Col md={6}>
               <Form.Group className="mb-3">
-                <Form.Label>Form Factor</Form.Label>
-                <Form.Select
-                  name="form_factor"
-                  value={formData.form_factor}
+                <Form.Label>SATA Connectors</Form.Label>
+                <Form.Control
+                  type="number"
+                  name="sata_connectors"
+                  value={formData.sata_connectors}
                   onChange={handleChange}
-                >
-                  <option value="">Select form factor</option>
-                  <option value="ATX">ATX</option>
-                  <option value="SFX">SFX</option>
-                  <option value="SFX-L">SFX-L</option>
-                  <option value="TFX">TFX</option>
-                </Form.Select>
+                  min="0"
+                  placeholder="e.g., 6"
+                />
               </Form.Group>
             </Col>
           </Row>
-
-          <Form.Group className="mb-3">
-            <Form.Label>Color</Form.Label>
-            <Form.Control
-              type="text"
-              name="color"
-              value={formData.color}
-              onChange={handleChange}
-              placeholder="e.g., Black, White"
-            />
-          </Form.Group>
         </Card.Body>
       </Card>
 

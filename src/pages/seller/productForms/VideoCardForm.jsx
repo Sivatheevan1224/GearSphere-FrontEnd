@@ -20,8 +20,8 @@ const VideoCardForm = ({ onSubmit }) => {
     boost_clock: '',
     tdp: '',
     length: '',
-    width: '',
-    height: ''
+    interface: '',
+    cooling: ''
   });
 
   const [selectedImage, setSelectedImage] = useState(null);
@@ -62,8 +62,6 @@ const VideoCardForm = ({ onSubmit }) => {
         boost_clock: parseFloat(formData.boost_clock) || null,
         tdp: parseFloat(formData.tdp) || null,
         length: parseFloat(formData.length) || null,
-        width: parseFloat(formData.width) || null,
-        height: parseFloat(formData.height) || null,
         image: selectedImage // Use 'image' instead of 'image_file'
       };
 
@@ -85,8 +83,8 @@ const VideoCardForm = ({ onSubmit }) => {
         boost_clock: '',
         tdp: '',
         length: '',
-        width: '',
-        height: ''
+        interface: '',
+        cooling: ''
       });
       setSelectedImage(null);
     } catch (error) {
@@ -276,7 +274,7 @@ const VideoCardForm = ({ onSubmit }) => {
           </Row>
 
           <Row>
-            <Col md={4}>
+            <Col md={6}>
               <Form.Group className="mb-3">
                 <Form.Label>Length (mm)</Form.Label>
                 <Form.Control
@@ -289,30 +287,57 @@ const VideoCardForm = ({ onSubmit }) => {
                 />
               </Form.Group>
             </Col>
-            <Col md={4}>
+            <Col md={6}>
               <Form.Group className="mb-3">
-                <Form.Label>Width (mm)</Form.Label>
-                <Form.Control
-                  type="number"
-                  name="width"
-                  value={formData.width}
+                <Form.Label>Interface *</Form.Label>
+                <Form.Select
+                  name="interface"
+                  value={formData.interface}
                   onChange={handleChange}
-                  min="0"
-                  placeholder="e.g., 137"
+                  required
+                >
+                  <option value="">Select interface</option>
+                  <option value="PCIe 4.0">PCIe 4.0</option>
+                  <option value="PCIe 3.0">PCIe 3.0</option>
+                  <option value="PCIe 5.0">PCIe 5.0</option>
+                  <option value="AGP">AGP</option>
+                  <option value="Other">Other</option>
+                </Form.Select>
+              </Form.Group>
+            </Col>
+          </Row>
+
+          <Row>
+            <Col md={6}>
+              <Form.Group className="mb-3">
+                <Form.Label>Chipset *</Form.Label>
+                <Form.Control
+                  type="text"
+                  name="chipset"
+                  value={formData.chipset}
+                  onChange={handleChange}
+                  required
+                  placeholder="e.g., NVIDIA RTX 4080, AMD RX 7900 XTX"
                 />
               </Form.Group>
             </Col>
-            <Col md={4}>
+            <Col md={6}>
               <Form.Group className="mb-3">
-                <Form.Label>Height (mm)</Form.Label>
-                <Form.Control
-                  type="number"
-                  name="height"
-                  value={formData.height}
+                <Form.Label>Cooling *</Form.Label>
+                <Form.Select
+                  name="cooling"
+                  value={formData.cooling}
                   onChange={handleChange}
-                  min="0"
-                  placeholder="e.g., 62"
-                />
+                  required
+                >
+                  <option value="">Select cooling type</option>
+                  <option value="Dual Fan">Dual Fan</option>
+                  <option value="Triple Fan">Triple Fan</option>
+                  <option value="Blower">Blower</option>
+                  <option value="Liquid">Liquid</option>
+                  <option value="Passive">Passive</option>
+                  <option value="Other">Other</option>
+                </Form.Select>
               </Form.Group>
             </Col>
           </Row>
