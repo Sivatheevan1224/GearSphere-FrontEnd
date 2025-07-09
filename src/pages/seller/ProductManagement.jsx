@@ -14,6 +14,7 @@ import OperatingSystemForm from './productForms/OperatingSystemForm';
 import MonitorForm from './productForms/MonitorForm';
 import PCCaseForm from './productForms/PCCaseForm';
 import GeneralProductForm from './productForms/GeneralProductForm';
+import GeneralProductEditForm from './editForms/GeneralProductEditForm';
 
 const ProductManagement = () => {
   const [currentPage, setCurrentPage] = useState(1);
@@ -654,147 +655,16 @@ const ProductManagement = () => {
         </Modal.Header>
         <Modal.Body>
           {editProduct && (
-            <Form>
-              <Row>
-                <Col md={6}>
-                  <Form.Group className="mb-3">
-                    <Form.Label>Product Name</Form.Label>
-                    <Form.Control
-                      type="text"
-                      name="name"
-                      value={editProduct.name}
-                      onChange={(e) =>
-                        setEditProduct({ ...editProduct, name: e.target.value })
-                      }
-                    />
-                  </Form.Group>
-                </Col>
-                <Col md={6}>
-                  <Form.Group className="mb-3">
-                    <Form.Label>Category</Form.Label>
-                    <Form.Select
-                      name="category"
-                      value={editProduct.category}
-                      onChange={(e) =>
-                        setEditProduct({
-                          ...editProduct,
-                          category: e.target.value,
-                        })
-                      }
-                    >
-                      {categories.map((category) => (
-                        <option key={category} value={category}>
-                          {category}
-                        </option>
-                      ))}
-                    </Form.Select>
-                  </Form.Group>
-                </Col>
-              </Row>
-              <Row>
-                <Col md={6}>
-                  <Form.Group className="mb-3">
-                    <Form.Label>Price (LKR)</Form.Label>
-                    <Form.Control
-                      type="number"
-                      name="price"
-                      value={editProduct.price}
-                      onChange={(e) =>
-                        setEditProduct({
-                          ...editProduct,
-                          price: Number(e.target.value),
-                        })
-                      }
-                    />
-                  </Form.Group>
-                </Col>
-                <Col md={6}>
-                  <Form.Group className="mb-3">
-                    <Form.Label>Stock</Form.Label>
-                    <Form.Control
-                      type="number"
-                      name="stock"
-                      value={editProduct.stock}
-                      onChange={(e) =>
-                        setEditProduct({
-                          ...editProduct,
-                          stock: Number(e.target.value),
-                        })
-                      }
-                    />
-                  </Form.Group>
-                </Col>
-              </Row>
-              <Row>
-                <Col md={6}>
-                  <Form.Group className="mb-3">
-                    <Form.Label>Manufacturer</Form.Label>
-                    <Form.Control
-                      type="text"
-                      name="manufacturer"
-                      value={editProduct.manufacturer || ""}
-                      onChange={(e) =>
-                        setEditProduct({
-                          ...editProduct,
-                          manufacturer: e.target.value,
-                        })
-                      }
-                    />
-                  </Form.Group>
-                </Col>
-                <Col md={6}>
-                  <Form.Group className="mb-3">
-                    <Form.Label>Product Image</Form.Label>
-                    <Form.Control
-                      type="file"
-                      accept="image/*"
-                      onChange={e => setEditProduct({ ...editProduct, image: e.target.files[0] })}
-
-                    />
-                  </Form.Group>
-                </Col>
-              </Row>
-              <Form.Group className="mb-3">
-                <Form.Label>Description</Form.Label>
-                <Form.Control
-                  as="textarea"
-                  rows={3}
-                  name="description"
-                  value={editProduct.description || ""}
-                  onChange={(e) =>
-                    setEditProduct({
-                      ...editProduct,
-                      description: e.target.value,
-                    })
-                  }
-                />
-              </Form.Group>
-            </Form>
+            <GeneralProductEditForm
+              initialData={editProduct}
+              onSubmit={handleEditProduct}
+              onCancel={() => {
+                setShowEditModal(false);
+                setEditProduct(null);
+              }}
+            />
           )}
         </Modal.Body>
-        <Modal.Footer>
-          <Button
-            variant="secondary"
-            onClick={() => {
-              setShowEditModal(false);
-              setEditProduct(null);
-            }}
-            disabled={submitting}
-          >
-            Cancel
-          </Button>
-          <Button
-            variant="primary"
-            onClick={() => handleEditProduct(editProduct)}
-            disabled={submitting}
-          >
-            {submitting ? (
-              <Spinner animation="border" size="sm" />
-            ) : (
-              "Save Changes"
-            )}
-          </Button>
-        </Modal.Footer>
       </Modal>
 
       {/* Delete Confirmation Modal */}
