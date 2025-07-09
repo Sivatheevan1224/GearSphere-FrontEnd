@@ -11,13 +11,11 @@ const OperatingSystemForm = ({ onSubmit }) => {
     description: '',
     manufacturer: '',
     stock: '',
-    
     // Operating System specific fields
+    model: '',
+    mode: '',
     version: '',
-    edition: '',
-    license_type: '',
-    architecture: '',
-    language: ''
+    max_supported_memory: ''
   });
 
   const [selectedImage, setSelectedImage] = useState(null);
@@ -68,11 +66,10 @@ const OperatingSystemForm = ({ onSubmit }) => {
         description: '',
         manufacturer: '',
         stock: '',
+        model: '',
+        mode: '',
         version: '',
-        edition: '',
-        license_type: '',
-        architecture: '',
-        language: ''
+        max_supported_memory: ''
       });
       setSelectedImage(null);
     } catch (error) {
@@ -151,7 +148,7 @@ const OperatingSystemForm = ({ onSubmit }) => {
           </Row>
 
           <Row>
-            <Col md={6}>
+            <Col md={12}>
               <Form.Group className="mb-3">
                 <Form.Label>Product Image</Form.Label>
                 <Form.Control
@@ -164,18 +161,6 @@ const OperatingSystemForm = ({ onSubmit }) => {
                     Selected: {selectedImage.name}
                   </small>
                 )}
-              </Form.Group>
-            </Col>
-            <Col md={6}>
-              <Form.Group className="mb-3">
-                <Form.Label>Edition</Form.Label>
-                <Form.Control
-                  type="text"
-                  name="edition"
-                  value={formData.edition}
-                  onChange={handleChange}
-                  placeholder="e.g., Pro, Home, Enterprise"
-                />
               </Form.Group>
             </Col>
           </Row>
@@ -202,48 +187,62 @@ const OperatingSystemForm = ({ onSubmit }) => {
           <Row>
             <Col md={6}>
               <Form.Group className="mb-3">
-                <Form.Label>License Type</Form.Label>
-                <Form.Select
-                  name="license_type"
-                  value={formData.license_type}
+                <Form.Label>Model *</Form.Label>
+                <Form.Control
+                  type="text"
+                  name="model"
+                  value={formData.model}
                   onChange={handleChange}
+                  required
+                  placeholder="e.g., Windows, Ubuntu, macOS"
+                />
+              </Form.Group>
+            </Col>
+            <Col md={6}>
+              <Form.Group className="mb-3">
+                <Form.Label>Version *</Form.Label>
+                <Form.Control
+                  type="text"
+                  name="version"
+                  value={formData.version}
+                  onChange={handleChange}
+                  required
+                  placeholder="e.g., 11, 22.04 LTS, Ventura"
+                />
+              </Form.Group>
+            </Col>
+          </Row>
+
+          <Row>
+            <Col md={6}>
+              <Form.Group className="mb-3">
+                <Form.Label>Mode *</Form.Label>
+                <Form.Select
+                  name="mode"
+                  value={formData.mode}
+                  onChange={handleChange}
+                  required
                 >
-                  <option value="">Select license type</option>
-                  <option value="Retail">Retail</option>
-                  <option value="OEM">OEM</option>
-                  <option value="Volume">Volume</option>
-                  <option value="Academic">Academic</option>
-                  <option value="Open Source">Open Source</option>
+                  <option value="">Select mode</option>
+                  <option value="32-bit">32-bit</option>
+                  <option value="64-bit">64-bit</option>
+                  <option value="Both">Both</option>
                 </Form.Select>
               </Form.Group>
             </Col>
             <Col md={6}>
               <Form.Group className="mb-3">
-                <Form.Label>Architecture</Form.Label>
-                <Form.Select
-                  name="architecture"
-                  value={formData.architecture}
+                <Form.Label>Max Supported Memory</Form.Label>
+                <Form.Control
+                  type="text"
+                  name="max_supported_memory"
+                  value={formData.max_supported_memory}
                   onChange={handleChange}
-                >
-                  <option value="">Select architecture</option>
-                  <option value="32-bit">32-bit</option>
-                  <option value="64-bit">64-bit</option>
-                  <option value="32-bit/64-bit">32-bit/64-bit</option>
-                </Form.Select>
+                  placeholder="e.g., 128GB, 2TB"
+                />
               </Form.Group>
             </Col>
           </Row>
-
-          <Form.Group className="mb-3">
-            <Form.Label>Language</Form.Label>
-            <Form.Control
-              type="text"
-              name="language"
-              value={formData.language}
-              onChange={handleChange}
-              placeholder="e.g., English, Multi-language"
-            />
-          </Form.Group>
         </Card.Body>
       </Card>
 
