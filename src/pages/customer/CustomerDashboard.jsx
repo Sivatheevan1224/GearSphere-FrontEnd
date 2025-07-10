@@ -1,11 +1,27 @@
-import React, { useState, useEffect } from 'react';
-import { Container, Row, Col, Card, Button, Form, InputGroup, Accordion } from 'react-bootstrap';
-import { Link } from 'react-router-dom';
-import { Award, Star, Cart, Heart, Person, Headset } from 'react-bootstrap-icons';
-import { Envelope, Telephone, GeoAlt } from 'react-bootstrap-icons';
-import pcGif from '../../images/pc_video1.gif';
-import logo from '../../images/logo.PNG';
-import pcpic2 from '../../images/pcpic2.jpeg';
+import React, { useState, useEffect } from "react";
+import {
+  Container,
+  Row,
+  Col,
+  Card,
+  Button,
+  Form,
+  InputGroup,
+  Accordion,
+} from "react-bootstrap";
+import { Link } from "react-router-dom";
+import {
+  Award,
+  Star,
+  Cart,
+  Heart,
+  Person,
+  Headset,
+} from "react-bootstrap-icons";
+import { Envelope, Telephone, GeoAlt } from "react-bootstrap-icons";
+import pcGif from "../../images/pc_video1.gif";
+import logo from "../../images/logo.PNG";
+import pcpic2 from "../../images/pcpic2.jpeg";
 
 function CustomerDashboard() {
   const [stats, setStats] = useState({
@@ -13,7 +29,7 @@ function CustomerDashboard() {
     wishlist: 0,
     reviews: 0,
     supportTickets: 0,
-    loyaltyPoints: 0
+    loyaltyPoints: 0,
   });
 
   // Mock data - Replace with actual API call
@@ -23,7 +39,7 @@ function CustomerDashboard() {
       wishlist: 5,
       reviews: 3,
       supportTickets: 1,
-      loyaltyPoints: 1200
+      loyaltyPoints: 1200,
     });
   }, []);
 
@@ -46,36 +62,61 @@ function CustomerDashboard() {
   return (
     <>
       {/* Hero Section */}
-      <section className="py-0 bg-black text-white position-relative overflow-hidden mb-5" style={{borderTopLeftRadius: 0, borderTopRightRadius: 0, borderBottomLeftRadius: '2rem', borderBottomRightRadius: '2rem', boxShadow: '0 4px 32px rgba(0,0,0,0.10)', marginTop: '-1px', marginBottom: 0, position: 'relative', paddingTop: 0}}>
+      <section
+        className="py-0 bg-black text-white position-relative overflow-hidden mb-5"
+        style={{
+          borderTopLeftRadius: 0,
+          borderTopRightRadius: 0,
+          borderBottomLeftRadius: "2rem",
+          borderBottomRightRadius: "2rem",
+          boxShadow: "0 4px 32px rgba(0,0,0,0.10)",
+          marginTop: "-1px",
+          marginBottom: 0,
+          position: "relative",
+          paddingTop: 0,
+        }}
+      >
         {/* Sharp background image (no blur) */}
         <div
           className="position-absolute top-0 start-0 w-100 h-100"
           style={{
             backgroundImage: `url(${pcpic2})`,
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
+            backgroundSize: "cover",
+            backgroundPosition: "center",
             zIndex: 0,
-            opacity: 0.7
+            opacity: 0.7,
           }}
         ></div>
         {/* Overlay for darkening and contrast */}
         <div
           className="position-absolute top-0 start-0 w-100 h-100"
           style={{
-            background: "radial-gradient(circle at 30% 50%, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0) 70%)",
+            background:
+              "radial-gradient(circle at 30% 50%, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0) 70%)",
             zIndex: 1,
           }}
         ></div>
         <Container className="py-0 position-relative" style={{ zIndex: 2 }}>
           <Row className="align-items-center">
             <Col lg={6} className="mb-5 mb-lg-0">
-              <h1 className="display-3 fw-bold mb-4 rise-up" style={{ animationDelay: '0s' }}>
-                Welcome to Your Dashboard, <span className="text-primary">GearSphere Customer</span>
+              <h1
+                className="display-3 fw-bold mb-4 rise-up"
+                style={{ animationDelay: "0s" }}
+              >
+                Welcome to Your Dashboard,{" "}
+                <span className="text-primary">GearSphere Customer</span>
               </h1>
-              <p className="lead mb-5 rise-up" style={{ animationDelay: '0.3s' }}>
-                Manage your orders, wishlist, reviews, and more. Enjoy your personalized PC experience!
+              <p
+                className="lead mb-5 rise-up"
+                style={{ animationDelay: "0.3s" }}
+              >
+                Manage your orders, wishlist, reviews, and more. Enjoy your
+                personalized PC experience!
               </p>
-              <div className="d-flex gap-3 rise-up" style={{ animationDelay: '0.6s' }}>
+              <div
+                className="d-flex gap-3 rise-up"
+                style={{ animationDelay: "0.6s" }}
+              >
                 {/* Add dashboard-specific buttons here if needed */}
               </div>
             </Col>
@@ -133,27 +174,37 @@ function CustomerDashboard() {
         </Row>
 
         <Row className="mt-4">
-          <Col>
-            
-          </Col>
+          <Col></Col>
         </Row>
       </Container>
       {/* Contact Section */}
-      <section className="py-0 bg-white" style={{borderRadius: '2rem', boxShadow: '0 4px 32px rgba(0,0,0,0.10)', marginTop: '2rem', marginBottom: 0}}>
+      <section
+        className="py-0 bg-white"
+        style={{
+          borderRadius: "2rem",
+          boxShadow: "0 4px 32px rgba(0,0,0,0.10)",
+          marginTop: "2rem",
+          marginBottom: 0,
+        }}
+      >
         <Container>
           <h1 className="text-center mb-5">Contact Us</h1>
           <Row className="mb-5">
             <Col lg={6} className="mb-4 mb-lg-0">
               <h2 className="mb-4">Get In Touch</h2>
               <p className="mb-4">
-                Have questions about your orders or need support? Fill out the form and our team will get back to you as soon as possible.
+                Have questions about your orders or need support? Fill out the
+                form and our team will get back to you as soon as possible.
               </p>
               <Form>
                 <Row>
                   <Col md={6}>
                     <Form.Group className="mb-3">
                       <Form.Label>First Name</Form.Label>
-                      <Form.Control type="text" placeholder="Enter first name" />
+                      <Form.Control
+                        type="text"
+                        placeholder="Enter first name"
+                      />
                     </Form.Group>
                   </Col>
                   <Col md={6}>
@@ -169,7 +220,12 @@ function CustomerDashboard() {
                 </Form.Group>
                 <Form.Group className="mb-3">
                   <Form.Label>Phone Number</Form.Label>
-                  <Form.Control type="tel" placeholder="07X XXX XXXX" pattern="0[0-9]{2} [0-9]{3} [0-9]{4}" title="Enter a valid Sri Lankan phone number (e.g., 077 123 4567)" />
+                  <Form.Control
+                    type="tel"
+                    placeholder="07X XXX XXXX"
+                    pattern="0[0-9]{2} [0-9]{3} [0-9]{4}"
+                    title="Enter a valid Sri Lankan phone number (e.g., 077 123 4567)"
+                  />
                 </Form.Group>
                 <Form.Group className="mb-3">
                   <Form.Label>Subject</Form.Label>
@@ -183,7 +239,11 @@ function CustomerDashboard() {
                 </Form.Group>
                 <Form.Group className="mb-3">
                   <Form.Label>Message</Form.Label>
-                  <Form.Control as="textarea" rows={5} placeholder="Enter your message" />
+                  <Form.Control
+                    as="textarea"
+                    rows={5}
+                    placeholder="Enter your message"
+                  />
                 </Form.Group>
                 <Button variant="primary" type="submit" className="w-100">
                   Send Message
@@ -222,12 +282,24 @@ function CustomerDashboard() {
                         </div>
                         <div>
                           <h5 className="mb-1">Address</h5>
-                          <p className="mb-0">Street Address, City (e.g., Colombo)</p>
+                          <p className="mb-0">
+                            Street Address, City (e.g., Colombo)
+                          </p>
                         </div>
                       </div>
                       {/* Logo at bottom */}
                       <div className="d-flex justify-content-center mt-4">
-                        <img src={logo} alt="GearSphere Logo" style={{height: 60, width: 'auto', background: '#fff', padding: 4, borderRadius: 8}} />
+                        <img
+                          src={logo}
+                          alt="GearSphere Logo"
+                          style={{
+                            height: 60,
+                            width: "auto",
+                            background: "#fff",
+                            padding: 4,
+                            borderRadius: 8,
+                          }}
+                        />
                       </div>
                     </Card.Body>
                   </Card>
@@ -241,4 +313,4 @@ function CustomerDashboard() {
   );
 }
 
-export default CustomerDashboard; 
+export default CustomerDashboard;

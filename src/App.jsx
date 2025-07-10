@@ -1,53 +1,78 @@
-import React from 'react';
-import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
-import { AuthProvider } from './context/AuthContext';
-import { CartProvider } from './pages/customer/CartContext';
-import { OrdersProvider } from './pages/customer/OrdersContext';
-import MainNavbar from './components/navbar/MainNavbar';
-import HomePage from './pages/HomePage';
-import Signup from './components/signup/Signup';
-import TechnicianManagement from './pages/admin/TechnicianManagement';
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import React from "react";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  useLocation,
+} from "react-router-dom";
+import { AuthProvider } from "./context/AuthContext";
+import { CartProvider } from "./pages/customer/CartContext";
+import { OrdersProvider } from "./pages/customer/OrdersContext";
+import MainNavbar from "./components/navbar/MainNavbar";
+import HomePage from "./pages/HomePage";
+import Signup from "./components/signup/Signup";
+import TechnicianManagement from "./pages/admin/TechnicianManagement";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import ScrollToTop from "./components/ScrollToTop";
 
 // Customer Pages
-import Marketplace from './pages/customer/Marketplace';
-import PCBuilder from './pages/customer/PCBuilder';
-import FindTechnician from './pages/customer/FindTechnician';
-import Orders from './pages/customer/Orders';
-import CustomerProfile from './pages/customer/Profile';
-import CustomerDashboard from './pages/customer/CustomerDashboard';
+import Marketplace from "./pages/customer/Marketplace";
+import PCBuilder from "./pages/customer/PCBuilder";
+import FindTechnician from "./pages/customer/FindTechnician";
+import Orders from "./pages/customer/Orders";
+import CustomerProfile from "./pages/customer/Profile";
+import CustomerDashboard from "./pages/customer/CustomerDashboard";
+import CPUPage from "./pages/customer/parts_components/cpu";
+import CompareCPU from "./pages/customer/parts_components/compare_cpu";
+import GPUPage from "./pages/customer/parts_components/gpu";
+import CompareGPU from "./pages/customer/parts_components/compare_gpu";
+import MotherboardPage from "./pages/customer/parts_components/motherboard";
+import CompareMotherboard from "./pages/customer/parts_components/compare_motherboard";
+import MemoryPage from "./pages/customer/parts_components/memory";
+import CompareMemory from "./pages/customer/parts_components/compare_memory";
+import StoragePage from "./pages/customer/parts_components/storage";
+import CompareStorage from "./pages/customer/parts_components/compare_storage";
+import PowerSupplyPage from "./pages/customer/parts_components/powersupply";
+import ComparePowerSupply from "./pages/customer/parts_components/compare_powersupply";
+import CasePage from "./pages/customer/parts_components/case";
+import CompareCase from "./pages/customer/parts_components/compare_case";
+import CPUCoolerPage from "./pages/customer/parts_components/cpucooler";
+import CompareCPUCooler from "./pages/customer/parts_components/compare_cpucooler";
+import MonitorPage from "./pages/customer/parts_components/monitor";
+import CompareMonitor from "./pages/customer/parts_components/compare_monitor";
+import OperatingSystemPage from "./pages/customer/parts_components/operatingsystem";
+import CompareOperatingSystem from "./pages/customer/parts_components/compare_operatingsystem";
 
 // Technician Pages
-import TechnicianDashboard from './pages/technician/Dashboard';
-import TechnicianServices from './pages/technician/Services';
-import BuildRequests from './pages/technician/BuildRequests';
-import TechnicianProfile from './pages/technician/Profile';
-import Earnings from './pages/technician/Earnings';
-import TechnicianReviews from './pages/technician/Reviews';
-import Appointments from './pages/technician/Appointments';
+import TechnicianDashboard from "./pages/technician/Dashboard";
+import TechnicianServices from "./pages/technician/Services";
+import BuildRequests from "./pages/technician/BuildRequests";
+import TechnicianProfile from "./pages/technician/Profile";
+import Earnings from "./pages/technician/Earnings";
+import TechnicianReviews from "./pages/technician/Reviews";
+import Appointments from "./pages/technician/Appointments";
 
 // Admin Pages
-import CustomerManagement from './pages/admin/CustomerManagement';
-import Analytics from './pages/admin/Analytics';
-import AdminMain from './pages/admin/AdminMain';
-import SellerVerification from './pages/admin/SellerVerification';
-import Reports from './pages/admin/Reports';
-import AdminProfile from './pages/admin/Profile';
+import CustomerManagement from "./pages/admin/CustomerManagement";
+import Analytics from "./pages/admin/Analytics";
+import AdminMain from "./pages/admin/AdminMain";
+import Reports from "./pages/admin/Reports";
+import AdminProfile from "./pages/admin/Profile";
 
 // Seller Pages
-import ProductManagement from './pages/seller/ProductManagement';
-import Inventory from './pages/seller/Inventory';
-import SellerOrders from './pages/seller/Orders';
-import SalesAnalytics from './pages/seller/Analytics';
-import SellerProfile from './pages/seller/Profile';
-import SellerMain from './pages/seller/SellerMain';
-import Dashboard from './pages/seller/Dashboard';
+import ProductManagement from "./pages/seller/ProductManagement";
+import Inventory from "./pages/seller/Inventory";
+import SellerOrders from "./pages/seller/Orders";
+import SalesAnalytics from "./pages/seller/Analytics";
+import SellerProfile from "./pages/seller/Profile";
+import SellerMain from "./pages/seller/SellerMain";
+import Dashboard from "./pages/seller/Dashboard";
 
-import CustomerLayout from './pages/customer/CustomerLayout';
-import AdminLayout from './pages/admin/AdminLayout';
-import SellerLayout from './pages/seller/SellerLayout';
-import TechnicianLayout from './pages/technician/TechnicianLayout';
+import CustomerLayout from "./pages/customer/CustomerLayout";
+import AdminLayout from "./pages/admin/AdminLayout";
+import SellerLayout from "./pages/seller/SellerLayout";
+import TechnicianLayout from "./pages/technician/TechnicianLayout";
 
 function AppContent() {
   const location = useLocation();
@@ -60,25 +85,54 @@ function AppContent() {
         {/* Public Routes */}
         <Route path="/" element={<HomePage />} />
         <Route path="/register" element={<Signup />} />
-        
+
         {/* Customer Layout for all customer pages */}
         <Route element={<CustomerLayout />}>
           <Route path="/customer" element={<CustomerDashboard />} />
           <Route path="/customer/dashboard" element={<CustomerDashboard />} />
           <Route path="/marketplace" element={<Marketplace />} />
           <Route path="/pc-builder" element={<PCBuilder />} />
+          <Route path="/cpu" element={<CPUPage />} />
+          <Route path="/compare-cpu" element={<CompareCPU />} />
+          <Route path="/gpu" element={<GPUPage />} />
+          <Route path="/compare-gpu" element={<CompareGPU />} />
+          <Route path="/motherboard" element={<MotherboardPage />} />
+          <Route path="/compare-motherboard" element={<CompareMotherboard />} />
+          <Route path="/memory" element={<MemoryPage />} />
+          <Route path="/compare-memory" element={<CompareMemory />} />
+          <Route path="/storage" element={<StoragePage />} />
+          <Route path="/compare-storage" element={<CompareStorage />} />
+          <Route path="/powersupply" element={<PowerSupplyPage />} />
+          <Route path="/compare-powersupply" element={<ComparePowerSupply />} />
+          <Route path="/case" element={<CasePage />} />
+          <Route path="/compare-case" element={<CompareCase />} />
           <Route path="/find-technician" element={<FindTechnician />} />
           <Route path="/orders" element={<Orders />} />
           <Route path="/profile" element={<CustomerProfile />} />
+          <Route path="/cpucooler" element={<CPUCoolerPage />} />
+          <Route path="/compare-cpucooler" element={<CompareCPUCooler />} />
+          <Route path="/monitor" element={<MonitorPage />} />
+          <Route path="/compare-monitor" element={<CompareMonitor />} />
+          <Route path="/operatingsystem" element={<OperatingSystemPage />} />
+          <Route
+            path="/compare-operatingsystem"
+            element={<CompareOperatingSystem />}
+          />
         </Route>
         {/* Technician Layout for all technician pages */}
         <Route element={<TechnicianLayout />}>
           <Route path="/technician" element={<TechnicianDashboard />} />
-          <Route path="/technician/dashboard" element={<TechnicianDashboard />} />
+          <Route
+            path="/technician/dashboard"
+            element={<TechnicianDashboard />}
+          />
           <Route path="/technician/appointments" element={<Appointments />} />
           <Route path="/technician/profile" element={<TechnicianProfile />} />
           <Route path="/technician/services" element={<TechnicianServices />} />
-          <Route path="/technician/build-requests" element={<BuildRequests />} />
+          <Route
+            path="/technician/build-requests"
+            element={<BuildRequests />}
+          />
           <Route path="/technician/earnings" element={<Earnings />} />
           <Route path="/technician/reviews" element={<TechnicianReviews />} />
         </Route>
@@ -87,7 +141,6 @@ function AppContent() {
           <Route path="/admin" element={<AdminMain />} />
           <Route path="/admin/customers" element={<CustomerManagement />} />
           <Route path="/admin/technicians" element={<TechnicianManagement />} />
-          <Route path="/admin/seller-verification" element={<SellerVerification />} />
           <Route path="/admin/analytics" element={<Analytics />} />
           <Route path="/admin/reports" element={<Reports />} />
           <Route path="/admin/profile" element={<AdminProfile />} />
@@ -116,6 +169,7 @@ function App() {
         v7_relativeSplatPath: true,
       }}
     >
+      <ScrollToTop />
       <ToastContainer
         position="top-right"
         autoClose={2000}
@@ -126,13 +180,13 @@ function App() {
         pauseOnFocusLoss
         draggable
         pauseOnHover
-        theme="colored"  // Optional: 'dark' or 'light' or 'colored'
+        theme="colored" // Optional: 'dark' or 'light' or 'colored'
         style={{ zIndex: 99999 }}
       />
       <AuthProvider>
         <CartProvider>
           <OrdersProvider>
-        <AppContent />
+            <AppContent />
           </OrdersProvider>
         </CartProvider>
       </AuthProvider>
