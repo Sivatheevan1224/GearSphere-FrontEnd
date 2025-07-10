@@ -639,22 +639,26 @@ function HomePage() {
                             rowParts.map((part, idx) => (
                               <div key={idx} style={{flex: '0 0 220px', maxWidth: 220}}>
                                 <Card className="h-100 shadow-sm text-center">
-                                  <Card.Body>
-                                    <div className="mb-3">
-                                      {part.image_url
-                                        ? <img src={`http://localhost/gearsphere_api/GearSphere-BackEnd/${part.image_url}`} alt={part.name} style={{width: 60, height: 60, objectFit: 'contain'}} />
-                                        : part.icon || <Display size={32} className="text-info" />}
+                                  <Card.Body className="d-flex flex-column justify-content-between" style={{paddingBottom: 0}}>
+                                    <div style={{minHeight: 120, display: 'flex', flexDirection: 'column', justifyContent: 'flex-start'}}>
+                                      <div className="mb-3">
+                                        {part.image_url
+                                          ? <img src={`http://localhost/gearsphere_api/GearSphere-BackEnd/${part.image_url}`} alt={part.name} style={{width: 60, height: 60, objectFit: 'contain'}} />
+                                          : part.icon || <Display size={32} className="text-info" />}
+                                      </div>
+                                      <Card.Title>{part.name}</Card.Title>
+                                      <Card.Text className="text-muted">{part.category}</Card.Text>
                                     </div>
-                                    <Card.Title>{part.name}</Card.Title>
-                                    <Card.Text className="text-muted">{part.category}</Card.Text>
-                                    <h5 className="text-primary mb-0">LKR {Number(part.price).toLocaleString()}</h5>
-                                    <Button 
-                                      variant="success" 
-                                      className="mt-3 w-100"
-                                      onClick={() => setShowLoginModal(true)}
-                                    >
-                                      Buy
-                                    </Button>
+                                    <div>
+                                      <h5 className="text-primary mb-2">LKR {Number(part.price).toLocaleString()}</h5>
+                                      <Button 
+                                        variant="success" 
+                                        className="w-100 mb-2"
+                                        onClick={() => setShowLoginModal(true)}
+                                      >
+                                        Buy
+                                      </Button>
+                                    </div>
                                   </Card.Body>
                                 </Card>
                               </div>
