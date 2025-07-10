@@ -1,57 +1,23 @@
-import React, { useState } from 'react';
-import { Container, Row, Col, Card, Button, Form, InputGroup, Modal } from 'react-bootstrap';
-import { Search, Plus, Pencil, Trash, Star } from 'react-bootstrap-icons';
-
-const initialProducts = [
-  {
-    id: 1,
-    name: 'Intel Core i9-13900K',
-    category: 'CPU',
-    price: 550,
-    image: '/placeholder.svg?height=200&width=200',
-    rating: 4.8,
-    stock: 12,
-    status: 'In Stock',
-  },
-  {
-    id: 2,
-    name: 'NVIDIA RTX 4090',
-    category: 'GPU',
-    price: 1800,
-    image: '/placeholder.svg?height=200&width=200',
-    rating: 4.9,
-    stock: 5,
-    status: 'In Stock',
-  },
-  {
-    id: 3,
-    name: 'Corsair Vengeance 32GB DDR5',
-    category: 'RAM',
-    price: 200,
-    image: '/placeholder.svg?height=200&width=200',
-    rating: 4.7,
-    stock: 20,
-    status: 'In Stock',
-  },
-  {
-    id: 4,
-    name: 'Samsung 980 Pro 1TB',
-    category: 'Storage',
-    price: 120,
-    image: '/placeholder.svg?height=200&width=200',
-    rating: 4.6,
-    stock: 8,
-    status: 'In Stock',
-  },
-];
+import React, { useState } from "react";
+import {
+  Container,
+  Row,
+  Col,
+  Card,
+  Button,
+  Form,
+  InputGroup,
+  Modal,
+} from "react-bootstrap";
+import { Search, Plus, Pencil, Trash, Star } from "react-bootstrap-icons";
 
 function SellerProducts() {
-  const [products, setProducts] = useState(initialProducts);
+  const [products, setProducts] = useState([]);
   const [editModalShow, setEditModalShow] = useState(false);
   const [editProduct, setEditProduct] = useState(null);
 
   const handleDelete = (id) => {
-    setProducts(products.filter(p => p.id !== id));
+    setProducts(products.filter((p) => p.id !== id));
   };
 
   const handleEdit = (product) => {
@@ -61,11 +27,16 @@ function SellerProducts() {
 
   const handleEditChange = (e) => {
     const { name, value } = e.target;
-    setEditProduct(prev => ({ ...prev, [name]: name === 'price' || name === 'stock' ? Number(value) : value }));
+    setEditProduct((prev) => ({
+      ...prev,
+      [name]: name === "price" || name === "stock" ? Number(value) : value,
+    }));
   };
 
   const handleEditSave = () => {
-    setProducts(products.map(p => p.id === editProduct.id ? editProduct : p));
+    setProducts(
+      products.map((p) => (p.id === editProduct.id ? editProduct : p))
+    );
     setEditModalShow(false);
     setEditProduct(null);
   };
@@ -79,7 +50,7 @@ function SellerProducts() {
           Add Product
         </Button>
       </div>
-      
+
       {/* Search and Filter */}
       <Row className="mb-4">
         <Col md={6}>
@@ -135,11 +106,19 @@ function SellerProducts() {
                   <span className="badge bg-success">{product.status}</span>
                 </div>
                 <div className="d-flex gap-2">
-                  <Button variant="outline-primary" className="flex-grow-1" onClick={() => handleEdit(product)}>
+                  <Button
+                    variant="outline-primary"
+                    className="flex-grow-1"
+                    onClick={() => handleEdit(product)}
+                  >
                     <Pencil className="me-2" />
                     Edit
                   </Button>
-                  <Button variant="outline-danger" className="flex-grow-1" onClick={() => handleDelete(product.id)}>
+                  <Button
+                    variant="outline-danger"
+                    className="flex-grow-1"
+                    onClick={() => handleDelete(product.id)}
+                  >
                     <Trash className="me-2" />
                     Delete
                   </Button>
@@ -150,7 +129,11 @@ function SellerProducts() {
         ))}
       </Row>
       {/* Edit Product Modal */}
-      <Modal show={editModalShow} onHide={() => setEditModalShow(false)} centered>
+      <Modal
+        show={editModalShow}
+        onHide={() => setEditModalShow(false)}
+        centered
+      >
         <Modal.Header closeButton>
           <Modal.Title>Edit Product</Modal.Title>
         </Modal.Header>
@@ -216,4 +199,4 @@ function SellerProducts() {
   );
 }
 
-export default SellerProducts; 
+export default SellerProducts;
