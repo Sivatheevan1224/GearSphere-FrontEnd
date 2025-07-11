@@ -26,14 +26,14 @@ function Marketplace() {
   }, []);
 
   const categories = [
-    'Graphics Card',
+    'Video Card',    // was 'Graphics Card'
     'CPU',
     'Memory',
     'Storage',
     'Motherboard',
     'Power Supply',
-    'Case',
-    'Cooling',
+    'PC Case',       // was 'Case'
+    'CPU Cooler',    // was 'Cooling'
     'Monitor',
     'Keyboard',
     'Mouse',
