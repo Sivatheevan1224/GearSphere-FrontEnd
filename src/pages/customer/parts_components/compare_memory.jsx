@@ -9,9 +9,10 @@ import {
   Row,
   Col,
 } from "react-bootstrap";
-import { ArrowLeft } from "react-bootstrap-icons";
+import { Memory, ArrowLeft } from "react-bootstrap-icons";
 import CustomerNavbar from "../../pageNavbars/CustomerNavbar";
 import { toast } from "react-toastify";
+import axios from "axios";
 
 const compareMemoryHeadingStyle = `
   .compare-memory-heading {
@@ -33,11 +34,19 @@ const comparisonTableStyle = `
     text-align: center;
     vertical-align: middle;
     border: 1px solid #dee2e6;
+    width: 200px;
+    min-width: 200px;
+    max-width: 200px;
+    word-break: break-word;
   }
   .comparison-table td {
     text-align: center;
     vertical-align: middle;
     border: 1px solid #dee2e6;
+    width: 200px;
+    min-width: 200px;
+    max-width: 200px;
+    word-break: break-word;
   }
   .comparison-table .memory-name {
     font-weight: 600;
@@ -54,27 +63,52 @@ const comparisonTableStyle = `
     font-weight: 600;
     color: #28a745;
   }
-  .comparison-table .rating {
-    color: #f5a623;
-  }
 `;
 
-const memoryIconMap = {
-  "Corsair Vengeance RGB Pro 32GB (2x16GB) DDR4-3600":
-    "/profile_images/memory1.jpg",
-  "G.Skill Ripjaws V 16GB (2x8GB) DDR4-3200": "/profile_images/memory2.jpg",
-  "Crucial Ballistix 8GB (1x8GB) DDR4-2666": "/profile_images/memory3.jpg",
-  "Kingston Fury Beast 64GB (2x32GB) DDR5-6000": "/profile_images/memory4.jpg",
-  "TeamGroup T-Force Vulcan Z 16GB (2x8GB) DDR4-3000":
-    "/profile_images/memory5.jpg",
-  "Patriot Viper Steel 32GB (2x16GB) DDR4-4400": "/profile_images/memory6.jpg",
-  "ADATA XPG Gammix D10 8GB (1x8GB) DDR4-3200": "/profile_images/memory7.jpg",
-  "Corsair Dominator Platinum RGB 64GB (2x32GB) DDR5-7200":
-    "/profile_images/memory8.jpg",
-  "G.Skill Trident Z5 RGB 32GB (2x16GB) DDR5-6400":
-    "/profile_images/memory9.jpg",
-  "Crucial P5 Plus 16GB (2x8GB) DDR4-3600": "/profile_images/memory10.jpg",
-};
+const smallCardStyle = `
+  .memory-compare-card-sm {
+    min-width: 200px;
+    max-width: 250px;
+    margin: 0 auto;
+    padding: 1rem 1rem 1.2rem 1rem;
+    border-radius: 14px;
+  }
+  .memory-compare-card-sm .memory-img {
+    width: 80px;
+    height: 80px;
+    margin-bottom: 0.7rem;
+  }
+  .memory-compare-card-sm .memory-name {
+    font-size: 0.95rem;
+    margin-bottom: 0.3rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    word-break: break-word;
+  }
+  .memory-compare-card-sm .price {
+    font-size: 1.05rem;
+    margin-bottom: 0.4rem;
+  }
+  .memory-compare-card-sm .btn {
+    font-size: 1rem;
+    padding: 0.35rem 1.1rem;
+  }
+  @media (max-width: 991.98px) {
+    .memory-compare-card-sm {
+      min-width: 170px;
+      max-width: 200px;
+    }
+  }
+  @media (max-width: 575.98px) {
+    .memory-compare-card-sm {
+      min-width: 140px;
+      max-width: 170px;
+    }
+  }
+`;
 
 export default function CompareMemoryPage() {
   const [memory, setMemory] = useState([]);
@@ -84,24 +118,34 @@ export default function CompareMemoryPage() {
   useEffect(() => {
     const compareMemory = sessionStorage.getItem("compare_memory");
     if (compareMemory) {
-      try {
-        const parsedMemory = JSON.parse(compareMemory);
-        const memoryWithIcons = parsedMemory.map((mem) => ({
-          ...mem,
-          icon: memoryIconMap[mem.name] || "/profile_images/user_image.jpg",
-        }));
-        setMemory(memoryWithIcons);
-      } catch (error) {
-        console.error("Error parsing memory data:", error);
-        toast.error("Error loading memory comparison data");
-      }
+      const parsedMemory = JSON.parse(compareMemory);
+      const ids = parsedMemory.map((mem) => mem.product_id);
+      axios
+        .get("http://localhost/gearsphere_api/GearSphere-BackEnd/getMemory.php")
+        .then((response) => {
+          const data = response.data;
+          if (data.success) {
+            // Filter only those in compare list
+            const filtered = (data.data || []).filter((mem) =>
+              ids.includes(mem.product_id)
+            );
+            setMemory(filtered);
+          } else {
+            toast.error(data.message || "Failed to fetch memory");
+          }
+          setLoading(false);
+        })
+        .catch(() => {
+          toast.error("Failed to fetch memory");
+          setLoading(false);
+        });
+    } else {
+      setLoading(false);
     }
-    setLoading(false);
   }, []);
 
   const handleSelectMemory = (mem) => {
-    const { icon, ...memWithoutIcon } = mem;
-    sessionStorage.setItem("selected_memory", JSON.stringify(memWithoutIcon));
+    sessionStorage.setItem("selected_memory", JSON.stringify(mem));
     toast.success(`Selected ${mem.name}. Redirecting to PC Builder...`);
     setTimeout(() => {
       navigate("/pc-builder?memorySelected=1");
@@ -151,18 +195,33 @@ export default function CompareMemoryPage() {
       <Container className="py-5">
         <style>{compareMemoryHeadingStyle}</style>
         <style>{comparisonTableStyle}</style>
+        <style>{smallCardStyle}</style>
 
         <div className="d-flex align-items-center justify-content-between mb-4">
           <h1 className="mb-0 compare-memory-heading">Compare Memory</h1>
         </div>
 
-        <Row className="mb-4">
-          {memory.map((mem, index) => (
-            <Col key={mem.name} md={12 / memory.length} className="mb-3">
-              <Card className="h-100 shadow-sm">
+        <Row
+          className="mb-4 d-flex flex-row justify-content-center"
+          style={{
+            gap: "2rem",
+            flexWrap: "nowrap",
+            overflowX: "auto",
+            whiteSpace: "nowrap",
+            marginTop: "1.5rem",
+            marginLeft: "0rem",
+          }}
+        >
+          {memory.map((mem) => (
+            <Col key={mem.name} xs="auto" className="p-0">
+              <Card className="h-100 shadow-sm memory-compare-card-sm">
                 <Card.Body className="text-center">
                   <img
-                    src={mem.icon || "/profile_images/user_image.jpg"}
+                    src={
+                      mem.image_url
+                        ? `http://localhost/gearsphere_api/GearSphere-BackEnd/${mem.image_url}`
+                        : "/profile_images/user_image.jpg"
+                    }
                     alt={mem.name}
                     className="memory-img mb-2"
                   />
@@ -183,39 +242,25 @@ export default function CompareMemoryPage() {
           ))}
         </Row>
 
-        <Table className="comparison-table">
+        <Table
+          className="comparison-table"
+          style={{ tableLayout: "fixed", width: "100%" }}
+        >
           <thead>
             <tr>
               <th>Specification</th>
               {memory.map((mem) => (
-                <th key={mem.name}>
-                  <div className="text-center">
-                    <img
-                      src={mem.icon || "/profile_images/user_image.jpg"}
-                      alt={mem.name}
-                      className="memory-img"
-                    />
-                    <div className="memory-name">{mem.name}</div>
-                  </div>
-                </th>
+                <th key={mem.name}>{mem.name}</th>
               ))}
             </tr>
           </thead>
           <tbody>
             <tr>
               <td>
-                <strong>Capacity</strong>
+                <strong>Memory Type</strong>
               </td>
               {memory.map((mem) => (
-                <td key={mem.name}>{mem.specs?.capacity || "—"}</td>
-              ))}
-            </tr>
-            <tr>
-              <td>
-                <strong>Type</strong>
-              </td>
-              {memory.map((mem) => (
-                <td key={mem.name}>{mem.specs?.type || "—"}</td>
+                <td key={mem.name}>{mem.memory_type || "—"}</td>
               ))}
             </tr>
             <tr>
@@ -223,15 +268,23 @@ export default function CompareMemoryPage() {
                 <strong>Speed</strong>
               </td>
               {memory.map((mem) => (
-                <td key={mem.name}>{mem.specs?.speed || "—"}</td>
+                <td key={mem.name}>{mem.speed || "—"}</td>
               ))}
             </tr>
             <tr>
               <td>
-                <strong>Latency</strong>
+                <strong>Modules</strong>
               </td>
               {memory.map((mem) => (
-                <td key={mem.name}>{mem.specs?.latency || "—"}</td>
+                <td key={mem.name}>{mem.modules || "—"}</td>
+              ))}
+            </tr>
+            <tr>
+              <td>
+                <strong>CAS Latency</strong>
+              </td>
+              {memory.map((mem) => (
+                <td key={mem.name}>{mem.cas_latency || "—"}</td>
               ))}
             </tr>
             <tr>
@@ -239,96 +292,24 @@ export default function CompareMemoryPage() {
                 <strong>Voltage</strong>
               </td>
               {memory.map((mem) => (
-                <td key={mem.name}>{mem.specs?.voltage || "—"}</td>
+                <td key={mem.name}>{mem.voltage || "—"}</td>
               ))}
             </tr>
             <tr>
               <td>
-                <strong>Performance</strong>
+                <strong>Description</strong>
               </td>
               {memory.map((mem) => (
-                <td key={mem.name}>
-                  {mem.features?.functionality?.performance || "—"}
-                </td>
-              ))}
-            </tr>
-            <tr>
-              <td>
-                <strong>Compatibility</strong>
-              </td>
-              {memory.map((mem) => (
-                <td key={mem.name}>
-                  {mem.features?.functionality?.compatibility || "—"}
-                </td>
-              ))}
-            </tr>
-            <tr>
-              <td>
-                <strong>Reliability</strong>
-              </td>
-              {memory.map((mem) => (
-                <td key={mem.name}>
-                  {mem.features?.functionality?.reliability || "—"}
-                </td>
-              ))}
-            </tr>
-            <tr>
-              <td>
-                <strong>Gaming</strong>
-              </td>
-              {memory.map((mem) => (
-                <td key={mem.name}>{mem.features?.usage?.gaming || "—"}</td>
-              ))}
-            </tr>
-            <tr>
-              <td>
-                <strong>Workstation</strong>
-              </td>
-              {memory.map((mem) => (
-                <td key={mem.name}>
-                  {mem.features?.usage?.workstation || "—"}
-                </td>
-              ))}
-            </tr>
-            <tr>
-              <td>
-                <strong>Productivity</strong>
-              </td>
-              {memory.map((mem) => (
-                <td key={mem.name}>
-                  {mem.features?.usage?.productivity || "—"}
-                </td>
-              ))}
-            </tr>
-            <tr>
-              <td>
-                <strong>Value</strong>
-              </td>
-              {memory.map((mem) => (
-                <td key={mem.name}>
-                  {mem.features?.priceAnalysis?.value || "—"}
-                </td>
-              ))}
-            </tr>
-            <tr>
-              <td>
-                <strong>Target Market</strong>
-              </td>
-              {memory.map((mem) => (
-                <td key={mem.name}>
-                  {mem.features?.priceAnalysis?.targetMarket || "—"}
-                </td>
-              ))}
-            </tr>
-            <tr>
-              <td>
-                <strong>Rating</strong>
-              </td>
-              {memory.map((mem) => (
-                <td key={mem.name}>
-                  <span className="rating">★★★★★</span>
-                  <br />
-                  <small className="text-muted">(123 reviews)</small>
+                <td
+                  key={mem.name}
+                  style={{
+                    whiteSpace: "pre-line",
+                    textAlign: "justify",
+                    fontSize: "0.95em",
+                    verticalAlign: "top",
+                  }}
+                >
+                  {mem.description || "—"}
                 </td>
               ))}
             </tr>

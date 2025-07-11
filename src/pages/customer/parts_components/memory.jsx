@@ -1,467 +1,61 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Container, Button, Table, Form } from "react-bootstrap";
-
+import {
+  Container,
+  Row,
+  Col,
+  Card,
+  Button,
+  Form,
+  Alert,
+  Table,
+} from "react-bootstrap";
+import { Memory } from "react-bootstrap-icons";
 import CustomerNavbar from "../../pageNavbars/CustomerNavbar";
 import { toast } from "react-toastify";
+import axios from "axios";
 
-// Breakpoint hook for responsive comparison limits
 function useBreakpoint() {
   const [breakpoint, setBreakpoint] = useState("lg");
-
-  React.useEffect(() => {
+  useEffect(() => {
     function updateBreakpoint() {
       const width = window.innerWidth;
-      if (width < 576) setBreakpoint("sm");
+      if (width < 768) setBreakpoint("sm");
       else if (width < 992) setBreakpoint("md");
       else setBreakpoint("lg");
     }
-
     updateBreakpoint();
     window.addEventListener("resize", updateBreakpoint);
     return () => window.removeEventListener("resize", updateBreakpoint);
   }, []);
-
   return breakpoint;
 }
 
-export const memoryOptions = [
-  {
-    name: "Corsair Vengeance RGB Pro 32GB (2x16GB) DDR4-3600",
-    price: 25000,
-    tier: "high",
-    specs: {
-      capacity: "32GB (2x16GB)",
-      type: "DDR4",
-      speed: "3600 MHz",
-      latency: "CL18",
-      voltage: "1.35V",
-    },
-    features: {
-      functionality: {
-        performance: "Excellent",
-        compatibility: "Outstanding",
-        reliability: "Superb",
-        powerEfficiency: "High",
-      },
-      usage: {
-        gaming: "Perfect for high-end gaming",
-        workstation: "Ideal for professional workstations",
-        productivity: "Excellent for heavy multitasking",
-        overclocking: "Great overclocking potential",
-      },
-      uniqueFeatures: [
-        "RGB Lighting",
-        "XMP 2.0 Support",
-        "Aluminum Heat Spreader",
-        "Lifetime Warranty",
-        "Intel XMP Ready",
-      ],
-      priceAnalysis: {
-        value: "Premium",
-        performancePerRupee: "High",
-        targetMarket: "Enthusiasts and Professionals",
-      },
-    },
-  },
-  {
-    name: "G.Skill Ripjaws V 16GB (2x8GB) DDR4-3200",
-    price: 12000,
-    tier: "mid",
-    specs: {
-      capacity: "16GB (2x8GB)",
-      type: "DDR4",
-      speed: "3200 MHz",
-      latency: "CL16",
-      voltage: "1.35V",
-    },
-    features: {
-      functionality: {
-        performance: "Very Good",
-        compatibility: "Excellent",
-        reliability: "Very Good",
-        powerEfficiency: "Good",
-      },
-      usage: {
-        gaming: "Great for gaming builds",
-        workstation: "Good for content creation",
-        productivity: "Excellent for multitasking",
-        overclocking: "Good overclocking potential",
-      },
-      uniqueFeatures: [
-        "XMP 2.0 Support",
-        "Aluminum Heat Spreader",
-        "Lifetime Warranty",
-        "Intel XMP Ready",
-        "AMD Ryzen Optimized",
-      ],
-      priceAnalysis: {
-        value: "Good",
-        performancePerRupee: "Very High",
-        targetMarket: "Gamers and Content Creators",
-      },
-    },
-  },
-  {
-    name: "Crucial Ballistix 8GB (1x8GB) DDR4-2666",
-    price: 6000,
-    tier: "low",
-    specs: {
-      capacity: "8GB (1x8GB)",
-      type: "DDR4",
-      speed: "2666 MHz",
-      latency: "CL19",
-      voltage: "1.2V",
-    },
-    features: {
-      functionality: {
-        performance: "Good",
-        compatibility: "Very Good",
-        reliability: "Good",
-        powerEfficiency: "Very High",
-      },
-      usage: {
-        gaming: "Good for basic gaming",
-        workstation: "Adequate for basic content creation",
-        productivity: "Good for multitasking",
-        overclocking: "Moderate overclocking potential",
-      },
-      uniqueFeatures: [
-        "XMP 2.0 Support",
-        "Aluminum Heat Spreader",
-        "Limited Lifetime Warranty",
-        "Intel XMP Ready",
-        "Low Power Consumption",
-      ],
-      priceAnalysis: {
-        value: "Excellent",
-        performancePerRupee: "High",
-        targetMarket: "Mainstream Users",
-      },
-    },
-  },
-  {
-    name: "Kingston Fury Beast 64GB (2x32GB) DDR5-6000",
-    price: 45000,
-    tier: "high",
-    specs: {
-      capacity: "64GB (2x32GB)",
-      type: "DDR5",
-      speed: "6000 MHz",
-      latency: "CL40",
-      voltage: "1.35V",
-    },
-    features: {
-      functionality: {
-        performance: "Outstanding",
-        compatibility: "Superb",
-        reliability: "Outstanding",
-        powerEfficiency: "High",
-      },
-      usage: {
-        gaming: "Perfect for extreme gaming",
-        workstation: "Ideal for professional workstations",
-        productivity: "Superb for heavy workloads",
-        overclocking: "Excellent overclocking potential",
-      },
-      uniqueFeatures: [
-        "DDR5 Technology",
-        "XMP 3.0 Support",
-        "Aluminum Heat Spreader",
-        "Lifetime Warranty",
-        "Intel XMP Ready",
-        "On-Die ECC",
-      ],
-      priceAnalysis: {
-        value: "Premium",
-        performancePerRupee: "High",
-        targetMarket: "Enthusiasts and Professionals",
-      },
-    },
-  },
-  {
-    name: "TeamGroup T-Force Vulcan Z 16GB (2x8GB) DDR4-3000",
-    price: 9000,
-    tier: "low",
-    specs: {
-      capacity: "16GB (2x8GB)",
-      type: "DDR4",
-      speed: "3000 MHz",
-      latency: "CL16",
-      voltage: "1.35V",
-    },
-    features: {
-      functionality: {
-        performance: "Good",
-        compatibility: "Good",
-        reliability: "Good",
-        powerEfficiency: "Very High",
-      },
-      usage: {
-        gaming: "Good for gaming",
-        workstation: "Adequate for basic content creation",
-        productivity: "Good for multitasking",
-        overclocking: "Moderate overclocking potential",
-      },
-      uniqueFeatures: [
-        "XMP 2.0 Support",
-        "Aluminum Heat Spreader",
-        "Limited Lifetime Warranty",
-        "Intel XMP Ready",
-        "AMD Ryzen Optimized",
-      ],
-      priceAnalysis: {
-        value: "Excellent",
-        performancePerRupee: "Very High",
-        targetMarket: "Budget Gamers",
-      },
-    },
-  },
-  {
-    name: "Patriot Viper Steel 32GB (2x16GB) DDR4-4400",
-    price: 35000,
-    tier: "high",
-    specs: {
-      capacity: "32GB (2x16GB)",
-      type: "DDR4",
-      speed: "4400 MHz",
-      latency: "CL19",
-      voltage: "1.45V",
-    },
-    features: {
-      functionality: {
-        performance: "Outstanding",
-        compatibility: "Excellent",
-        reliability: "Very Good",
-        powerEfficiency: "Good",
-      },
-      usage: {
-        gaming: "Perfect for high-end gaming",
-        workstation: "Ideal for professional workstations",
-        productivity: "Excellent for heavy workloads",
-        overclocking: "Excellent overclocking potential",
-      },
-      uniqueFeatures: [
-        "XMP 2.0 Support",
-        "Aluminum Heat Spreader",
-        "Lifetime Warranty",
-        "Intel XMP Ready",
-        "High Performance",
-        "Low Latency",
-      ],
-      priceAnalysis: {
-        value: "Premium",
-        performancePerRupee: "High",
-        targetMarket: "Enthusiasts and Professionals",
-      },
-    },
-  },
-  {
-    name: "ADATA XPG Gammix D10 8GB (1x8GB) DDR4-3200",
-    price: 7000,
-    tier: "low",
-    specs: {
-      capacity: "8GB (1x8GB)",
-      type: "DDR4",
-      speed: "3200 MHz",
-      latency: "CL16",
-      voltage: "1.35V",
-    },
-    features: {
-      functionality: {
-        performance: "Good",
-        compatibility: "Good",
-        reliability: "Good",
-        powerEfficiency: "Very High",
-      },
-      usage: {
-        gaming: "Good for basic gaming",
-        workstation: "Adequate for basic tasks",
-        productivity: "Good for office work",
-        overclocking: "Moderate overclocking potential",
-      },
-      uniqueFeatures: [
-        "XMP 2.0 Support",
-        "Aluminum Heat Spreader",
-        "Limited Lifetime Warranty",
-        "Intel XMP Ready",
-        "AMD Ryzen Optimized",
-      ],
-      priceAnalysis: {
-        value: "Good",
-        performancePerRupee: "Very High",
-        targetMarket: "Budget Users",
-      },
-    },
-  },
-  {
-    name: "Kingston Fury Beast 16GB (2x8GB) DDR4-3200",
-    price: 15000,
-    tier: "low",
-    specs: {
-      capacity: "16GB (2x8GB)",
-      type: "DDR4",
-      speed: "3200 MHz",
-      latency: "CL16",
-      voltage: "1.35V",
-    },
-    features: {
-      functionality: {
-        performance: "Good",
-        compatibility: "Good",
-        reliability: "Good",
-        powerEfficiency: "High",
-      },
-      usage: {
-        gaming: "Good for gaming",
-        workstation: "Good for light content creation",
-        productivity: "Good for multitasking",
-        overclocking: "No overclocking",
-      },
-      uniqueFeatures: ["Affordable", "Lifetime Warranty"],
-      priceAnalysis: {
-        value: "Excellent",
-        performancePerRupee: "High",
-        targetMarket: "Budget Users",
-      },
-    },
-  },
-  {
-    name: "Corsair Dominator Platinum RGB 64GB (2x32GB) DDR5-7200",
-    price: 65000,
-    tier: "high",
-    specs: {
-      capacity: "64GB (2x32GB)",
-      type: "DDR5",
-      speed: "7200 MHz",
-      latency: "CL36",
-      voltage: "1.4V",
-    },
-    features: {
-      functionality: {
-        performance: "Outstanding",
-        compatibility: "Superb",
-        reliability: "Outstanding",
-        powerEfficiency: "High",
-      },
-      usage: {
-        gaming: "Perfect for extreme gaming",
-        workstation: "Ideal for professional workstations",
-        productivity: "Superb for heavy workloads",
-        overclocking: "Excellent overclocking potential",
-      },
-      uniqueFeatures: [
-        "DDR5 Technology",
-        "RGB Lighting",
-        "XMP 3.0 Support",
-        "Aluminum Heat Spreader",
-        "Lifetime Warranty",
-        "Intel XMP Ready",
-        "On-Die ECC",
-        "Premium Design",
-      ],
-      priceAnalysis: {
-        value: "Premium",
-        performancePerRupee: "High",
-        targetMarket: "Enthusiasts and Professionals",
-      },
-    },
-  },
-  {
-    name: "G.Skill Trident Z5 RGB 32GB (2x16GB) DDR5-6400",
-    price: 38000,
-    tier: "high",
-    specs: {
-      capacity: "32GB (2x16GB)",
-      type: "DDR5",
-      speed: "6400 MHz",
-      latency: "CL32",
-      voltage: "1.4V",
-    },
-    features: {
-      functionality: {
-        performance: "Outstanding",
-        compatibility: "Excellent",
-        reliability: "Very Good",
-        powerEfficiency: "Good",
-      },
-      usage: {
-        gaming: "Perfect for high-end gaming",
-        workstation: "Ideal for professional workstations",
-        productivity: "Excellent for heavy workloads",
-        overclocking: "Excellent overclocking potential",
-      },
-      uniqueFeatures: [
-        "DDR5 Technology",
-        "RGB Lighting",
-        "XMP 3.0 Support",
-        "Aluminum Heat Spreader",
-        "Lifetime Warranty",
-        "Intel XMP Ready",
-        "On-Die ECC",
-        "Low Latency",
-      ],
-      priceAnalysis: {
-        value: "Premium",
-        performancePerRupee: "High",
-        targetMarket: "Enthusiasts and Professionals",
-      },
-    },
-  },
-  {
-    name: "Crucial P5 Plus 16GB (2x8GB) DDR4-3600",
-    price: 15000,
-    tier: "mid",
-    specs: {
-      capacity: "16GB (2x8GB)",
-      type: "DDR4",
-      speed: "3600 MHz",
-      latency: "CL18",
-      voltage: "1.35V",
-    },
-    features: {
-      functionality: {
-        performance: "Very Good",
-        compatibility: "Excellent",
-        reliability: "Very Good",
-        powerEfficiency: "Good",
-      },
-      usage: {
-        gaming: "Great for gaming",
-        workstation: "Good for content creation",
-        productivity: "Very Good for multitasking",
-        overclocking: "Good overclocking potential",
-      },
-      uniqueFeatures: [
-        "XMP 2.0 Support",
-        "Aluminum Heat Spreader",
-        "Limited Lifetime Warranty",
-        "Intel XMP Ready",
-        "AMD Ryzen Optimized",
-        "Micron ICs",
-      ],
-      priceAnalysis: {
-        value: "Good",
-        performancePerRupee: "Very High",
-        targetMarket: "Gamers and Content Creators",
-      },
-    },
-  },
-];
+const baseCardStyle = {
+  boxShadow: "0 2px 12px rgba(0,0,0,0.10), 0 1.5px 4px rgba(0,0,0,0.08)",
+  borderRadius: 16,
+  background: "#fff",
+  transition:
+    "box-shadow 0.3s cubic-bezier(.4,0,.2,1), transform 0.3s cubic-bezier(.4,0,.2,1)",
+  animation: "fadeInCard 0.6s ease",
+  minHeight: 0,
+};
+const hoverCardStyle = {
+  boxShadow: "0 8px 32px rgba(0,0,0,0.18), 0 3px 12px rgba(0,0,0,0.12)",
+  transform: "translateY(-4px) scale(1.03)",
+};
 
-// Add internal CSS for responsive table styling
+if (
+  typeof document !== "undefined" &&
+  !document.getElementById("fadeInCardKeyframes")
+) {
+  const style = document.createElement("style");
+  style.id = "fadeInCardKeyframes";
+  style.innerHTML = `@keyframes fadeInCard { from { opacity: 0; transform: translateY(20px) scale(0.98); } to { opacity: 1; transform: translateY(0) scale(1); } }`;
+  document.head.appendChild(style);
+}
+
 const memoryTableResponsiveStyle = `
-  .memory-table-sm .memory-img {
-    width: 24px;
-    height: 24px;
-    min-width: 24px;
-    min-height: 24px;
-    max-width: 24px;
-    max-height: 24px;
-    margin-right: 8px;
-    border-radius: 4px;
-    object-fit: cover;
-  }
   @media (max-width: 991.98px) {
     .memory-table-sm .memory-img {
       width: 18px !important;
@@ -505,6 +99,9 @@ const selectMemoryHeadingStyle = `
 
 export default function MemoryPage() {
   const [compareSelection, setCompareSelection] = useState([]);
+  const [memory, setMemory] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const navigate = useNavigate();
 
   const breakpoint = useBreakpoint();
@@ -512,26 +109,43 @@ export default function MemoryPage() {
   if (breakpoint === "md") maxCompare = 3;
   if (breakpoint === "sm") maxCompare = 2;
 
-  const [priceSort, setPriceSort] = useState("default"); // 'default', 'asc', or 'desc'
-  const [originalMemoryOrder] = useState(memoryOptions);
+  const [priceSort, setPriceSort] = useState("default");
 
-  let sortedMemory;
+  useEffect(() => {
+    setLoading(true);
+    setError(null);
+    axios
+      .get("http://localhost/gearsphere_api/GearSphere-BackEnd/getMemory.php")
+      .then((response) => {
+        const data = response.data;
+        if (data.success) {
+          setMemory(data.data || []);
+        } else {
+          setError(data.message || "Failed to fetch memory");
+        }
+        setLoading(false);
+      })
+      .catch((err) => {
+        setError("Failed to fetch memory");
+        setLoading(false);
+      });
+  }, []);
+
+  let sortedMemory = [...memory];
   if (priceSort === "asc") {
-    sortedMemory = [...memoryOptions].sort((a, b) => a.price - b.price);
+    sortedMemory.sort((a, b) => a.price - b.price);
   } else if (priceSort === "desc") {
-    sortedMemory = [...memoryOptions].sort((a, b) => b.price - a.price);
-  } else {
-    sortedMemory = originalMemoryOrder;
+    sortedMemory.sort((a, b) => b.price - a.price);
   }
 
   const handleToggleCompare = (option) => {
     setCompareSelection((prev) => {
-      if (prev.some((item) => item.name === option.name)) {
-        return prev.filter((item) => item.name !== option.name);
+      if (prev.some((item) => item.product_id === option.product_id)) {
+        return prev.filter((item) => item.product_id !== option.product_id);
       } else {
         if (prev.length >= maxCompare) {
           toast.warning(
-            `You can only compare up to ${maxCompare} Memory modules at a time on this device.`
+            `You can only compare up to ${maxCompare} memory modules at a time on this device.`
           );
           return prev;
         }
@@ -540,13 +154,9 @@ export default function MemoryPage() {
     });
   };
 
-  const handleSelectMemory = (memory) => {
-    const { icon, ...memoryWithoutIcon } = memory;
-    sessionStorage.setItem(
-      "selected_memory",
-      JSON.stringify(memoryWithoutIcon)
-    );
-    toast.success(`Selected ${memory.name}. Redirecting to PC Builder...`);
+  const handleSelectMemory = (memoryItem) => {
+    sessionStorage.setItem("selected_memory", JSON.stringify(memoryItem));
+    toast.success(`Selected ${memoryItem.name}. Redirecting to PC Builder...`);
     setTimeout(() => {
       navigate("/pc-builder?memorySelected=1");
     }, 1000);
@@ -596,54 +206,89 @@ export default function MemoryPage() {
           <thead>
             <tr>
               <th></th>
+              <th>Image</th>
               <th>Name</th>
-              <th>Capacity</th>
-              <th>Type</th>
+              <th>Memory Type</th>
               <th>Speed</th>
-              <th>Latency</th>
+              <th>Modules</th>
+              <th>CAS Latency</th>
               <th>Voltage</th>
-              <th>Rating</th>
               <th>Price</th>
               <th></th>
             </tr>
           </thead>
           <tbody>
-            {sortedMemory.map((memory) => (
-              <tr key={memory.name}>
-                <td>
-                  <Form.Check
-                    type="checkbox"
-                    checked={compareSelection.some(
-                      (item) => item.name === memory.name
-                    )}
-                    onChange={() => handleToggleCompare(memory)}
-                  />
-                </td>
-                <td className="d-flex align-items-center">
-                  <img
-                    src={memory.icon || "/profile_images/user_image.jpg"}
-                    alt={memory.name}
-                    className="memory-img"
-                  />
-                  <strong className="memory-name">{memory.name}</strong>
-                </td>
-                <td>{memory.specs.capacity}</td>
-                <td>{memory.specs.type}</td>
-                <td>{memory.specs.speed}</td>
-                <td>{memory.specs.latency}</td>
-                <td>{memory.specs.voltage}</td>
-                <td>
-                  <span style={{ color: "#f5a623" }}>★★★★★</span>{" "}
-                  <span style={{ color: "#888" }}>(123)</span>
-                </td>
-                <td>LKR {memory.price.toLocaleString()}</td>
-                <td>
-                  <Button size="sm" onClick={() => handleSelectMemory(memory)}>
-                    Add
-                  </Button>
+            {loading ? (
+              <tr>
+                <td colSpan="10" className="text-center text-muted">
+                  Loading...
                 </td>
               </tr>
-            ))}
+            ) : error ? (
+              <tr>
+                <td colSpan="10" className="text-center text-danger">
+                  {error}
+                </td>
+              </tr>
+            ) : sortedMemory.length === 0 ? (
+              <tr>
+                <td colSpan="10" className="text-center text-muted">
+                  No memory modules available.
+                </td>
+              </tr>
+            ) : (
+              sortedMemory.map((memoryItem) => (
+                <tr key={memoryItem.product_id}>
+                  <td>
+                    <Form.Check
+                      type="checkbox"
+                      checked={compareSelection.some(
+                        (item) => item.product_id === memoryItem.product_id
+                      )}
+                      onChange={() => handleToggleCompare(memoryItem)}
+                    />
+                  </td>
+                  <td>
+                    {memoryItem.image_url ? (
+                      <img
+                        src={`http://localhost/gearsphere_api/GearSphere-BackEnd/${memoryItem.image_url}`}
+                        alt={memoryItem.name}
+                        className="memory-img me-2"
+                        style={{
+                          width: 40,
+                          height: 40,
+                          objectFit: "cover",
+                          borderRadius: 4,
+                        }}
+                      />
+                    ) : (
+                      <Memory size={24} className="me-2 text-secondary" />
+                    )}
+                  </td>
+                  <td>
+                    <strong className="memory-name">{memoryItem.name}</strong>
+                  </td>
+                  <td>{memoryItem.memory_type || "—"}</td>
+                  <td>{memoryItem.speed || "—"}</td>
+                  <td>{memoryItem.modules || "—"}</td>
+                  <td>{memoryItem.cas_latency || "—"}</td>
+                  <td>{memoryItem.voltage || "—"}</td>
+                  <td>
+                    LKR{" "}
+                    {memoryItem.price ? memoryItem.price.toLocaleString() : "—"}
+                  </td>
+                  <td>
+                    <Button
+                      className="btn-darkblue"
+                      size="sm"
+                      onClick={() => handleSelectMemory(memoryItem)}
+                    >
+                      Add
+                    </Button>
+                  </td>
+                </tr>
+              ))
+            )}
           </tbody>
         </Table>
       </Container>

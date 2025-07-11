@@ -7,168 +7,13 @@ import {
   Card,
   Button,
   Form,
+  Alert,
   Table,
 } from "react-bootstrap";
+import { PcDisplay } from "react-bootstrap-icons";
 import { toast } from "react-toastify";
 import CustomerNavbar from "../../pageNavbars/CustomerNavbar";
-
-export const caseOptions = [
-  {
-    name: "NZXT H510",
-    price: 15000,
-    image: "/profile_images/pp5.jpg",
-    tier: "low",
-    specs: {
-      type: "Mid Tower",
-      color: "Matte Black",
-      sidePanel: "Tempered Glass",
-      fansIncluded: 2,
-      maxGPU: "381mm",
-    },
-    features: ["Cable Management", "USB-C Front Panel", "Minimalist Design"],
-  },
-  {
-    name: "Corsair 4000D Airflow",
-    price: 18000,
-    image: "/profile_images/pp6.jpg",
-    tier: "mid",
-    specs: {
-      type: "Mid Tower",
-      color: "White",
-      sidePanel: "Tempered Glass",
-      fansIncluded: 2,
-      maxGPU: "360mm",
-    },
-    features: ["High Airflow", "Easy Cable Routing", "Modern Look"],
-  },
-  {
-    name: "Cooler Master NR200",
-    price: 16000,
-    image: "/profile_images/pp7.jpg",
-    tier: "mid",
-    specs: {
-      type: "Mini-ITX",
-      color: "Black",
-      sidePanel: "Steel",
-      fansIncluded: 2,
-      maxGPU: "330mm",
-    },
-    features: ["Compact Size", "Tool-less Panels", "Versatile Cooling"],
-  },
-  {
-    name: "Lian Li PC-O11 Dynamic",
-    price: 22000,
-    image: "/profile_images/pp8.jpg",
-    tier: "mid",
-    specs: {
-      type: "Mid Tower",
-      color: "White",
-      sidePanel: "Tempered Glass",
-      fansIncluded: 3,
-      maxGPU: "420mm",
-    },
-    features: ["Dual Chamber", "Showcase Design", "Excellent Cooling"],
-  },
-  // 6 more dummy entries
-  {
-    name: "Phanteks Eclipse P400A",
-    price: 17000,
-    image: "/profile_images/pp9.jpg",
-    tier: "mid",
-    specs: {
-      type: "Mid Tower",
-      color: "Black",
-      sidePanel: "Tempered Glass",
-      fansIncluded: 3,
-      maxGPU: "420mm",
-    },
-    features: ["High Airflow", "Mesh Front", "RGB Lighting"],
-  },
-  {
-    name: "Fractal Design Meshify C",
-    price: 19000,
-    image: "/profile_images/pp10.jpg",
-    tier: "mid",
-    specs: {
-      type: "Mid Tower",
-      color: "Black",
-      sidePanel: "Tempered Glass",
-      fansIncluded: 2,
-      maxGPU: "360mm",
-    },
-    features: ["Mesh Front", "Compact Design", "Easy Cable Management"],
-  },
-  {
-    name: "Thermaltake Core V1",
-    price: 12000,
-    image: "/profile_images/pp11.jpg",
-    tier: "low",
-    specs: {
-      type: "Mini-ITX",
-      color: "White",
-      sidePanel: "Acrylic",
-      fansIncluded: 1,
-      maxGPU: "285mm",
-    },
-    features: ["Small Form Factor", "Affordable", "Easy to Build"],
-  },
-  {
-    name: "Cooler Master MasterBox Q300L",
-    price: 11000,
-    image: "/profile_images/pp12.jpg",
-    tier: "low",
-    specs: {
-      type: "Micro-ATX",
-      color: "Black",
-      sidePanel: "Acrylic",
-      fansIncluded: 1,
-      maxGPU: "360mm",
-    },
-    features: ["Modular Design", "Affordable", "Compact"],
-  },
-  {
-    name: "SilverStone RL06",
-    price: 14000,
-    image: "/profile_images/pp13.jpg",
-    tier: "low",
-    specs: {
-      type: "ATX Mid Tower",
-      color: "Red/White",
-      sidePanel: "Tempered Glass",
-      fansIncluded: 4,
-      maxGPU: "400mm",
-    },
-    features: ["High Airflow", "Multiple Fans", "Stylish"],
-  },
-  {
-    name: "Be Quiet! Pure Base 500DX",
-    price: 20000,
-    image: "/profile_images/pp14.jpg",
-    tier: "mid",
-    specs: {
-      type: "Mid Tower",
-      color: "Black",
-      sidePanel: "Tempered Glass",
-      fansIncluded: 3,
-      maxGPU: "369mm",
-    },
-    features: ["Silent Operation", "RGB Lighting", "Premium Build"],
-  },
-  {
-    name: "Zebronics Zeb-Cronus",
-    price: 10000,
-    tier: "low",
-    image: "/profile_images/pp22.jpg",
-    specs: {
-      type: "Mid Tower",
-      color: "Black",
-      sidePanel: "Acrylic",
-      fansIncluded: 2,
-      maxGPU: "320mm",
-    },
-    features: ["Affordable", "Spacious", "Good Airflow"],
-  },
-];
+import axios from "axios";
 
 function useBreakpoint() {
   const [breakpoint, setBreakpoint] = useState("lg");
@@ -186,31 +31,108 @@ function useBreakpoint() {
   return breakpoint;
 }
 
+const caseTableResponsiveStyle = `
+  .case-table-sm .case-img {
+    width: 40px !important;
+    height: 40px !important;
+    min-width: 40px !important;
+    min-height: 40px !important;
+    max-width: 40px !important;
+    max-height: 40px !important;
+    margin-right: 8px !important;
+    border-radius: 6px !important;
+    object-fit: cover;
+  }
+  @media (max-width: 991.98px) {
+    .case-table-sm .case-img {
+      width: 24px !important;
+      height: 24px !important;
+      min-width: 24px !important;
+      min-height: 24px !important;
+      max-width: 24px !important;
+      max-height: 24px !important;
+      margin-right: 4px !important;
+      border-radius: 4px !important;
+      object-fit: cover;
+    }
+  }
+  @media (max-width: 576px) {
+    .case-table-sm td, .case-table-sm th {
+      padding: 0.25rem 0.3rem !important;
+      font-size: 0.85rem !important;
+    }
+    .case-table-sm .case-name {
+      font-size: 0.95rem !important;
+    }
+    .case-table-sm .btn {
+      font-size: 0.8rem !important;
+      padding: 0.2rem 0.5rem !important;
+    }
+  }
+`;
+
+const selectCaseHeadingStyle = `
+  .select-case-heading {
+    font-size: 2.1rem;
+    font-weight: 700;
+    color: #1a237e;
+    letter-spacing: 0.5px;
+    text-shadow: 0 2px 8px rgba(26,35,126,0.08);
+    margin-bottom: 0;
+    margin-top: 0.2em;
+    line-height: 1.1;
+  }
+`;
+
 export default function CasePage() {
   const [compareSelection, setCompareSelection] = useState([]);
+  const [cases, setCases] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const navigate = useNavigate();
+
   const breakpoint = useBreakpoint();
   let maxCompare = 4;
   if (breakpoint === "md") maxCompare = 3;
   if (breakpoint === "sm") maxCompare = 2;
-  const [priceSort, setPriceSort] = useState("default");
-  const [originalOrder] = useState(caseOptions);
-  let sortedOptions;
+
+  const [priceSort, setPriceSort] = useState("default"); // 'default', 'asc', or 'desc'
+
+  useEffect(() => {
+    setLoading(true);
+    setError(null);
+    axios
+      .get("http://localhost/gearsphere_api/GearSphere-BackEnd/getPCCases.php")
+      .then((response) => {
+        const data = response.data;
+        if (data.success) {
+          setCases(data.data || []);
+        } else {
+          setError(data.message || "Failed to fetch PC Cases");
+        }
+        setLoading(false);
+      })
+      .catch((err) => {
+        setError("Failed to fetch PC Cases");
+        setLoading(false);
+      });
+  }, []);
+
+  let sortedCases = [...cases];
   if (priceSort === "asc") {
-    sortedOptions = [...caseOptions].sort((a, b) => a.price - b.price);
+    sortedCases.sort((a, b) => a.price - b.price);
   } else if (priceSort === "desc") {
-    sortedOptions = [...caseOptions].sort((a, b) => b.price - a.price);
-  } else {
-    sortedOptions = originalOrder;
+    sortedCases.sort((a, b) => b.price - a.price);
   }
+
   const handleToggleCompare = (option) => {
     setCompareSelection((prev) => {
-      if (prev.some((item) => item.name === option.name)) {
-        return prev.filter((item) => item.name !== option.name);
+      if (prev.some((item) => item.product_id === option.product_id)) {
+        return prev.filter((item) => item.product_id !== option.product_id);
       } else {
         if (prev.length >= maxCompare) {
           toast.warning(
-            `You can only compare up to ${maxCompare} Cases at a time on this device.`
+            `You can only compare up to ${maxCompare} PC Cases at a time on this device.`
           );
           return prev;
         }
@@ -218,28 +140,33 @@ export default function CasePage() {
       }
     });
   };
-  const handleSelect = (pcCase) => {
+
+  const handleSelectCase = (pcCase) => {
     sessionStorage.setItem("selected_case", JSON.stringify(pcCase));
     toast.success(`Selected ${pcCase.name}. Redirecting to PC Builder...`);
     setTimeout(() => {
       navigate("/pc-builder?caseSelected=1");
     }, 1000);
   };
+
   const handleCompareClick = () => {
     sessionStorage.setItem("compare_cases", JSON.stringify(compareSelection));
     navigate("/compare-case");
   };
+
   const handleTogglePriceSort = () => {
     setPriceSort((prev) =>
       prev === "default" ? "asc" : prev === "asc" ? "desc" : "default"
     );
   };
+
   return (
     <>
       <CustomerNavbar />
       <Container className="py-5">
+        <style>{selectCaseHeadingStyle}</style>
         <div className="d-flex align-items-center justify-content-between mb-4">
-          <h1 className="mb-0">Select PC Case</h1>
+          <h1 className="mb-0 select-case-heading">Select PC Case</h1>
           <div>
             <Button
               variant="outline-primary"
@@ -261,61 +188,86 @@ export default function CasePage() {
             )}
           </div>
         </div>
-        <Table striped bordered hover responsive>
-          <thead>
-            <tr>
-              <th></th>
-              <th>Name</th>
-              <th>Type</th>
-              <th>Color</th>
-              <th>Side Panel</th>
-              <th>Fans Included</th>
-              <th>Max GPU Length</th>
-              <th>Price</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody>
-            {sortedOptions.map((pcCase) => (
-              <tr key={pcCase.name}>
-                <td>
-                  <Form.Check
-                    type="checkbox"
-                    checked={compareSelection.some(
-                      (item) => item.name === pcCase.name
-                    )}
-                    onChange={() => handleToggleCompare(pcCase)}
-                  />
-                </td>
-                <td className="d-flex align-items-center">
-                  <img
-                    src={pcCase.image}
-                    alt={pcCase.name}
-                    style={{
-                      width: 32,
-                      height: 32,
-                      marginRight: 8,
-                      borderRadius: 6,
-                      objectFit: "cover",
-                    }}
-                  />
-                  <strong>{pcCase.name}</strong>
-                </td>
-                <td>{pcCase.specs.type}</td>
-                <td>{pcCase.specs.color}</td>
-                <td>{pcCase.specs.sidePanel}</td>
-                <td>{pcCase.specs.fansIncluded}</td>
-                <td>{pcCase.specs.maxGPU}</td>
-                <td>LKR {pcCase.price.toLocaleString()}</td>
-                <td>
-                  <Button size="sm" onClick={() => handleSelect(pcCase)}>
-                    Add
-                  </Button>
-                </td>
+        <style>{caseTableResponsiveStyle}</style>
+        {error && <Alert variant="danger">{error}</Alert>}
+        {loading ? (
+          <div className="text-center my-5">
+            <div className="spinner-border" role="status">
+              <span className="visually-hidden">Loading...</span>
+            </div>
+          </div>
+        ) : (
+          <Table striped bordered hover responsive className="case-table-sm">
+            <thead>
+              <tr>
+                <th></th>
+                <th>Image</th>
+                <th>Name</th>
+                <th>Type</th>
+                <th>Color</th>
+                <th>Side Panel</th>
+                <th>Max GPU Length</th>
+                <th>Volume</th>
+                <th>Dimensions</th>
+                <th>Price</th>
+                <th></th>
               </tr>
-            ))}
-          </tbody>
-        </Table>
+            </thead>
+            <tbody>
+              {sortedCases.length === 0 ? (
+                <tr>
+                  <td colSpan="11" className="text-center text-muted">
+                    No PC Cases available.
+                  </td>
+                </tr>
+              ) : (
+                sortedCases.map((pcCase) => (
+                  <tr key={pcCase.product_id}>
+                    <td>
+                      <Form.Check
+                        type="checkbox"
+                        checked={compareSelection.some(
+                          (item) => item.product_id === pcCase.product_id
+                        )}
+                        onChange={() => handleToggleCompare(pcCase)}
+                      />
+                    </td>
+                    <td className="text-center align-middle">
+                      <img
+                        src={
+                          pcCase.image_url
+                            ? `http://localhost/gearsphere_api/GearSphere-BackEnd/${pcCase.image_url}`
+                            : "/profile_images/user_image.jpg"
+                        }
+                        alt={pcCase.name}
+                        className="case-img"
+                      />
+                    </td>
+                    <td className="align-middle">
+                      <strong className="case-name">{pcCase.name}</strong>
+                    </td>
+                    <td>{pcCase.type || "—"}</td>
+                    <td>{pcCase.color || "—"}</td>
+                    <td>{pcCase.side_panel || "—"}</td>
+                    <td>{pcCase.max_gpu_length || "—"}</td>
+                    <td>{pcCase.volume || "—"}</td>
+                    <td>{pcCase.dimensions || "—"}</td>
+                    <td>LKR {pcCase.price?.toLocaleString() || "N/A"}</td>
+                    <td>
+                      <Button
+                        className="btn-darkblue"
+                        size="sm"
+                        onClick={() => handleSelectCase(pcCase)}
+                      >
+                        Add
+                      </Button>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </Table>
+        )}
       </Container>
     </>
   );

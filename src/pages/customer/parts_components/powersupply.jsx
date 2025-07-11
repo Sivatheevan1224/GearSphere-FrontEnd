@@ -9,166 +9,10 @@ import {
   Form,
   Table,
 } from "react-bootstrap";
+import { Power } from "react-bootstrap-icons";
 import { toast } from "react-toastify";
 import CustomerNavbar from "../../pageNavbars/CustomerNavbar";
-
-export const powerSupplyOptions = [
-  {
-    name: "Corsair RM850x (850W, Gold)",
-    price: 25000,
-    tier: "high",
-    image: "/profile_images/pp1.png",
-    specs: {
-      wattage: "850W",
-      efficiency: "80+ Gold",
-      modular: "Fully Modular",
-      fan: "135mm Rifle Bearing",
-      warranty: "10 Years",
-    },
-    features: ["Zero RPM Fan Mode", "Japanese Capacitors", "Compact Size"],
-  },
-  {
-    name: "Seasonic Focus GX-750 (750W, Gold)",
-    price: 21000,
-    tier: "high",
-    image: "/profile_images/pp2.png",
-    specs: {
-      wattage: "750W",
-      efficiency: "80+ Gold",
-      modular: "Fully Modular",
-      fan: "120mm Fluid Dynamic",
-      warranty: "7 Years",
-    },
-    features: ["Silent Operation", "Premium Build", "Hybrid Fan Control"],
-  },
-  {
-    name: "Cooler Master MWE 650 Bronze V2",
-    price: 12000,
-    tier: "low",
-    image: "/profile_images/pp3.jpg",
-    specs: {
-      wattage: "650W",
-      efficiency: "80+ Bronze",
-      modular: "Non-Modular",
-      fan: "120mm HDB",
-      warranty: "5 Years",
-    },
-    features: ["Affordable", "Reliable", "Compact"],
-  },
-  {
-    name: "EVGA SuperNOVA 550 G3",
-    price: 11000,
-    tier: "low",
-    image: "/profile_images/pp4.jpg",
-    specs: {
-      wattage: "550W",
-      efficiency: "80+ Gold",
-      modular: "Fully Modular",
-      fan: "130mm Hydraulic",
-      warranty: "7 Years",
-    },
-    features: ["Eco Mode", "Small Form Factor", "High Quality"],
-  },
-  // 6 more dummy entries
-  {
-    name: "Thermaltake Smart 700W",
-    price: 9000,
-    tier: "low",
-    image: "/profile_images/pp5.jpg",
-    specs: {
-      wattage: "700W",
-      efficiency: "80+",
-      modular: "Non-Modular",
-      fan: "120mm",
-      warranty: "3 Years",
-    },
-    features: ["Affordable", "Reliable", "Quiet Operation"],
-  },
-  {
-    name: "Antec Earthwatts 650W Gold",
-    price: 13000,
-    tier: "mid",
-    image: "/profile_images/pp6.jpg",
-    specs: {
-      wattage: "650W",
-      efficiency: "80+ Gold",
-      modular: "Semi-Modular",
-      fan: "120mm",
-      warranty: "5 Years",
-    },
-    features: ["Semi-Modular", "Gold Efficiency", "Silent Fan"],
-  },
-  {
-    name: "Be Quiet! Pure Power 11 600W",
-    price: 14000,
-    tier: "mid",
-    image: "/profile_images/pp7.jpg",
-    specs: {
-      wattage: "600W",
-      efficiency: "80+ Gold",
-      modular: "Non-Modular",
-      fan: "120mm",
-      warranty: "5 Years",
-    },
-    features: ["Silent Operation", "German Engineering", "Reliable"],
-  },
-  {
-    name: "SilverStone Strider 850W Platinum",
-    price: 27000,
-    tier: "high",
-    image: "/profile_images/pp8.jpg",
-    specs: {
-      wattage: "850W",
-      efficiency: "80+ Platinum",
-      modular: "Fully Modular",
-      fan: "120mm",
-      warranty: "7 Years",
-    },
-    features: ["Platinum Efficiency", "Fully Modular", "Compact Size"],
-  },
-  {
-    name: "Gigabyte P650B 650W Bronze",
-    price: 10000,
-    tier: "low",
-    image: "/profile_images/pp9.jpg",
-    specs: {
-      wattage: "650W",
-      efficiency: "80+ Bronze",
-      modular: "Non-Modular",
-      fan: "120mm",
-      warranty: "3 Years",
-    },
-    features: ["Affordable", "Bronze Efficiency", "Reliable"],
-  },
-  {
-    name: "FSP Hydro G Pro 750W",
-    price: 18000,
-    tier: "mid",
-    image: "/profile_images/pp10.jpg",
-    specs: {
-      wattage: "750W",
-      efficiency: "80+ Gold",
-      modular: "Fully Modular",
-      fan: "135mm",
-      warranty: "10 Years",
-    },
-    features: ["Fully Modular", "Gold Efficiency", "Long Warranty"],
-  },
-  {
-    name: "Antec VP650 Plus 650W",
-    price: 12000,
-    tier: "low",
-    image: "/profile_images/pp21.jpg",
-    specs: {
-      wattage: "650W",
-      efficiency: "80+",
-      modular: "Non-Modular",
-      fan: "120mm",
-      warranty: "2 Years",
-    },
-    features: ["Affordable", "Reliable", "Quiet Operation"],
-  },
-];
+import axios from "axios";
 
 function useBreakpoint() {
   const [breakpoint, setBreakpoint] = useState("lg");
@@ -186,31 +30,97 @@ function useBreakpoint() {
   return breakpoint;
 }
 
+const selectPSUHeadingStyle = `
+  .select-psu-heading {
+    font-size: 2.1rem;
+    font-weight: 700;
+    color: #1a237e;
+    letter-spacing: 0.5px;
+    text-shadow: 0 2px 8px rgba(26,35,126,0.08);
+    margin-bottom: 0;
+    margin-top: 0.2em;
+    line-height: 1.1;
+  }
+`;
+
+const psuTableResponsiveStyle = `
+  @media (max-width: 991.98px) {
+    .psu-table-sm .psu-img {
+      width: 18px !important;
+      height: 18px !important;
+      min-width: 18px !important;
+      min-height: 18px !important;
+      max-width: 18px !important;
+      max-height: 18px !important;
+      margin-right: 4px !important;
+      border-radius: 4px !important;
+      object-fit: cover;
+    }
+  }
+  @media (max-width: 576px) {
+    .psu-table-sm td, .psu-table-sm th {
+      padding: 0.25rem 0.3rem !important;
+      font-size: 0.85rem !important;
+    }
+    .psu-table-sm .psu-name {
+      font-size: 0.95rem !important;
+    }
+    .psu-table-sm .btn {
+      font-size: 0.8rem !important;
+      padding: 0.2rem 0.5rem !important;
+    }
+  }
+`;
+
 export default function PowerSupplyPage() {
   const [compareSelection, setCompareSelection] = useState([]);
+  const [psus, setPsus] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const navigate = useNavigate();
   const breakpoint = useBreakpoint();
   let maxCompare = 4;
   if (breakpoint === "md") maxCompare = 3;
   if (breakpoint === "sm") maxCompare = 2;
   const [priceSort, setPriceSort] = useState("default");
-  const [originalOrder] = useState(powerSupplyOptions);
-  let sortedOptions;
+
+  useEffect(() => {
+    setLoading(true);
+    setError(null);
+    axios
+      .get(
+        "http://localhost/gearsphere_api/GearSphere-BackEnd/getPowerSupply.php"
+      )
+      .then((response) => {
+        const data = response.data;
+        if (data.success) {
+          setPsus(data.data || []);
+        } else {
+          setError(data.message || "Failed to fetch power supplies");
+        }
+        setLoading(false);
+      })
+      .catch((err) => {
+        setError("Failed to fetch power supplies");
+        setLoading(false);
+      });
+  }, []);
+
+  let sortedPsus = [...psus];
   if (priceSort === "asc") {
-    sortedOptions = [...powerSupplyOptions].sort((a, b) => a.price - b.price);
+    sortedPsus.sort((a, b) => a.price - b.price);
   } else if (priceSort === "desc") {
-    sortedOptions = [...powerSupplyOptions].sort((a, b) => b.price - a.price);
-  } else {
-    sortedOptions = originalOrder;
+    sortedPsus.sort((a, b) => b.price - a.price);
   }
+
   const handleToggleCompare = (option) => {
     setCompareSelection((prev) => {
-      if (prev.some((item) => item.name === option.name)) {
-        return prev.filter((item) => item.name !== option.name);
+      if (prev.some((item) => item.product_id === option.product_id)) {
+        return prev.filter((item) => item.product_id !== option.product_id);
       } else {
         if (prev.length >= maxCompare) {
           toast.warning(
-            `You can only compare up to ${maxCompare} Power Supplies at a time on this device.`
+            `You can only compare up to ${maxCompare} power supplies at a time on this device.`
           );
           return prev;
         }
@@ -218,6 +128,7 @@ export default function PowerSupplyPage() {
       }
     });
   };
+
   const handleSelect = (psu) => {
     sessionStorage.setItem("selected_powersupply", JSON.stringify(psu));
     toast.success(`Selected ${psu.name}. Redirecting to PC Builder...`);
@@ -225,6 +136,7 @@ export default function PowerSupplyPage() {
       navigate("/pc-builder?powersupplySelected=1");
     }, 1000);
   };
+
   const handleCompareClick = () => {
     sessionStorage.setItem(
       "compare_powersupplies",
@@ -232,17 +144,20 @@ export default function PowerSupplyPage() {
     );
     navigate("/compare-powersupply");
   };
+
   const handleTogglePriceSort = () => {
     setPriceSort((prev) =>
       prev === "default" ? "asc" : prev === "asc" ? "desc" : "default"
     );
   };
+
   return (
     <>
       <CustomerNavbar />
       <Container className="py-5">
+        <style>{selectPSUHeadingStyle}</style>
         <div className="d-flex align-items-center justify-content-between mb-4">
-          <h1 className="mb-0">Select Power Supply</h1>
+          <h1 className="mb-0 select-psu-heading">Select Power Supply</h1>
           <div>
             <Button
               variant="outline-primary"
@@ -264,59 +179,93 @@ export default function PowerSupplyPage() {
             )}
           </div>
         </div>
-        <Table striped bordered hover responsive>
+        <style>{psuTableResponsiveStyle}</style>
+        <Table striped bordered hover responsive className="psu-table-sm">
           <thead>
             <tr>
               <th></th>
+              <th>Image</th>
               <th>Name</th>
               <th>Wattage</th>
+              <th>Type</th>
               <th>Efficiency</th>
+              <th>Length</th>
               <th>Modular</th>
-              <th>Fan</th>
-              <th>Warranty</th>
+              <th>SATA Connectors</th>
               <th>Price</th>
               <th></th>
             </tr>
           </thead>
           <tbody>
-            {sortedOptions.map((psu) => (
-              <tr key={psu.name}>
-                <td>
-                  <Form.Check
-                    type="checkbox"
-                    checked={compareSelection.some(
-                      (item) => item.name === psu.name
-                    )}
-                    onChange={() => handleToggleCompare(psu)}
-                  />
-                </td>
-                <td className="d-flex align-items-center">
-                  <img
-                    src={psu.image}
-                    alt={psu.name}
-                    style={{
-                      width: 32,
-                      height: 32,
-                      marginRight: 8,
-                      borderRadius: 6,
-                      objectFit: "cover",
-                    }}
-                  />
-                  <strong>{psu.name}</strong>
-                </td>
-                <td>{psu.specs.wattage}</td>
-                <td>{psu.specs.efficiency}</td>
-                <td>{psu.specs.modular}</td>
-                <td>{psu.specs.fan}</td>
-                <td>{psu.specs.warranty}</td>
-                <td>LKR {psu.price.toLocaleString()}</td>
-                <td>
-                  <Button size="sm" onClick={() => handleSelect(psu)}>
-                    Add
-                  </Button>
+            {loading ? (
+              <tr>
+                <td colSpan="11" className="text-center text-muted">
+                  Loading...
                 </td>
               </tr>
-            ))}
+            ) : error ? (
+              <tr>
+                <td colSpan="11" className="text-center text-danger">
+                  {error}
+                </td>
+              </tr>
+            ) : sortedPsus.length === 0 ? (
+              <tr>
+                <td colSpan="11" className="text-center text-muted">
+                  No power supplies available.
+                </td>
+              </tr>
+            ) : (
+              sortedPsus.map((psu) => (
+                <tr key={psu.product_id}>
+                  <td>
+                    <Form.Check
+                      type="checkbox"
+                      checked={compareSelection.some(
+                        (item) => item.product_id === psu.product_id
+                      )}
+                      onChange={() => handleToggleCompare(psu)}
+                    />
+                  </td>
+                  <td>
+                    {psu.image_url ? (
+                      <img
+                        src={`http://localhost/gearsphere_api/GearSphere-BackEnd/${psu.image_url}`}
+                        alt={psu.name}
+                        className="psu-img me-2"
+                        style={{
+                          width: 40,
+                          height: 40,
+                          objectFit: "cover",
+                          borderRadius: 4,
+                        }}
+                      />
+                    ) : (
+                      <Power size={24} className="me-2 text-secondary" />
+                    )}
+                  </td>
+                  <td>
+                    <strong className="psu-name">{psu.name}</strong>
+                  </td>
+                  <td>{psu.wattage || "—"}</td>
+                  <td>{psu.psu_type || "—"}</td>
+                  <td>{psu.efficiency_rating || "—"}</td>
+                  <td>{psu.length || "—"}</td>
+                  <td>{psu.modular || "—"}</td>
+                  <td>{psu.sata_connectors || "—"}</td>
+                  <td>LKR {psu.price ? psu.price.toLocaleString() : "—"}</td>
+                  <td>
+                    <Button
+                      className="btn-darkblue"
+                      size="sm"
+                      onClick={() => handleSelect(psu)}
+                    >
+                      Add
+                    </Button>
+                  </td>
+                </tr>
+              ))
+            )}
           </tbody>
         </Table>
       </Container>

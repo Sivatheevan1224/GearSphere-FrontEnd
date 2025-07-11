@@ -33,11 +33,19 @@ const comparisonTableStyle = `
     text-align: center;
     vertical-align: middle;
     border: 1px solid #dee2e6;
+    width: 200px;
+    min-width: 200px;
+    max-width: 200px;
+    word-break: break-word;
   }
   .comparison-table td {
     text-align: center;
     vertical-align: middle;
     border: 1px solid #dee2e6;
+    width: 200px;
+    min-width: 200px;
+    max-width: 200px;
+    word-break: break-word;
   }
   .comparison-table .cpu-name {
     font-weight: 600;
@@ -56,6 +64,51 @@ const comparisonTableStyle = `
   }
   .comparison-table .rating {
     color: #f5a623;
+  }
+`;
+
+const smallCardStyle = `
+  .cpu-compare-card-sm {
+    min-width: 200px;
+    max-width: 250px;
+    margin: 0 auto;
+    padding: 1rem 1rem 1.2rem 1rem;
+    border-radius: 14px;
+  }
+  .cpu-compare-card-sm .cpu-img {
+    width: 80px;
+    height: 80px;
+    margin-bottom: 0.7rem;
+  }
+  .cpu-compare-card-sm .cpu-name {
+    font-size: 0.95rem;
+    margin-bottom: 0.3rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    word-break: break-word;
+  }
+  .cpu-compare-card-sm .price {
+    font-size: 1.05rem;
+    margin-bottom: 0.4rem;
+  }
+  .cpu-compare-card-sm .btn {
+    font-size: 1rem;
+    padding: 0.35rem 1.1rem;
+  }
+  @media (max-width: 991.98px) {
+    .cpu-compare-card-sm {
+      min-width: 170px;
+      max-width: 200px;
+    }
+  }
+  @media (max-width: 575.98px) {
+    .cpu-compare-card-sm {
+      min-width: 140px;
+      max-width: 170px;
+    }
   }
 `;
 
@@ -153,18 +206,33 @@ export default function CompareCPUPage() {
       <Container className="py-5">
         <style>{compareCpuHeadingStyle}</style>
         <style>{comparisonTableStyle}</style>
+        <style>{smallCardStyle}</style>
 
         <div className="d-flex align-items-center justify-content-between mb-4">
           <h1 className="mb-0 compare-cpu-heading">Compare CPUs</h1>
         </div>
 
-        <Row className="mb-4">
+        <Row
+          className="mb-4 d-flex flex-row justify-content-center"
+          style={{
+            gap: "2rem",
+            flexWrap: "nowrap",
+            overflowX: "auto",
+            whiteSpace: "nowrap",
+            marginTop: "1.5rem",
+            marginLeft: "0rem",
+          }}
+        >
           {cpus.map((cpu, index) => (
-            <Col key={cpu.name} md={12 / cpus.length} className="mb-3">
-              <Card className="h-100 shadow-sm">
+            <Col key={cpu.name} xs="auto" className="p-0">
+              <Card className="h-100 shadow-sm cpu-compare-card-sm">
                 <Card.Body className="text-center">
                   <img
-                    src={cpu.icon || "/profile_images/user_image.jpg"}
+                    src={
+                      cpu.image_url
+                        ? `http://localhost/gearsphere_api/GearSphere-BackEnd/${cpu.image_url}`
+                        : "/profile_images/user_image.jpg"
+                    }
                     alt={cpu.name}
                     className="cpu-img mb-2"
                   />
@@ -185,7 +253,10 @@ export default function CompareCPUPage() {
           ))}
         </Row>
 
-        <Table className="comparison-table">
+        <Table
+          className="comparison-table"
+          style={{ tableLayout: "fixed", width: "100%" }}
+        >
           <thead>
             <tr>
               <th>Specification</th>
@@ -200,7 +271,7 @@ export default function CompareCPUPage() {
                 <strong>Cores</strong>
               </td>
               {cpus.map((cpu) => (
-                <td key={cpu.name}>{cpu.specs?.cores || "—"}</td>
+                <td key={cpu.name}>{cpu.core_count ?? "—"}</td>
               ))}
             </tr>
             <tr>
@@ -208,31 +279,23 @@ export default function CompareCPUPage() {
                 <strong>Threads</strong>
               </td>
               {cpus.map((cpu) => (
-                <td key={cpu.name}>{cpu.specs?.threads || "—"}</td>
+                <td key={cpu.name}>{cpu.thread_count ?? "—"}</td>
               ))}
             </tr>
             <tr>
               <td>
-                <strong>Base Speed</strong>
+                <strong>Base Speed (GHz)</strong>
               </td>
               {cpus.map((cpu) => (
-                <td key={cpu.name}>{cpu.specs?.baseSpeed || "—"}</td>
+                <td key={cpu.name}>{cpu.core_clock ?? "—"}</td>
               ))}
             </tr>
             <tr>
               <td>
-                <strong>Boost Speed</strong>
+                <strong>Boost Speed (GHz)</strong>
               </td>
               {cpus.map((cpu) => (
-                <td key={cpu.name}>{cpu.specs?.boostSpeed || "—"}</td>
-              ))}
-            </tr>
-            <tr>
-              <td>
-                <strong>Cache</strong>
-              </td>
-              {cpus.map((cpu) => (
-                <td key={cpu.name}>{cpu.specs?.cache || "—"}</td>
+                <td key={cpu.name}>{cpu.core_boost_clock ?? "—"}</td>
               ))}
             </tr>
             <tr>
@@ -240,15 +303,15 @@ export default function CompareCPUPage() {
                 <strong>TDP</strong>
               </td>
               {cpus.map((cpu) => (
-                <td key={cpu.name}>{cpu.specs?.tdp || "—"}</td>
+                <td key={cpu.name}>{cpu.tdp || "—"}</td>
               ))}
             </tr>
             <tr>
               <td>
-                <strong>Architecture</strong>
+                <strong>Series</strong>
               </td>
               {cpus.map((cpu) => (
-                <td key={cpu.name}>{cpu.features?.architecture || "—"}</td>
+                <td key={cpu.name}>{cpu.series || "—"}</td>
               ))}
             </tr>
             <tr>
@@ -256,18 +319,38 @@ export default function CompareCPUPage() {
                 <strong>Socket</strong>
               </td>
               {cpus.map((cpu) => (
-                <td key={cpu.name}>{cpu.features?.socket || "—"}</td>
+                <td key={cpu.name}>{cpu.socket || "—"}</td>
               ))}
             </tr>
             <tr>
               <td>
-                <strong>Rating</strong>
+                <strong>Integrated Graphics</strong>
               </td>
               {cpus.map((cpu) => (
                 <td key={cpu.name}>
-                  <span className="rating">★★★★★</span>
-                  <br />
-                  <small className="text-muted">(123 reviews)</small>
+                  {cpu.integrated_graphics === 1
+                    ? "Yes"
+                    : cpu.integrated_graphics === 0
+                    ? "No"
+                    : "—"}
+                </td>
+              ))}
+            </tr>
+            <tr>
+              <td>
+                <strong>Description</strong>
+              </td>
+              {cpus.map((cpu) => (
+                <td
+                  key={cpu.name}
+                  style={{
+                    whiteSpace: "pre-line",
+                    textAlign: "justify",
+                    fontSize: "0.95em",
+                    verticalAlign: "top",
+                  }}
+                >
+                  {cpu.description || "—"}
                 </td>
               ))}
             </tr>

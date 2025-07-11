@@ -9,9 +9,10 @@ import {
   Row,
   Col,
 } from "react-bootstrap";
-import { ArrowLeft } from "react-bootstrap-icons";
+import { Hdd, ArrowLeft } from "react-bootstrap-icons";
 import CustomerNavbar from "../../pageNavbars/CustomerNavbar";
 import { toast } from "react-toastify";
+import axios from "axios";
 
 const compareStorageHeadingStyle = `
   .compare-storage-heading {
@@ -33,11 +34,19 @@ const comparisonTableStyle = `
     text-align: center;
     vertical-align: middle;
     border: 1px solid #dee2e6;
+    width: 200px;
+    min-width: 200px;
+    max-width: 200px;
+    word-break: break-word;
   }
   .comparison-table td {
     text-align: center;
     vertical-align: middle;
     border: 1px solid #dee2e6;
+    width: 200px;
+    min-width: 200px;
+    max-width: 200px;
+    word-break: break-word;
   }
   .comparison-table .storage-name {
     font-weight: 600;
@@ -54,23 +63,52 @@ const comparisonTableStyle = `
     font-weight: 600;
     color: #28a745;
   }
-  .comparison-table .rating {
-    color: #f5a623;
-  }
 `;
 
-const storageIconMap = {
-  "Samsung 970 EVO Plus 1TB NVMe M.2 SSD": "/profile_images/storage1.jpg",
-  "Crucial P3 500GB NVMe M.2 SSD": "/profile_images/storage2.jpg",
-  "Western Digital Blue 1TB SATA SSD": "/profile_images/storage3.jpg",
-  "Seagate Barracuda 2TB HDD": "/profile_images/storage4.jpg",
-  "Kingston A2000 1TB NVMe M.2 SSD": "/profile_images/storage5.jpg",
-  "Samsung 980 Pro 2TB NVMe M.2 SSD": "/profile_images/storage6.jpg",
-  "ADATA XPG SX8200 Pro 512GB NVMe M.2 SSD": "/profile_images/storage7.jpg",
-  "Western Digital Black 4TB HDD": "/profile_images/storage8.jpg",
-  "Corsair Force MP600 1TB NVMe M.2 SSD": "/profile_images/storage9.jpg",
-  "TeamGroup MP33 256GB NVMe M.2 SSD": "/profile_images/storage10.jpg",
-};
+const smallCardStyle = `
+  .storage-compare-card-sm {
+    min-width: 200px;
+    max-width: 250px;
+    margin: 0 auto;
+    padding: 1rem 1rem 1.2rem 1rem;
+    border-radius: 14px;
+  }
+  .storage-compare-card-sm .storage-img {
+    width: 80px;
+    height: 80px;
+    margin-bottom: 0.7rem;
+  }
+  .storage-compare-card-sm .storage-name {
+    font-size: 0.95rem;
+    margin-bottom: 0.3rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    word-break: break-word;
+  }
+  .storage-compare-card-sm .price {
+    font-size: 1.05rem;
+    margin-bottom: 0.4rem;
+  }
+  .storage-compare-card-sm .btn {
+    font-size: 1rem;
+    padding: 0.35rem 1.1rem;
+  }
+  @media (max-width: 991.98px) {
+    .storage-compare-card-sm {
+      min-width: 170px;
+      max-width: 200px;
+    }
+  }
+  @media (max-width: 575.98px) {
+    .storage-compare-card-sm {
+      min-width: 140px;
+      max-width: 170px;
+    }
+  }
+`;
 
 export default function CompareStoragePage() {
   const [storage, setStorage] = useState([]);
@@ -80,24 +118,36 @@ export default function CompareStoragePage() {
   useEffect(() => {
     const compareStorage = sessionStorage.getItem("compare_storage");
     if (compareStorage) {
-      try {
-        const parsedStorage = JSON.parse(compareStorage);
-        const storageWithIcons = parsedStorage.map((stor) => ({
-          ...stor,
-          icon: storageIconMap[stor.name] || "/profile_images/user_image.jpg",
-        }));
-        setStorage(storageWithIcons);
-      } catch (error) {
-        console.error("Error parsing storage data:", error);
-        toast.error("Error loading storage comparison data");
-      }
+      const parsedStorage = JSON.parse(compareStorage);
+      const ids = parsedStorage.map((stor) => stor.product_id);
+      axios
+        .get(
+          "http://localhost/gearsphere_api/GearSphere-BackEnd/getStorage.php"
+        )
+        .then((response) => {
+          const data = response.data;
+          if (data.success) {
+            // Filter only those in compare list
+            const filtered = (data.data || []).filter((stor) =>
+              ids.includes(stor.product_id)
+            );
+            setStorage(filtered);
+          } else {
+            toast.error(data.message || "Failed to fetch storage");
+          }
+          setLoading(false);
+        })
+        .catch(() => {
+          toast.error("Failed to fetch storage");
+          setLoading(false);
+        });
+    } else {
+      setLoading(false);
     }
-    setLoading(false);
   }, []);
 
   const handleSelectStorage = (stor) => {
-    const { icon, ...storWithoutIcon } = stor;
-    sessionStorage.setItem("selected_storage", JSON.stringify(storWithoutIcon));
+    sessionStorage.setItem("selected_storage", JSON.stringify(stor));
     toast.success(`Selected ${stor.name}. Redirecting to PC Builder...`);
     setTimeout(() => {
       navigate("/pc-builder?storageSelected=1");
@@ -147,18 +197,33 @@ export default function CompareStoragePage() {
       <Container className="py-5">
         <style>{compareStorageHeadingStyle}</style>
         <style>{comparisonTableStyle}</style>
+        <style>{smallCardStyle}</style>
 
         <div className="d-flex align-items-center justify-content-between mb-4">
           <h1 className="mb-0 compare-storage-heading">Compare Storage</h1>
         </div>
 
-        <Row className="mb-4">
-          {storage.map((stor, index) => (
-            <Col key={stor.name} md={12 / storage.length} className="mb-3">
-              <Card className="h-100 shadow-sm">
+        <Row
+          className="mb-4 d-flex flex-row justify-content-center"
+          style={{
+            gap: "2rem",
+            flexWrap: "nowrap",
+            overflowX: "auto",
+            whiteSpace: "nowrap",
+            marginTop: "1.5rem",
+            marginLeft: "0rem",
+          }}
+        >
+          {storage.map((stor) => (
+            <Col key={stor.name} xs="auto" className="p-0">
+              <Card className="h-100 shadow-sm storage-compare-card-sm">
                 <Card.Body className="text-center">
                   <img
-                    src={stor.icon || "/profile_images/user_image.jpg"}
+                    src={
+                      stor.image_url
+                        ? `http://localhost/gearsphere_api/GearSphere-BackEnd/${stor.image_url}`
+                        : "/profile_images/user_image.jpg"
+                    }
                     alt={stor.name}
                     className="storage-img mb-2"
                   />
@@ -179,39 +244,33 @@ export default function CompareStoragePage() {
           ))}
         </Row>
 
-        <Table className="comparison-table">
+        <Table
+          className="comparison-table"
+          style={{ tableLayout: "fixed", width: "100%" }}
+        >
           <thead>
             <tr>
               <th>Specification</th>
               {storage.map((stor) => (
-                <th key={stor.name}>
-                  <div className="text-center">
-                    <img
-                      src={stor.icon || "/profile_images/user_image.jpg"}
-                      alt={stor.name}
-                      className="storage-img"
-                    />
-                    <div className="storage-name">{stor.name}</div>
-                  </div>
-                </th>
+                <th key={stor.name}>{stor.name}</th>
               ))}
             </tr>
           </thead>
           <tbody>
             <tr>
               <td>
-                <strong>Capacity</strong>
+                <strong>Storage Type</strong>
               </td>
               {storage.map((stor) => (
-                <td key={stor.name}>{stor.specs?.capacity || "—"}</td>
+                <td key={stor.name}>{stor.storage_type || "—"}</td>
               ))}
             </tr>
             <tr>
               <td>
-                <strong>Type</strong>
+                <strong>Capacity</strong>
               </td>
               {storage.map((stor) => (
-                <td key={stor.name}>{stor.specs?.type || "—"}</td>
+                <td key={stor.name}>{stor.capacity || "—"}</td>
               ))}
             </tr>
             <tr>
@@ -219,23 +278,7 @@ export default function CompareStoragePage() {
                 <strong>Interface</strong>
               </td>
               {storage.map((stor) => (
-                <td key={stor.name}>{stor.specs?.interface || "—"}</td>
-              ))}
-            </tr>
-            <tr>
-              <td>
-                <strong>Read Speed</strong>
-              </td>
-              {storage.map((stor) => (
-                <td key={stor.name}>{stor.specs?.readSpeed || "—"}</td>
-              ))}
-            </tr>
-            <tr>
-              <td>
-                <strong>Write Speed</strong>
-              </td>
-              {storage.map((stor) => (
-                <td key={stor.name}>{stor.specs?.writeSpeed || "—"}</td>
+                <td key={stor.name}>{stor.interface || "—"}</td>
               ))}
             </tr>
             <tr>
@@ -243,106 +286,24 @@ export default function CompareStoragePage() {
                 <strong>Form Factor</strong>
               </td>
               {storage.map((stor) => (
-                <td key={stor.name}>{stor.specs?.formFactor || "—"}</td>
+                <td key={stor.name}>{stor.form_factor || "—"}</td>
               ))}
             </tr>
             <tr>
               <td>
-                <strong>Performance</strong>
+                <strong>Description</strong>
               </td>
               {storage.map((stor) => (
-                <td key={stor.name}>
-                  {stor.features?.functionality?.performance || "—"}
-                </td>
-              ))}
-            </tr>
-            <tr>
-              <td>
-                <strong>Reliability</strong>
-              </td>
-              {storage.map((stor) => (
-                <td key={stor.name}>
-                  {stor.features?.functionality?.reliability || "—"}
-                </td>
-              ))}
-            </tr>
-            <tr>
-              <td>
-                <strong>Durability</strong>
-              </td>
-              {storage.map((stor) => (
-                <td key={stor.name}>
-                  {stor.features?.functionality?.durability || "—"}
-                </td>
-              ))}
-            </tr>
-            <tr>
-              <td>
-                <strong>Gaming</strong>
-              </td>
-              {storage.map((stor) => (
-                <td key={stor.name}>{stor.features?.usage?.gaming || "—"}</td>
-              ))}
-            </tr>
-            <tr>
-              <td>
-                <strong>Workstation</strong>
-              </td>
-              {storage.map((stor) => (
-                <td key={stor.name}>
-                  {stor.features?.usage?.workstation || "—"}
-                </td>
-              ))}
-            </tr>
-            <tr>
-              <td>
-                <strong>Productivity</strong>
-              </td>
-              {storage.map((stor) => (
-                <td key={stor.name}>
-                  {stor.features?.usage?.productivity || "—"}
-                </td>
-              ))}
-            </tr>
-            <tr>
-              <td>
-                <strong>Boot Drive</strong>
-              </td>
-              {storage.map((stor) => (
-                <td key={stor.name}>
-                  {stor.features?.usage?.bootDrive || "—"}
-                </td>
-              ))}
-            </tr>
-            <tr>
-              <td>
-                <strong>Value</strong>
-              </td>
-              {storage.map((stor) => (
-                <td key={stor.name}>
-                  {stor.features?.priceAnalysis?.value || "—"}
-                </td>
-              ))}
-            </tr>
-            <tr>
-              <td>
-                <strong>Target Market</strong>
-              </td>
-              {storage.map((stor) => (
-                <td key={stor.name}>
-                  {stor.features?.priceAnalysis?.targetMarket || "—"}
-                </td>
-              ))}
-            </tr>
-            <tr>
-              <td>
-                <strong>Rating</strong>
-              </td>
-              {storage.map((stor) => (
-                <td key={stor.name}>
-                  <span className="rating">★★★★★</span>
-                  <br />
-                  <small className="text-muted">(123 reviews)</small>
+                <td
+                  key={stor.name}
+                  style={{
+                    whiteSpace: "pre-line",
+                    textAlign: "justify",
+                    fontSize: "0.95em",
+                    verticalAlign: "top",
+                  }}
+                >
+                  {stor.description || "—"}
                 </td>
               ))}
             </tr>
