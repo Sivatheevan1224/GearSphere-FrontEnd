@@ -1,0 +1,30 @@
+.notification-list-item {
+  transition: background 0.2s, box-shadow 0.2s;
+  border-radius: 12px !important;
+  margin-bottom: 2px;
+  position: relative;
+}
+
+.notification-list-item:hover {
+  background: #f0f4ff !important;
+  box-shadow: 0 2px 8px rgba(79, 140, 255, 0.08);
+}
+
+.notification-delete-btn {
+  opacity: 0;
+  transition: opacity 0.2s, background 0.2s, color 0.2s, box-shadow 0.2s;
+}
+
+.notification-list-item:hover .notification-delete-btn {
+  opacity: 1;
+}
+
+.notification-delete-btn:hover {
+  background: #ffeaea !important;
+  color: #e63946 !important;
+  box-shadow: 0 2px 8px rgba(230, 57, 70, 0.10);
+}
+
+.notification-list-group {
+  padding: 0 2px 2px 2px;
+} 

@@ -3,6 +3,8 @@ import { Navbar, Container, Nav, Button, Modal } from "react-bootstrap";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { Bell } from "react-bootstrap-icons";
 import axios from 'axios';
+import Notification from '../seller/notification/Notification';
+import { useRef } from 'react';
 
 function SellerNavbar({ fixed = "top" }) {
   const navigate = useNavigate();
@@ -13,6 +15,21 @@ function SellerNavbar({ fixed = "top" }) {
     name: '',
     profile_image: 'https://via.placeholder.com/150'
   });
+  const [showNotification, setShowNotification] = useState(false);
+  const [notificationCount, setNotificationCount] = useState(0);
+  const bellRef = useRef(null);
+  const userId = sessionStorage.getItem('user_id');
+
+  // Fetch notification count
+  const fetchNotificationCount = async () => {
+    if (!userId) return;
+    try {
+      const response = await axios.get(`http://localhost/gearsphere_api/GearSphere-BackEnd/getSellerNotification.php?user_id=${userId}&count=1`);
+      setNotificationCount(response.data.count || 0);
+    } catch (err) {
+      setNotificationCount(0);
+    }
+  };
 
   useEffect(() => {
     const fetchSellerData = async () => {
@@ -55,6 +72,24 @@ function SellerNavbar({ fixed = "top" }) {
     return () => window.removeEventListener('profilePicUpdated', handleProfileUpdate);
   }, []);
 
+  useEffect(() => {
+    fetchNotificationCount();
+    // Optionally, poll every minute:
+    // const interval = setInterval(fetchNotificationCount, 60000);
+    // return () => clearInterval(interval);
+  }, []);
+
+  // When notification dropdown is opened, refresh count
+  const handleBellClick = () => {
+    setShowNotification((prev) => !prev);
+    fetchNotificationCount();
+  };
+
+  // Handler to update count after delete
+  const handleNotificationDeleted = () => {
+    fetchNotificationCount();
+  };
+
   const handleLogout = () => {
     sessionStorage.clear();
     navigate("/", { replace: true });
@@ -83,7 +118,12 @@ function SellerNavbar({ fixed = "top" }) {
               <Nav.Link as={Link} to="/seller/analytics" onClick={() => setExpanded(false)} className={location.pathname === "/seller/analytics" ? "text-primary fw-bold" : ""}>Analytics</Nav.Link>
             </Nav>
             <div className="d-flex align-items-center">
-              <Bell size={22} className="me-3 cursor-pointer text-secondary" style={{ verticalAlign: 'middle' }} />
+              <div style={{ position: 'relative' }}>
+                <Bell ref={bellRef} size={22} className="me-3 cursor-pointer text-secondary" style={{ verticalAlign: 'middle' }} onClick={handleBellClick} />
+                {notificationCount > 0 && (
+                  <span style={{ position: 'absolute', top: 0, right: 2, background: 'red', color: 'white', borderRadius: '50%', fontSize: 12, padding: '2px 6px', minWidth: 18, textAlign: 'center' }}>{notificationCount}</span>
+                )}
+              </div>
               <Nav.Link as={Link} to="/seller/profile" className="d-flex align-items-center p-0 ms-2">
                 <img
                   src={sellerData.profile_image}
@@ -116,6 +156,7 @@ function SellerNavbar({ fixed = "top" }) {
           </Button>
         </Modal.Footer>
       </Modal>
+      <Notification show={showNotification} target={bellRef.current} onHide={() => setShowNotification(false)} onDeleted={handleNotificationDeleted} />
     </>
   );
 }
