@@ -21,58 +21,28 @@ import {
   Fan,
   CashStack,
   ArrowsAngleExpand,
+  ExclamationTriangleFill,
 } from "react-bootstrap-icons";
 import { useOrders } from "./OrdersContext";
 import Checkout from "./Checkout";
 import { useNavigate, useLocation } from "react-router-dom";
-import { cpuOptions } from "./parts_components/cpu";
-import { gpuOptions } from "./parts_components/gpu";
-import { motherboardOptions } from "./parts_components/motherboard";
-import { memoryOptions } from "./parts_components/memory";
-import { storageOptions } from "./parts_components/storage";
-import { powerSupplyOptions } from "./parts_components/powersupply";
-import { caseOptions } from "./parts_components/case";
-import { cpuCoolerOptions } from "./parts_components/cpucooler";
-import { monitorOptions } from "./parts_components/monitor";
-import { operatingSystemOptions } from "./parts_components/operatingsystem";
+import OverlayTrigger from "react-bootstrap/OverlayTrigger";
+import Tooltip from "react-bootstrap/Tooltip";
 
 const partOptionsMap = {
-  cpu: cpuOptions,
-  gpu: gpuOptions,
-  motherboard: motherboardOptions,
-  ram: memoryOptions,
-  storage: storageOptions,
-  psu: powerSupplyOptions,
-  case: caseOptions,
-  cooling: cpuCoolerOptions,
-  monitor: monitorOptions,
-  operating_system: operatingSystemOptions,
+  cpu: null,
+  gpu: null,
+  motherboard: null,
+  ram: null,
+  storage: null,
+  psu: null,
+  case: null,
+  cooling: null,
+  monitor: null,
+  operating_system: null,
 };
 
 const getPartOptions = (type) => partOptionsMap[type] || [];
-
-const getRecommendedComponents = (range, usageType) => {
-  if (!range || !usageType || !usageTypes[usageType]) return {};
-  const priorities = usageTypes[usageType].priorities;
-  const avgBudget = (range.min + range.max) / 2;
-  const recommended = {};
-  for (const [component, allocation] of Object.entries(priorities)) {
-    const options = getPartOptions(component).filter(
-      (opt) => opt.tier === range.tier
-    );
-    const componentBudget = avgBudget * allocation;
-    if (options.length > 0) {
-      // Pick the most expensive within budget, or the cheapest if none fit
-      const best = options.reduce((best, curr) => {
-        if (curr.price <= componentBudget && (!best || curr.price > best.price))
-          return curr;
-        return best;
-      }, null);
-      recommended[component] = best || options[0];
-    }
-  }
-  return recommended;
-};
 
 function PCBuilder() {
   const [selectedRange, setSelectedRange] = useState("");
@@ -97,6 +67,9 @@ function PCBuilder() {
   const [showCheckoutModal, setShowCheckoutModal] = useState(false);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [showTechnicianChoice, setShowTechnicianChoice] = useState(false);
+  // Restore suggested build state
+  const [suggestedBuild, setSuggestedBuild] = useState(null);
+  const [suggestDebug, setSuggestDebug] = useState(null);
 
   const { addOrder } = useOrders();
   const navigate = useNavigate();
@@ -104,13 +77,13 @@ function PCBuilder() {
 
   // Budget ranges in LKR
   const budgetRanges = [
-    {
-      id: "range1",
-      name: "Entry Level",
-      min: 100000,
-      max: 200000,
-      tier: "low",
-    },
+    // {
+    //   id: "range1",
+    //   name: "Entry Level",
+    //   min: 100000,
+    //   max: 200000,
+    //   tier: "low",
+    // },
     { id: "range2", name: "Budget", min: 200000, max: 300000, tier: "low" },
     { id: "range3", name: "Mid-Range", min: 300000, max: 400000, tier: "mid" },
     { id: "range4", name: "High-End", min: 400000, max: 500000, tier: "mid" },
@@ -138,7 +111,7 @@ function PCBuilder() {
     },
     workstation: {
       name: "Workstation",
-      icon: "💼",
+      icon: "💻",
       priorities: {
         cpu: 0.32,
         ram: 0.22,
@@ -166,22 +139,6 @@ function PCBuilder() {
         cooling: 0.02,
         monitor: 0.04,
         operating_system: 0.01,
-      },
-    },
-    office: {
-      name: "Office",
-      icon: "💻",
-      priorities: {
-        cpu: 0.22,
-        ram: 0.18,
-        storage: 0.18,
-        motherboard: 0.13,
-        gpu: 0.08,
-        psu: 0.09,
-        case: 0.04,
-        cooling: 0.03,
-        monitor: 0.03,
-        operating_system: 0.02,
       },
     },
   };
@@ -236,33 +193,31 @@ function PCBuilder() {
     return recommendedComponents;
   };
 
-  // Handle range change
-  const handleRangeChange = (e) => {
-    const rangeId = e.target.value;
-    const range = budgetRanges.find((r) => r.id === rangeId);
-    setSelectedRange(rangeId);
-
-    if (range) {
-      // If usage is selected, use it; otherwise use 'gaming' as default
-      const usageType = usage || "gaming";
-      const recommendations = generateRecommendations(range, usageType);
-      setRecommendations(recommendations);
-      setSelectedComponents(recommendations);
+  // Add this function to fetch suggested build
+  const fetchSuggestedBuild = async (budget, usageType) => {
+    if (!budget || !usageType) return;
+    try {
+      const res = await fetch(
+        `http://localhost/gearsphere_api/GearSphere-BackEnd/suggestBuild.php?budget=${budget}&usage=${usageType}`
+      );
+      const data = await res.json();
+      const mapped = {
+        ...data.build,
+        cooling: data.build.cooler,
+        operating_system: data.build.os,
+      };
+      setSelectedComponents((prev) => ({
+        ...prev,
+        ...mapped,
+      }));
+    } catch (err) {
+      alert("Error fetching suggested build");
     }
   };
 
-  // Handle usage change
-  const handleUsageChange = (e) => {
-    const newUsage = e.target.value;
-    setUsage(newUsage);
-
-    if (newUsage && selectedRange) {
-      const range = budgetRanges.find((r) => r.id === selectedRange);
-      const recommendations = generateRecommendations(range, newUsage);
-      setRecommendations(recommendations);
-      setSelectedComponents(recommendations);
-    }
-  };
+  // Replace handleRangeChange and handleUsageChange with:
+  const handleRangeChange = (e) => setSelectedRange(e.target.value);
+  const handleUsageChange = (e) => setUsage(e.target.value);
 
   // Handle component comparison with enhanced information
   const handleCompare = (componentType) => {
@@ -301,7 +256,7 @@ function PCBuilder() {
   // Calculate total price
   useEffect(() => {
     const total = Object.values(selectedComponents).reduce((sum, component) => {
-      return sum + (component?.price || 0);
+      return sum + (component?.price ? parseFloat(component.price) : 0);
     }, 0);
     setTotalPrice(total);
   }, [selectedComponents]);
@@ -757,6 +712,13 @@ function PCBuilder() {
     );
   }, [selectedComponents]);
 
+  useEffect(() => {
+    if (selectedRange && usage) {
+      const range = budgetRanges.find((r) => r.id === selectedRange);
+      fetchSuggestedBuild(range.max, usage);
+    }
+  }, [selectedRange, usage]);
+
   return (
     <Container className="py-5">
       <h1 className="mb-4">PC Builder</h1>
@@ -811,6 +773,9 @@ function PCBuilder() {
         </Alert>
       )}
 
+      {/* SUGGESTED BUILD DISPLAY */}
+      {/* Remove the entire suggested build display section */}
+
       <Row>
         {/* Component Selection */}
         <Col md={8}>
@@ -818,132 +783,310 @@ function PCBuilder() {
             <Card.Body>
               <h3>Build Your Custom PC</h3>
               <Form>
-                {Object.entries(selectedComponents).map(([key, component]) => (
-                  <div key={key} className="mb-4">
-                    <div className="d-flex justify-content-between align-items-center mb-2">
-                      <h5 className="mb-0">
-                        {componentIcons[key]}{" "}
-                        {key === "gpu"
-                          ? "Video Card"
-                          : key === "ram"
-                          ? "Memory"
-                          : key === "psu"
-                          ? "Power Supply"
-                          : key === "cooling"
-                          ? "CPU Cooler"
-                          : key === "monitor"
-                          ? "Monitor"
-                          : key === "operating_system"
-                          ? "Operating System"
-                          : key.toUpperCase()}
-                      </h5>
-                      {component && (
-                        <Button
-                          variant="outline-danger"
-                          size="sm"
-                          onClick={() =>
-                            setSelectedComponents((prev) => ({
-                              ...prev,
-                              [key]: null,
-                            }))
-                          }
-                        >
-                          Remove
-                        </Button>
-                      )}
-                    </div>
-                    <Card>
-                      <Card.Body>
-                        <Row>
-                          <Col
-                            md={3}
-                            className="d-flex align-items-center justify-content-center"
+                {Object.entries(selectedComponents)
+                  .filter(([key]) => key !== "cooler" && key !== "os")
+                  .map(([key, component]) => (
+                    <div key={key} className="mb-4">
+                      <div className="d-flex justify-content-between align-items-center mb-2">
+                        <h5 className="mb-0">
+                          {componentIcons[key]}{" "}
+                          {key === "gpu"
+                            ? "Video Card"
+                            : key === "ram"
+                            ? "Memory"
+                            : key === "psu"
+                            ? "Power Supply"
+                            : key === "cooling"
+                            ? "CPU Cooler"
+                            : key === "monitor"
+                            ? "Monitor"
+                            : key === "operating_system"
+                            ? "Operating System"
+                            : key.toUpperCase()}
+                        </h5>
+                        {component && (
+                          <Button
+                            variant="outline-danger"
+                            size="sm"
+                            onClick={() =>
+                              setSelectedComponents((prev) => ({
+                                ...prev,
+                                [key]: null,
+                              }))
+                            }
                           >
-                            {componentIcons[key]}
-                          </Col>
-                          <Col md={9}>
-                            <Button
-                              className="mb-2 btn-darkblue"
-                              onClick={() =>
-                                key === "cpu"
-                                  ? navigate("/cpu")
-                                  : key === "gpu"
-                                  ? navigate("/gpu")
-                                  : key === "motherboard"
-                                  ? navigate("/motherboard")
-                                  : key === "ram"
-                                  ? navigate("/memory")
-                                  : key === "storage"
-                                  ? navigate("/storage")
-                                  : key === "psu"
-                                  ? navigate("/powersupply")
-                                  : key === "case"
-                                  ? navigate("/case")
-                                  : key === "cooling"
-                                  ? navigate("/cpucooler")
-                                  : key === "monitor"
-                                  ? navigate("/monitor")
-                                  : key === "operating_system"
-                                  ? navigate("/operatingsystem")
-                                  : null
-                              }
+                            Remove
+                          </Button>
+                        )}
+                      </div>
+                      <Card>
+                        <Card.Body>
+                          <Row>
+                            <Col
+                              md={3}
+                              className="d-flex align-items-center justify-content-center"
                             >
-                              {component
-                                ? `Change ${
-                                    key === "gpu"
-                                      ? "Video Card"
-                                      : key === "ram"
-                                      ? "Memory"
-                                      : key === "psu"
-                                      ? "Power Supply"
-                                      : key === "cooling"
-                                      ? "CPU Cooler"
-                                      : key === "monitor"
-                                      ? "Monitor"
-                                      : key === "operating_system"
-                                      ? "Operating System"
-                                      : key.toUpperCase()
-                                  }`
-                                : `Select ${
-                                    key === "gpu"
-                                      ? "Video Card"
-                                      : key === "ram"
-                                      ? "Memory"
-                                      : key === "psu"
-                                      ? "Power Supply"
-                                      : key === "cooling"
-                                      ? "CPU Cooler"
-                                      : key === "monitor"
-                                      ? "Monitor"
-                                      : key === "operating_system"
-                                      ? "Operating System"
-                                      : key.toUpperCase()
-                                  }`}
-                            </Button>
-                            {component && (
-                              <span className="ms-2 text-muted small">
-                                Selected: <strong>{component.name}</strong>
-                              </span>
-                            )}
-                            {component && component.specs && (
-                              <div className="mt-2">
-                                <small className="text-muted">
-                                  {Object.entries(component.specs).map(
-                                    ([spec, value]) => (
-                                      <span key={spec} className="me-3">
-                                        <strong>{spec}:</strong> {value}
-                                      </span>
-                                    )
-                                  )}
-                                </small>
-                              </div>
-                            )}
-                          </Col>
-                        </Row>
-                      </Card.Body>
-                    </Card>
-                  </div>
-                ))}
+                              {/* For CPU, GPU, Motherboard: show icon if not selected, image if selected. For others, show icon. */}
+                              {key === "cpu" && component ? (
+                                <img
+                                  src={
+                                    component.image_url
+                                      ? `http://localhost/gearsphere_api/GearSphere-BackEnd/${component.image_url}`
+                                      : "/profile_images/user_image.jpg"
+                                  }
+                                  alt={component.name}
+                                  style={{
+                                    width: 56,
+                                    height: 56,
+                                    objectFit: "cover",
+                                    borderRadius: 6,
+                                  }}
+                                />
+                              ) : key === "cpu" && !component ? (
+                                <Cpu size={40} className="text-primary" />
+                              ) : key === "gpu" && component ? (
+                                <img
+                                  src={
+                                    component.image_url
+                                      ? `http://localhost/gearsphere_api/GearSphere-BackEnd/${component.image_url}`
+                                      : "/profile_images/user_image.jpg"
+                                  }
+                                  alt={component.name}
+                                  style={{
+                                    width: 56,
+                                    height: 56,
+                                    objectFit: "cover",
+                                    borderRadius: 6,
+                                  }}
+                                />
+                              ) : key === "gpu" && !component ? (
+                                <Display size={40} className="text-success" />
+                              ) : key === "motherboard" && component ? (
+                                <img
+                                  src={
+                                    component.image_url
+                                      ? `http://localhost/gearsphere_api/GearSphere-BackEnd/${component.image_url}`
+                                      : "/profile_images/user_image.jpg"
+                                  }
+                                  alt={component.name}
+                                  style={{
+                                    width: 56,
+                                    height: 56,
+                                    objectFit: "cover",
+                                    borderRadius: 6,
+                                  }}
+                                />
+                              ) : key === "motherboard" && !component ? (
+                                <Motherboard size={40} className="text-info" />
+                              ) : key === "ram" && component ? (
+                                <img
+                                  src={
+                                    component.image_url
+                                      ? `http://localhost/gearsphere_api/GearSphere-BackEnd/${component.image_url}`
+                                      : "/profile_images/user_image.jpg"
+                                  }
+                                  alt={component.name}
+                                  style={{
+                                    width: 56,
+                                    height: 56,
+                                    objectFit: "cover",
+                                    borderRadius: 6,
+                                  }}
+                                />
+                              ) : key === "ram" && !component ? (
+                                <Memory size={40} className="text-warning" />
+                              ) : key === "storage" && component ? (
+                                <img
+                                  src={
+                                    component.image_url
+                                      ? `http://localhost/gearsphere_api/GearSphere-BackEnd/${component.image_url}`
+                                      : "/profile_images/user_image.jpg"
+                                  }
+                                  alt={component.name}
+                                  style={{
+                                    width: 56,
+                                    height: 56,
+                                    objectFit: "cover",
+                                    borderRadius: 6,
+                                  }}
+                                />
+                              ) : key === "storage" && !component ? (
+                                <Hdd size={40} className="text-danger" />
+                              ) : key === "psu" && component ? (
+                                <img
+                                  src={
+                                    component.image_url
+                                      ? `http://localhost/gearsphere_api/GearSphere-BackEnd/${component.image_url}`
+                                      : "/profile_images/user_image.jpg"
+                                  }
+                                  alt={component.name}
+                                  style={{
+                                    width: 56,
+                                    height: 56,
+                                    objectFit: "cover",
+                                    borderRadius: 6,
+                                  }}
+                                />
+                              ) : key === "psu" && !component ? (
+                                <Power size={40} className="text-secondary" />
+                              ) : key === "case" && component ? (
+                                <img
+                                  src={
+                                    component.image_url
+                                      ? `http://localhost/gearsphere_api/GearSphere-BackEnd/${component.image_url}`
+                                      : "/profile_images/user_image.jpg"
+                                  }
+                                  alt={component.name}
+                                  style={{
+                                    width: 56,
+                                    height: 56,
+                                    objectFit: "cover",
+                                    borderRadius: 6,
+                                  }}
+                                />
+                              ) : key === "case" && !component ? (
+                                <PcDisplay size={40} className="text-dark" />
+                              ) : key === "cooling" && component ? (
+                                <img
+                                  src={
+                                    component.image_url
+                                      ? `http://localhost/gearsphere_api/GearSphere-BackEnd/${component.image_url}`
+                                      : "/profile_images/user_image.jpg"
+                                  }
+                                  alt={component.name}
+                                  style={{
+                                    width: 56,
+                                    height: 56,
+                                    objectFit: "cover",
+                                    borderRadius: 6,
+                                  }}
+                                />
+                              ) : key === "cooling" && !component ? (
+                                <Fan size={40} className="text-info" />
+                              ) : key === "monitor" && component ? (
+                                <img
+                                  src={
+                                    component.image_url
+                                      ? `http://localhost/gearsphere_api/GearSphere-BackEnd/${component.image_url}`
+                                      : "/profile_images/user_image.jpg"
+                                  }
+                                  alt={component.name}
+                                  style={{
+                                    width: 56,
+                                    height: 56,
+                                    objectFit: "cover",
+                                    borderRadius: 6,
+                                  }}
+                                />
+                              ) : key === "monitor" && !component ? (
+                                <Display size={40} className="text-primary" />
+                              ) : key === "operating_system" && component ? (
+                                <img
+                                  src={
+                                    component.image_url
+                                      ? `http://localhost/gearsphere_api/GearSphere-BackEnd/${component.image_url}`
+                                      : "/profile_images/user_image.jpg"
+                                  }
+                                  alt={component.name}
+                                  style={{
+                                    width: 56,
+                                    height: 56,
+                                    objectFit: "cover",
+                                    borderRadius: 6,
+                                  }}
+                                />
+                              ) : key === "operating_system" && !component ? (
+                                <ArrowsAngleExpand
+                                  size={40}
+                                  className="text-secondary"
+                                />
+                              ) : (
+                                componentIcons[key]
+                              )}
+                            </Col>
+                            <Col md={9}>
+                              <Button
+                                className="mb-2 btn-darkblue"
+                                onClick={() =>
+                                  key === "cpu"
+                                    ? navigate("/cpu")
+                                    : key === "gpu"
+                                    ? navigate("/gpu")
+                                    : key === "motherboard"
+                                    ? navigate("/motherboard")
+                                    : key === "ram"
+                                    ? navigate("/memory")
+                                    : key === "storage"
+                                    ? navigate("/storage")
+                                    : key === "psu"
+                                    ? navigate("/powersupply")
+                                    : key === "case"
+                                    ? navigate("/case")
+                                    : key === "cooling"
+                                    ? navigate("/cpucooler")
+                                    : key === "monitor"
+                                    ? navigate("/monitor")
+                                    : key === "operating_system"
+                                    ? navigate("/operatingsystem")
+                                    : null
+                                }
+                              >
+                                {component
+                                  ? `Change ${
+                                      key === "gpu"
+                                        ? "Video Card"
+                                        : key === "ram"
+                                        ? "Memory"
+                                        : key === "psu"
+                                        ? "Power Supply"
+                                        : key === "cooling"
+                                        ? "CPU Cooler"
+                                        : key === "monitor"
+                                        ? "Monitor"
+                                        : key === "operating_system"
+                                        ? "Operating System"
+                                        : key.toUpperCase()
+                                    }`
+                                  : `Select ${
+                                      key === "gpu"
+                                        ? "Video Card"
+                                        : key === "ram"
+                                        ? "Memory"
+                                        : key === "psu"
+                                        ? "Power Supply"
+                                        : key === "cooling"
+                                        ? "CPU Cooler"
+                                        : key === "monitor"
+                                        ? "Monitor"
+                                        : key === "operating_system"
+                                        ? "Operating System"
+                                        : key.toUpperCase()
+                                    }`}
+                              </Button>
+                              {component && (
+                                <span className="ms-2 text-muted small">
+                                  Selected: <strong>{component.name}</strong>
+                                </span>
+                              )}
+                              {component && component.specs && (
+                                <div className="mt-2">
+                                  <small className="text-muted">
+                                    {Object.entries(component.specs).map(
+                                      ([spec, value]) => (
+                                        <span key={spec} className="me-3">
+                                          <strong>{spec}:</strong> {value}
+                                        </span>
+                                      )
+                                    )}
+                                  </small>
+                                </div>
+                              )}
+                            </Col>
+                          </Row>
+                        </Card.Body>
+                      </Card>
+                    </div>
+                  ))}
               </Form>
             </Card.Body>
           </Card>
@@ -995,7 +1138,11 @@ function PCBuilder() {
               <div className="mb-3">
                 <h5>Total Price</h5>
                 <h3 className="text-primary">
-                  LKR {totalPrice.toLocaleString()}
+                  LKR{" "}
+                  {totalPrice.toLocaleString(undefined, {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
+                  })}
                 </h3>
                 {selectedRange && (
                   <div

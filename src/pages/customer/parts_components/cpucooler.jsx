@@ -7,168 +7,13 @@ import {
   Card,
   Button,
   Form,
+  Alert,
   Table,
 } from "react-bootstrap";
+import { Fan } from "react-bootstrap-icons";
 import { toast } from "react-toastify";
 import CustomerNavbar from "../../pageNavbars/CustomerNavbar";
-
-export const cpuCoolerOptions = [
-  {
-    name: "Noctua NH-D15",
-    price: 12000,
-    image: "/profile_images/pp15.jpg",
-    tier: "high",
-    specs: {
-      type: "Air Cooler",
-      fanSize: "140mm",
-      height: "165mm",
-      noise: "24.6 dB",
-      warranty: "6 Years",
-    },
-    features: ["Dual Tower", "Quiet Operation", "Premium Quality"],
-  },
-  {
-    name: "Cooler Master Hyper 212 EVO",
-    price: 3500,
-    image: "/profile_images/pp16.jpg",
-    tier: "low",
-    specs: {
-      type: "Air Cooler",
-      fanSize: "120mm",
-      height: "159mm",
-      noise: "36 dB",
-      warranty: "2 Years",
-    },
-    features: ["Affordable", "Reliable", "Easy Installation"],
-  },
-  {
-    name: "Corsair iCUE H100i RGB Pro XT",
-    price: 10500,
-    image: "/profile_images/pp17.jpg",
-    tier: "high",
-    specs: {
-      type: "Liquid Cooler",
-      fanSize: "2x120mm",
-      height: "27mm Radiator",
-      noise: "37 dB",
-      warranty: "5 Years",
-    },
-    features: ["RGB Lighting", "Quiet Pump", "High Performance"],
-  },
-  {
-    name: "be quiet! Dark Rock Pro 4",
-    price: 9500,
-    image: "/profile_images/pp18.png",
-    tier: "high",
-    specs: {
-      type: "Air Cooler",
-      fanSize: "135mm + 120mm",
-      height: "162.8mm",
-      noise: "24.3 dB",
-      warranty: "3 Years",
-    },
-    features: ["Silent Wings Fans", "Dual Tower", "Premium Build"],
-  },
-  // 6 more dummy entries
-  {
-    name: "Deepcool GAMMAXX 400",
-    price: 2500,
-    image: "/profile_images/pp19.png",
-    tier: "low",
-    specs: {
-      type: "Air Cooler",
-      fanSize: "120mm",
-      height: "155mm",
-      noise: "30 dB",
-      warranty: "1 Year",
-    },
-    features: ["Blue LED Fan", "Affordable", "Easy Mounting"],
-  },
-  {
-    name: "NZXT Kraken X63",
-    price: 13000,
-    image: "/profile_images/pp10.jpg",
-    tier: "high",
-    specs: {
-      type: "Liquid Cooler",
-      fanSize: "2x140mm",
-      height: "30mm Radiator",
-      noise: "38 dB",
-      warranty: "6 Years",
-    },
-    features: ["RGB Pump", "Quiet Operation", "High Performance"],
-  },
-  {
-    name: "Arctic Freezer 34 eSports DUO",
-    price: 5000,
-    image: "/profile_images/pp11.jpg",
-    tier: "mid",
-    specs: {
-      type: "Air Cooler",
-      fanSize: "2x120mm",
-      height: "157mm",
-      noise: "28 dB",
-      warranty: "6 Years",
-    },
-    features: ["Dual Fan", "Efficient Cooling", "Affordable"],
-  },
-  {
-    name: "Thermaltake Water 3.0 ARGB Sync",
-    price: 9000,
-    image: "/profile_images/pp12.jpg",
-    tier: "mid",
-    specs: {
-      type: "Liquid Cooler",
-      fanSize: "3x120mm",
-      height: "27mm Radiator",
-      noise: "40 dB",
-      warranty: "3 Years",
-    },
-    features: ["ARGB Lighting", "Triple Fan", "High Performance"],
-  },
-  {
-    name: "Scythe Mugen 5 Rev.B",
-    price: 6000,
-    image: "/profile_images/pp13.jpg",
-    tier: "mid",
-    specs: {
-      type: "Air Cooler",
-      fanSize: "120mm",
-      height: "154.5mm",
-      noise: "24.9 dB",
-      warranty: "2 Years",
-    },
-    features: ["Quiet", "Easy Installation", "Good Value"],
-  },
-  {
-    name: "ID-COOLING SE-224-XT",
-    price: 3200,
-    image: "/profile_images/pp14.jpg",
-    tier: "low",
-    specs: {
-      type: "Air Cooler",
-      fanSize: "120mm",
-      height: "154mm",
-      noise: "26 dB",
-      warranty: "3 Years",
-    },
-    features: ["Affordable", "Compact", "Good Performance"],
-  },
-  {
-    name: "Cooler Master Hyper H410R",
-    price: 5000,
-    tier: "low",
-    image: "/profile_images/pp23.jpg",
-    specs: {
-      type: "Air Cooler",
-      fanSize: "92mm",
-      height: "136mm",
-      noise: "29 dB",
-      warranty: "2 Years",
-    },
-    features: ["Affordable", "Compact", "Good Performance"],
-  },
-];
+import axios from "axios";
 
 function useBreakpoint() {
   const [breakpoint, setBreakpoint] = useState("lg");
@@ -187,6 +32,9 @@ function useBreakpoint() {
 }
 
 export default function CPUCoolerPage() {
+  const [cpuCoolers, setCpuCoolers] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [compareSelection, setCompareSelection] = useState([]);
   const navigate = useNavigate();
   const breakpoint = useBreakpoint();
@@ -194,19 +42,41 @@ export default function CPUCoolerPage() {
   if (breakpoint === "md") maxCompare = 3;
   if (breakpoint === "sm") maxCompare = 2;
   const [priceSort, setPriceSort] = useState("default");
-  const [originalOrder] = useState(cpuCoolerOptions);
-  let sortedOptions;
+
+  useEffect(() => {
+    const fetchCPUCoolers = async () => {
+      try {
+        setLoading(true);
+        const response = await axios.get(
+          "http://localhost/gearsphere_api/GearSphere-BackEnd/getCPUCoolers.php"
+        );
+        if (response.data.success) {
+          setCpuCoolers(response.data.data);
+        } else {
+          setError("Failed to fetch CPU coolers");
+        }
+      } catch (err) {
+        setError("Error fetching CPU coolers: " + err.message);
+        console.error("Error fetching CPU coolers:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCPUCoolers();
+  }, []);
+
+  let sortedOptions = [...cpuCoolers];
   if (priceSort === "asc") {
-    sortedOptions = [...cpuCoolerOptions].sort((a, b) => a.price - b.price);
+    sortedOptions = [...cpuCoolers].sort((a, b) => a.price - b.price);
   } else if (priceSort === "desc") {
-    sortedOptions = [...cpuCoolerOptions].sort((a, b) => b.price - a.price);
-  } else {
-    sortedOptions = originalOrder;
+    sortedOptions = [...cpuCoolers].sort((a, b) => b.price - a.price);
   }
-  const handleToggleCompare = (option) => {
+
+  const handleToggleCompare = (cooler) => {
     setCompareSelection((prev) => {
-      if (prev.some((item) => item.name === option.name)) {
-        return prev.filter((item) => item.name !== option.name);
+      if (prev.some((item) => item.product_id === cooler.product_id)) {
+        return prev.filter((item) => item.product_id !== cooler.product_id);
       } else {
         if (prev.length >= maxCompare) {
           toast.warning(
@@ -214,10 +84,11 @@ export default function CPUCoolerPage() {
           );
           return prev;
         }
-        return [...prev, option];
+        return [...prev, cooler];
       }
     });
   };
+
   const handleSelect = (cooler) => {
     sessionStorage.setItem("selected_cpucooler", JSON.stringify(cooler));
     toast.success(`Selected ${cooler.name}. Redirecting to PC Builder...`);
@@ -225,6 +96,7 @@ export default function CPUCoolerPage() {
       navigate("/pc-builder?cpucoolerSelected=1");
     }, 1000);
   };
+
   const handleCompareClick = () => {
     sessionStorage.setItem(
       "compare_cpucoolers",
@@ -232,11 +104,43 @@ export default function CPUCoolerPage() {
     );
     navigate("/compare-cpucooler");
   };
+
   const handleTogglePriceSort = () => {
     setPriceSort((prev) =>
       prev === "default" ? "asc" : prev === "asc" ? "desc" : "default"
     );
   };
+
+  if (loading) {
+    return (
+      <>
+        <CustomerNavbar />
+        <Container className="py-5">
+          <div className="text-center">
+            <div className="spinner-border" role="status">
+              <span className="visually-hidden">Loading...</span>
+            </div>
+            <p className="mt-3">Loading CPU Coolers...</p>
+          </div>
+        </Container>
+      </>
+    );
+  }
+
+  if (error) {
+    return (
+      <>
+        <CustomerNavbar />
+        <Container className="py-5">
+          <Alert variant="danger">
+            <Alert.Heading>Error</Alert.Heading>
+            <p>{error}</p>
+          </Alert>
+        </Container>
+      </>
+    );
+  }
+
   return (
     <>
       <CustomerNavbar />
@@ -264,61 +168,83 @@ export default function CPUCoolerPage() {
             )}
           </div>
         </div>
-        <Table striped bordered hover responsive>
-          <thead>
-            <tr>
-              <th></th>
-              <th>Name</th>
-              <th>Type</th>
-              <th>Height</th>
-              <th>Fans</th>
-              <th>Noise</th>
-              <th>TDP</th>
-              <th>Price</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody>
-            {sortedOptions.map((cooler) => (
-              <tr key={cooler.name}>
-                <td>
-                  <Form.Check
-                    type="checkbox"
-                    checked={compareSelection.some(
-                      (item) => item.name === cooler.name
-                    )}
-                    onChange={() => handleToggleCompare(cooler)}
-                  />
-                </td>
-                <td className="d-flex align-items-center">
-                  <img
-                    src={cooler.image}
-                    alt={cooler.name}
-                    style={{
-                      width: 32,
-                      height: 32,
-                      marginRight: 8,
-                      borderRadius: 6,
-                      objectFit: "cover",
-                    }}
-                  />
-                  <strong>{cooler.name}</strong>
-                </td>
-                <td>{cooler.specs.type}</td>
-                <td>{cooler.specs.height}</td>
-                <td>{cooler.specs.fans}</td>
-                <td>{cooler.specs.noise}</td>
-                <td>{cooler.specs.tdp}</td>
-                <td>LKR {cooler.price.toLocaleString()}</td>
-                <td>
-                  <Button size="sm" onClick={() => handleSelect(cooler)}>
-                    Add
-                  </Button>
-                </td>
+
+        {sortedOptions.length === 0 ? (
+          <Alert variant="info">
+            <Alert.Heading>No CPU Coolers Available</Alert.Heading>
+            <p>There are currently no CPU coolers in stock.</p>
+          </Alert>
+        ) : (
+          <Table striped bordered hover responsive>
+            <thead>
+              <tr>
+                <th></th>
+                <th>Name</th>
+                <th>Fan RPM</th>
+                <th>Noise Level</th>
+                <th>Color</th>
+                <th>Height</th>
+                <th>Type</th>
+                <th>Price</th>
+                <th></th>
               </tr>
-            ))}
-          </tbody>
-        </Table>
+            </thead>
+            <tbody>
+              {sortedOptions.map((cooler) => (
+                <tr key={cooler.product_id}>
+                  <td>
+                    <Form.Check
+                      type="checkbox"
+                      checked={compareSelection.some(
+                        (item) => item.product_id === cooler.product_id
+                      )}
+                      onChange={() => handleToggleCompare(cooler)}
+                    />
+                  </td>
+                  <td className="d-flex align-items-center">
+                    <img
+                      src={
+                        cooler.image_url
+                          ? `http://localhost/gearsphere_api/GearSphere-BackEnd/${cooler.image_url}`
+                          : "/profile_images/user_image.jpg"
+                      }
+                      alt={cooler.name}
+                      style={{
+                        width: 32,
+                        height: 32,
+                        marginRight: 8,
+                        borderRadius: 6,
+                        objectFit: "cover",
+                      }}
+                    />
+                    <strong>{cooler.name}</strong>
+                  </td>
+                  <td>{cooler.fan_rpm || "—"}</td>
+                  <td>{cooler.noise_level || "—"}</td>
+                  <td>{cooler.color || "—"}</td>
+                  <td>{cooler.height || "—"}</td>
+                  <td>
+                    {cooler.water_cooled ? (
+                      <span className="badge bg-primary">Liquid</span>
+                    ) : (
+                      <span className="badge bg-secondary">Air</span>
+                    )}
+                  </td>
+                  <td>LKR {cooler.price?.toLocaleString() || "N/A"}</td>
+                  <td>
+                    <Button 
+                      size="sm" 
+                      className="btn-darkblue"
+                      onClick={() => handleSelect(cooler)}
+                    >
+                      Add
+                    </Button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </Table>
+        )}
       </Container>
     </>
   );

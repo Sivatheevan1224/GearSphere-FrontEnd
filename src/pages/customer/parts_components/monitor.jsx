@@ -7,182 +7,13 @@ import {
   Card,
   Button,
   Form,
+  Alert,
   Table,
 } from "react-bootstrap";
+import { Display } from "react-bootstrap-icons";
 import { toast } from "react-toastify";
 import CustomerNavbar from "../../pageNavbars/CustomerNavbar";
-
-export const monitorOptions = [
-  {
-    name: "Dell S2721DGF",
-    price: 35000,
-    tier: "mid",
-    image: "/profile_images/pp1.png",
-    specs: {
-      size: '27"',
-      resolution: "2560x1440",
-      refreshRate: "165Hz",
-      panel: "IPS",
-      responseTime: "1ms",
-    },
-    features: ["G-Sync Compatible", "Adjustable Stand", "VESA Mount"],
-  },
-  {
-    name: "LG 27GL850-B",
-    price: 34000,
-    tier: "mid",
-    image: "/profile_images/pp2.png",
-    specs: {
-      size: '27"',
-      resolution: "2560x1440",
-      refreshRate: "144Hz",
-      panel: "IPS",
-      responseTime: "1ms",
-    },
-    features: ["Nano IPS", "HDR10", "Height Adjustable"],
-  },
-  {
-    name: "AOC 24G2",
-    price: 18000,
-    tier: "low",
-    image: "/profile_images/pp3.jpg",
-    specs: {
-      size: '24"',
-      resolution: "1920x1080",
-      refreshRate: "144Hz",
-      panel: "IPS",
-      responseTime: "1ms",
-    },
-    features: ["Affordable", "Wide Color Gamut", "Slim Bezel"],
-  },
-  {
-    name: "Samsung Odyssey G7",
-    price: 48000,
-    tier: "high",
-    image: "/profile_images/pp4.jpg",
-    specs: {
-      size: '27"',
-      resolution: "2560x1440",
-      refreshRate: "240Hz",
-      panel: "VA",
-      responseTime: "1ms",
-    },
-    features: ["Curved", "HDR600", "High Refresh Rate"],
-  },
-  // 6 more dummy entries
-  {
-    name: "ASUS VG259QM",
-    price: 25000,
-    tier: "mid",
-    image: "/profile_images/pp5.jpg",
-    specs: {
-      size: '24.5"',
-      resolution: "1920x1080",
-      refreshRate: "280Hz",
-      panel: "IPS",
-      responseTime: "1ms",
-    },
-    features: ["Extreme Low Motion Blur", "Fast IPS", "Ergonomic Stand"],
-  },
-  {
-    name: "BenQ EX2780Q",
-    price: 32000,
-    tier: "mid",
-    image: "/profile_images/pp6.jpg",
-    specs: {
-      size: '27"',
-      resolution: "2560x1440",
-      refreshRate: "144Hz",
-      panel: "IPS",
-      responseTime: "5ms",
-    },
-    features: ["HDRi", "Built-in Speakers", "Remote Control"],
-  },
-  {
-    name: "Gigabyte M27Q",
-    price: 30000,
-    tier: "mid",
-    image: "/profile_images/pp7.jpg",
-    specs: {
-      size: '27"',
-      resolution: "2560x1440",
-      refreshRate: "170Hz",
-      panel: "IPS",
-      responseTime: "0.5ms",
-    },
-    features: ["KVM Switch", "Wide Color Gamut", "Low Blue Light"],
-  },
-  {
-    name: "MSI Optix MAG272CQR",
-    price: 29000,
-    tier: "mid",
-    image: "/profile_images/pp8.jpg",
-    specs: {
-      size: '27"',
-      resolution: "2560x1440",
-      refreshRate: "165Hz",
-      panel: "VA",
-      responseTime: "1ms",
-    },
-    features: ["Curved", "RGB Lighting", "Frameless Design"],
-  },
-  {
-    name: "Acer Predator XB273K",
-    price: 60000,
-    tier: "high",
-    image: "/profile_images/pp9.jpg",
-    specs: {
-      size: '27"',
-      resolution: "3840x2160",
-      refreshRate: "144Hz",
-      panel: "IPS",
-      responseTime: "4ms",
-    },
-    features: ["4K UHD", "G-Sync", "HDR"],
-  },
-  {
-    name: "ViewSonic XG2405",
-    price: 17000,
-    tier: "low",
-    image: "/profile_images/pp10.jpg",
-    specs: {
-      size: '24"',
-      resolution: "1920x1080",
-      refreshRate: "144Hz",
-      panel: "IPS",
-      responseTime: "1ms",
-    },
-    features: ["Affordable", "Ergonomic Stand", "Frameless"],
-  },
-  {
-    name: "AOC 22B1HS",
-    price: 13000,
-    tier: "low",
-    image: "/profile_images/pp20.jpg",
-    specs: {
-      size: '21.5"',
-      resolution: "1920x1080",
-      refreshRate: "60Hz",
-      panel: "IPS",
-      responseTime: "7ms",
-    },
-    features: ["Affordable", "Slim Bezel", "HDMI Input"],
-  },
-  {
-    name: "Samsung LF24T350FHWXXL 24-inch",
-    price: 25000,
-    tier: "low",
-    image: "/profile_images/pp24.jpg",
-    specs: {
-      size: '24"',
-      resolution: "1920x1080",
-      refreshRate: "75Hz",
-      panel: "IPS",
-      responseTime: "5ms",
-    },
-    features: ["Affordable", "IPS Panel", "Slim Bezel"],
-  },
-];
+import axios from "axios";
 
 function useBreakpoint() {
   const [breakpoint, setBreakpoint] = useState("lg");
@@ -201,6 +32,9 @@ function useBreakpoint() {
 }
 
 export default function MonitorPage() {
+  const [monitors, setMonitors] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [compareSelection, setCompareSelection] = useState([]);
   const navigate = useNavigate();
   const breakpoint = useBreakpoint();
@@ -208,19 +42,41 @@ export default function MonitorPage() {
   if (breakpoint === "md") maxCompare = 3;
   if (breakpoint === "sm") maxCompare = 2;
   const [priceSort, setPriceSort] = useState("default");
-  const [originalOrder] = useState(monitorOptions);
-  let sortedOptions;
+
+  useEffect(() => {
+    const fetchMonitors = async () => {
+      try {
+        setLoading(true);
+        const response = await axios.get(
+          "http://localhost/gearsphere_api/GearSphere-BackEnd/getMonitors.php"
+        );
+        if (response.data.success) {
+          setMonitors(response.data.data);
+        } else {
+          setError("Failed to fetch monitors");
+        }
+      } catch (err) {
+        setError("Error fetching monitors: " + err.message);
+        console.error("Error fetching monitors:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchMonitors();
+  }, []);
+
+  let sortedOptions = [...monitors];
   if (priceSort === "asc") {
-    sortedOptions = [...monitorOptions].sort((a, b) => a.price - b.price);
+    sortedOptions = [...monitors].sort((a, b) => a.price - b.price);
   } else if (priceSort === "desc") {
-    sortedOptions = [...monitorOptions].sort((a, b) => b.price - a.price);
-  } else {
-    sortedOptions = originalOrder;
+    sortedOptions = [...monitors].sort((a, b) => b.price - a.price);
   }
-  const handleToggleCompare = (option) => {
+
+  const handleToggleCompare = (monitor) => {
     setCompareSelection((prev) => {
-      if (prev.some((item) => item.name === option.name)) {
-        return prev.filter((item) => item.name !== option.name);
+      if (prev.some((item) => item.product_id === monitor.product_id)) {
+        return prev.filter((item) => item.product_id !== monitor.product_id);
       } else {
         if (prev.length >= maxCompare) {
           toast.warning(
@@ -228,10 +84,11 @@ export default function MonitorPage() {
           );
           return prev;
         }
-        return [...prev, option];
+        return [...prev, monitor];
       }
     });
   };
+
   const handleSelect = (monitor) => {
     sessionStorage.setItem("selected_monitor", JSON.stringify(monitor));
     toast.success(`Selected ${monitor.name}. Redirecting to PC Builder...`);
@@ -239,6 +96,7 @@ export default function MonitorPage() {
       navigate("/pc-builder?monitorSelected=1");
     }, 1000);
   };
+
   const handleCompareClick = () => {
     sessionStorage.setItem(
       "compare_monitors",
@@ -246,11 +104,43 @@ export default function MonitorPage() {
     );
     navigate("/compare-monitor");
   };
+
   const handleTogglePriceSort = () => {
     setPriceSort((prev) =>
       prev === "default" ? "asc" : prev === "asc" ? "desc" : "default"
     );
   };
+
+  if (loading) {
+    return (
+      <>
+        <CustomerNavbar />
+        <Container className="py-5">
+          <div className="text-center">
+            <div className="spinner-border" role="status">
+              <span className="visually-hidden">Loading...</span>
+            </div>
+            <p className="mt-3">Loading Monitors...</p>
+          </div>
+        </Container>
+      </>
+    );
+  }
+
+  if (error) {
+    return (
+      <>
+        <CustomerNavbar />
+        <Container className="py-5">
+          <Alert variant="danger">
+            <Alert.Heading>Error</Alert.Heading>
+            <p>{error}</p>
+          </Alert>
+        </Container>
+      </>
+    );
+  }
+
   return (
     <>
       <CustomerNavbar />
@@ -278,61 +168,93 @@ export default function MonitorPage() {
             )}
           </div>
         </div>
-        <Table striped bordered hover responsive>
-          <thead>
-            <tr>
-              <th></th>
-              <th>Name</th>
-              <th>Size</th>
-              <th>Resolution</th>
-              <th>Refresh Rate</th>
-              <th>Panel</th>
-              <th>Response</th>
-              <th>Price</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody>
-            {sortedOptions.map((monitor) => (
-              <tr key={monitor.name}>
-                <td>
-                  <Form.Check
-                    type="checkbox"
-                    checked={compareSelection.some(
-                      (item) => item.name === monitor.name
-                    )}
-                    onChange={() => handleToggleCompare(monitor)}
-                  />
-                </td>
-                <td className="d-flex align-items-center">
-                  <img
-                    src={monitor.image}
-                    alt={monitor.name}
-                    style={{
-                      width: 32,
-                      height: 32,
-                      marginRight: 8,
-                      borderRadius: 6,
-                      objectFit: "cover",
-                    }}
-                  />
-                  <strong>{monitor.name}</strong>
-                </td>
-                <td>{monitor.specs.size}</td>
-                <td>{monitor.specs.resolution}</td>
-                <td>{monitor.specs.refreshRate}</td>
-                <td>{monitor.specs.panel}</td>
-                <td>{monitor.specs.responseTime}</td>
-                <td>LKR {monitor.price.toLocaleString()}</td>
-                <td>
-                  <Button size="sm" onClick={() => handleSelect(monitor)}>
-                    Add
-                  </Button>
-                </td>
+
+        {sortedOptions.length === 0 ? (
+          <Alert variant="info">
+            <Alert.Heading>No Monitors Available</Alert.Heading>
+            <p>There are currently no monitors in stock.</p>
+          </Alert>
+        ) : (
+          <Table striped bordered hover responsive>
+            <thead>
+              <tr>
+                <th></th>
+                <th>Name</th>
+                <th>Screen Size</th>
+                <th>Resolution</th>
+                <th>Refresh Rate</th>
+                <th>Panel Type</th>
+                <th>Aspect Ratio</th>
+                <th>Brightness</th>
+                <th>Price</th>
+                <th></th>
               </tr>
-            ))}
-          </tbody>
-        </Table>
+            </thead>
+            <tbody>
+              {sortedOptions.map((monitor) => (
+                <tr key={monitor.product_id}>
+                  <td>
+                    <Form.Check
+                      type="checkbox"
+                      checked={compareSelection.some(
+                        (item) => item.product_id === monitor.product_id
+                      )}
+                      onChange={() => handleToggleCompare(monitor)}
+                    />
+                  </td>
+                  <td className="d-flex align-items-center">
+                    <img
+                      src={
+                        monitor.image_url
+                          ? `http://localhost/gearsphere_api/GearSphere-BackEnd/${monitor.image_url}`
+                          : "/profile_images/user_image.jpg"
+                      }
+                      alt={monitor.name}
+                      style={{
+                        width: 32,
+                        height: 32,
+                        marginRight: 8,
+                        borderRadius: 6,
+                        objectFit: "cover",
+                      }}
+                    />
+                    <strong>{monitor.name}</strong>
+                  </td>
+                  <td>
+                    {monitor.screen_size ? `${monitor.screen_size}"` : "—"}
+                  </td>
+                  <td>{monitor.resolution || "—"}</td>
+                  <td>{monitor.refresh_rate || "—"}</td>
+                  <td>
+                    <span
+                      className={`badge bg-${
+                        monitor.panel_type === "IPS"
+                          ? "info"
+                          : monitor.panel_type === "OLED"
+                          ? "dark"
+                          : "secondary"
+                      }`}
+                    >
+                      {monitor.panel_type || "—"}
+                    </span>
+                  </td>
+                  <td>{monitor.aspect_ratio || "—"}</td>
+                  <td>{monitor.brightness || "—"}</td>
+                  <td>LKR {monitor.price?.toLocaleString() || "N/A"}</td>
+                  <td>
+                    <Button
+                      size="sm"
+                      className="btn-darkblue"
+                      onClick={() => handleSelect(monitor)}
+                    >
+                      Add
+                    </Button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </Table>
+        )}
       </Container>
     </>
   );

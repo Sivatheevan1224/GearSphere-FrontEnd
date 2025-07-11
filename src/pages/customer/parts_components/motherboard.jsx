@@ -10,11 +10,11 @@ import {
   Alert,
   Table,
 } from "react-bootstrap";
-
+import { Motherboard } from "react-bootstrap-icons";
 import CustomerNavbar from "../../pageNavbars/CustomerNavbar";
 import { toast } from "react-toastify";
+import axios from "axios";
 
-// Add useBreakpoint hook
 function useBreakpoint() {
   const [breakpoint, setBreakpoint] = useState("lg");
   useEffect(() => {
@@ -31,7 +31,6 @@ function useBreakpoint() {
   return breakpoint;
 }
 
-// Inline styles for card
 const baseCardStyle = {
   boxShadow: "0 2px 12px rgba(0,0,0,0.10), 0 1.5px 4px rgba(0,0,0,0.08)",
   borderRadius: 16,
@@ -46,7 +45,6 @@ const hoverCardStyle = {
   transform: "translateY(-4px) scale(1.03)",
 };
 
-// Add fadeInCard keyframes to a style tag if not present
 if (
   typeof document !== "undefined" &&
   !document.getElementById("fadeInCardKeyframes")
@@ -57,681 +55,9 @@ if (
   document.head.appendChild(style);
 }
 
-export const motherboardOptions = [
-  {
-    name: "ASUS ROG Strix Z790-E Gaming",
-    price: 120000,
-    tier: "high",
-    specs: {
-      chipset: "Intel Z790",
-      socket: "LGA1700",
-      formFactor: "ATX",
-      memorySlots: "4",
-      maxMemory: "128GB DDR5",
-      memorySpeed: "7800+ MHz",
-    },
-    features: {
-      functionality: {
-        overclocking: "Excellent",
-        connectivity: "Outstanding",
-        features: "Superb",
-        powerEfficiency: "High",
-      },
-      usage: {
-        gaming: "Perfect for high-end gaming builds",
-        workstation: "Ideal for professional workstations",
-        productivity: "Excellent for heavy multitasking",
-        overclocking: "Great overclocking potential",
-      },
-      uniqueFeatures: [
-        "PCIe 5.0 Support",
-        "WiFi 6E",
-        "2.5GbE LAN",
-        "Thunderbolt 4",
-        "USB 3.2 Gen 2x2",
-      ],
-      priceAnalysis: {
-        value: "Premium",
-        performancePerRupee: "High",
-        targetMarket: "Enthusiasts and Professionals",
-      },
-    },
-  },
-  {
-    name: "MSI MAG B650 Tomahawk WiFi",
-    price: 75000,
-    tier: "mid",
-    specs: {
-      chipset: "AMD B650",
-      socket: "AM5",
-      formFactor: "ATX",
-      memorySlots: "4",
-      maxMemory: "128GB DDR5",
-      memorySpeed: "6600+ MHz",
-    },
-    features: {
-      functionality: {
-        overclocking: "Very Good",
-        connectivity: "Excellent",
-        features: "Very Good",
-        powerEfficiency: "Good",
-      },
-      usage: {
-        gaming: "Great for gaming builds",
-        workstation: "Good for content creation",
-        productivity: "Excellent for multitasking",
-        overclocking: "Good overclocking potential",
-      },
-      uniqueFeatures: [
-        "PCIe 4.0 Support",
-        "WiFi 6",
-        "2.5GbE LAN",
-        "USB 3.2 Gen 2",
-        "M.2 Shield Frozr",
-      ],
-      priceAnalysis: {
-        value: "Good",
-        performancePerRupee: "Very High",
-        targetMarket: "Gamers and Content Creators",
-      },
-    },
-  },
-  {
-    name: "Gigabyte B760M DS3H AX",
-    price: 42000,
-    tier: "mid",
-    specs: {
-      chipset: "Intel B760",
-      socket: "LGA1700",
-      formFactor: "mATX",
-      memorySlots: "4",
-      maxMemory: "128GB DDR4",
-      memorySpeed: "5333+ MHz",
-    },
-    features: {
-      functionality: {
-        overclocking: "Good",
-        connectivity: "Very Good",
-        features: "Good",
-        powerEfficiency: "Very High",
-      },
-      usage: {
-        gaming: "Good for gaming",
-        workstation: "Adequate for content creation",
-        productivity: "Good for multitasking",
-        overclocking: "Moderate overclocking potential",
-      },
-      uniqueFeatures: [
-        "PCIe 4.0 Support",
-        "WiFi 6",
-        "2.5GbE LAN",
-        "USB 3.2 Gen 1",
-        "Q-Flash Plus",
-      ],
-      priceAnalysis: {
-        value: "Excellent",
-        performancePerRupee: "High",
-        targetMarket: "Mainstream Users",
-      },
-    },
-  },
-  {
-    name: "ASRock X670E Taichi",
-    price: 135000,
-    tier: "high",
-    specs: {
-      chipset: "AMD X670E",
-      socket: "AM5",
-      formFactor: "ATX",
-      memorySlots: "4",
-      maxMemory: "128GB DDR5",
-      memorySpeed: "6600+ MHz",
-    },
-    features: {
-      functionality: {
-        overclocking: "Outstanding",
-        connectivity: "Superb",
-        features: "Outstanding",
-        powerEfficiency: "High",
-      },
-      usage: {
-        gaming: "Perfect for extreme gaming",
-        workstation: "Ideal for professional workstations",
-        productivity: "Superb for heavy workloads",
-        overclocking: "Excellent overclocking potential",
-      },
-      uniqueFeatures: [
-        "PCIe 5.0 Support",
-        "WiFi 6E",
-        "10GbE LAN",
-        "Thunderbolt 4",
-        "USB 3.2 Gen 2x2",
-        "20+2+2 Phase VRM",
-      ],
-      priceAnalysis: {
-        value: "Premium",
-        performancePerRupee: "High",
-        targetMarket: "Enthusiasts and Professionals",
-      },
-    },
-  },
-  {
-    name: "ASUS PRIME H610M-E D4",
-    price: 25000,
-    tier: "low",
-    specs: {
-      chipset: "Intel H610",
-      socket: "LGA1700",
-      formFactor: "mATX",
-      memorySlots: "2",
-      maxMemory: "64GB DDR4",
-      memorySpeed: "3200 MHz",
-    },
-    features: {
-      functionality: {
-        overclocking: "Basic",
-        connectivity: "Good",
-        features: "Basic",
-        powerEfficiency: "Excellent",
-      },
-      usage: {
-        gaming: "Basic gaming",
-        workstation: "Basic productivity",
-        productivity: "Good for office work",
-        overclocking: "Not supported",
-      },
-      uniqueFeatures: [
-        "PCIe 4.0 Support",
-        "1GbE LAN",
-        "USB 3.2 Gen 1",
-        "ASUS EZ DIY",
-      ],
-      priceAnalysis: {
-        value: "Good",
-        performancePerRupee: "Good",
-        targetMarket: "Budget Users",
-      },
-    },
-  },
-  {
-    name: "MSI PRO B550M-VC",
-    price: 32000,
-    tier: "low",
-    specs: {
-      chipset: "AMD B550",
-      socket: "AM4",
-      formFactor: "mATX",
-      memorySlots: "4",
-      maxMemory: "128GB DDR4",
-      memorySpeed: "5100+ MHz",
-    },
-    features: {
-      functionality: {
-        overclocking: "Good",
-        connectivity: "Good",
-        features: "Good",
-        powerEfficiency: "Very High",
-      },
-      usage: {
-        gaming: "Good for gaming",
-        workstation: "Adequate for basic content creation",
-        productivity: "Good for multitasking",
-        overclocking: "Moderate overclocking potential",
-      },
-      uniqueFeatures: [
-        "PCIe 4.0 Support",
-        "1GbE LAN",
-        "USB 3.2 Gen 1",
-        "M.2 Shield",
-        "Core Boost",
-      ],
-      priceAnalysis: {
-        value: "Excellent",
-        performancePerRupee: "Very High",
-        targetMarket: "Budget Gamers",
-      },
-    },
-  },
-  {
-    name: "Gigabyte Z690 AORUS Master",
-    price: 110000,
-    tier: "high",
-    specs: {
-      chipset: "Intel Z690",
-      socket: "LGA1700",
-      formFactor: "ATX",
-      memorySlots: "4",
-      maxMemory: "128GB DDR5",
-      memorySpeed: "6666+ MHz",
-    },
-    features: {
-      functionality: {
-        overclocking: "Excellent",
-        connectivity: "Outstanding",
-        features: "Superb",
-        powerEfficiency: "High",
-      },
-      usage: {
-        gaming: "Perfect for high-end gaming",
-        workstation: "Ideal for professional workstations",
-        productivity: "Excellent for heavy workloads",
-        overclocking: "Great overclocking potential",
-      },
-      uniqueFeatures: [
-        "PCIe 5.0 Support",
-        "WiFi 6E",
-        "2.5GbE LAN",
-        "Thunderbolt 4",
-        "USB 3.2 Gen 2x2",
-        "20+1+2 Phase VRM",
-      ],
-      priceAnalysis: {
-        value: "Premium",
-        performancePerRupee: "High",
-        targetMarket: "Enthusiasts and Professionals",
-      },
-    },
-  },
-  {
-    name: "ASRock B650M Pro RS",
-    price: 38000,
-    tier: "low",
-    specs: {
-      chipset: "AMD B650",
-      socket: "AM5",
-      formFactor: "mATX",
-      memorySlots: "4",
-      maxMemory: "128GB DDR5",
-      memorySpeed: "6600+ MHz",
-    },
-    features: {
-      functionality: {
-        overclocking: "Good",
-        connectivity: "Good",
-        features: "Good",
-        powerEfficiency: "Very High",
-      },
-      usage: {
-        gaming: "Good for gaming",
-        workstation: "Adequate for basic content creation",
-        productivity: "Good for multitasking",
-        overclocking: "Moderate overclocking potential",
-      },
-      uniqueFeatures: [
-        "PCIe 4.0 Support",
-        "1GbE LAN",
-        "USB 3.2 Gen 1",
-        "Dr. MOS",
-        "Steel Slot",
-      ],
-      priceAnalysis: {
-        value: "Excellent",
-        performancePerRupee: "Very High",
-        targetMarket: "Budget Gamers",
-      },
-    },
-  },
-  {
-    name: "ASUS TUF Gaming B760M-Plus WiFi",
-    price: 55000,
-    tier: "mid",
-    specs: {
-      chipset: "Intel B760",
-      socket: "LGA1700",
-      formFactor: "mATX",
-      memorySlots: "4",
-      maxMemory: "128GB DDR4",
-      memorySpeed: "5333+ MHz",
-    },
-    features: {
-      functionality: {
-        overclocking: "Very Good",
-        connectivity: "Very Good",
-        features: "Very Good",
-        powerEfficiency: "Good",
-      },
-      usage: {
-        gaming: "Great for gaming",
-        workstation: "Good for content creation",
-        productivity: "Very Good for multitasking",
-        overclocking: "Good overclocking potential",
-      },
-      uniqueFeatures: [
-        "PCIe 4.0 Support",
-        "WiFi 6",
-        "2.5GbE LAN",
-        "USB 3.2 Gen 2",
-        "TUF Protection",
-        "Military Grade Capacitors",
-      ],
-      priceAnalysis: {
-        value: "Good",
-        performancePerRupee: "Very High",
-        targetMarket: "Gamers and Content Creators",
-      },
-    },
-  },
-  {
-    name: "MSI MPG B550 Gaming Edge WiFi",
-    price: 45000,
-    tier: "mid",
-    specs: {
-      chipset: "AMD B550",
-      socket: "AM4",
-      formFactor: "ATX",
-      memorySlots: "4",
-      maxMemory: "128GB DDR4",
-      memorySpeed: "5100+ MHz",
-    },
-    features: {
-      functionality: {
-        overclocking: "Very Good",
-        connectivity: "Very Good",
-        features: "Very Good",
-        powerEfficiency: "Good",
-      },
-      usage: {
-        gaming: "Great for gaming",
-        workstation: "Good for content creation",
-        productivity: "Very Good for multitasking",
-        overclocking: "Good overclocking potential",
-      },
-      uniqueFeatures: [
-        "PCIe 4.0 Support",
-        "WiFi 6",
-        "2.5GbE LAN",
-        "USB 3.2 Gen 2",
-        "M.2 Shield Frozr",
-        "Audio Boost 4",
-      ],
-      priceAnalysis: {
-        value: "Good",
-        performancePerRupee: "Very High",
-        targetMarket: "Gamers and Content Creators",
-      },
-    },
-  },
-  {
-    name: "Gigabyte H610M S2H",
-    price: 18000,
-    tier: "low",
-    specs: {
-      chipset: "Intel H610",
-      socket: "LGA1700",
-      formFactor: "mATX",
-      memorySlots: "2",
-      maxMemory: "64GB DDR4",
-      memorySpeed: "3200 MHz",
-    },
-    features: {
-      functionality: {
-        overclocking: "Basic",
-        connectivity: "Basic",
-        features: "Basic",
-        powerEfficiency: "Excellent",
-      },
-      usage: {
-        gaming: "Entry-level gaming",
-        workstation: "Entry-level tasks",
-        productivity: "Basic office work",
-        overclocking: "Not supported",
-      },
-      uniqueFeatures: [
-        "PCIe 4.0 Support",
-        "1GbE LAN",
-        "USB 3.2 Gen 1",
-        "Q-Flash Plus",
-        "Ultra Durable",
-      ],
-      priceAnalysis: {
-        value: "Budget",
-        performancePerRupee: "Good",
-        targetMarket: "Entry Users",
-      },
-    },
-  },
-  {
-    name: "ASRock A520M-HDV",
-    price: 15000,
-    tier: "low",
-    specs: {
-      chipset: "AMD A520",
-      socket: "AM4",
-      formFactor: "mATX",
-      memorySlots: "2",
-      maxMemory: "64GB DDR4",
-      memorySpeed: "4600+ MHz",
-    },
-    features: {
-      functionality: {
-        overclocking: "Basic",
-        connectivity: "Basic",
-        features: "Basic",
-        powerEfficiency: "Excellent",
-      },
-      usage: {
-        gaming: "Entry-level gaming",
-        workstation: "Entry-level tasks",
-        productivity: "Basic office work",
-        overclocking: "Not supported",
-      },
-      uniqueFeatures: [
-        "PCIe 3.0 Support",
-        "1GbE LAN",
-        "USB 3.2 Gen 1",
-        "Steel Slot",
-        "Ultra M.2",
-      ],
-      priceAnalysis: {
-        value: "Budget",
-        performancePerRupee: "Good",
-        targetMarket: "Entry Users",
-      },
-    },
-  },
-  {
-    name: "ASUS ROG Strix B760-F Gaming WiFi",
-    price: 85000,
-    tier: "mid",
-    specs: {
-      chipset: "Intel B760",
-      socket: "LGA1700",
-      formFactor: "ATX",
-      memorySlots: "4",
-      maxMemory: "128GB DDR5",
-      memorySpeed: "7800+ MHz",
-    },
-    features: {
-      functionality: {
-        overclocking: "Very Good",
-        connectivity: "Excellent",
-        features: "Very Good",
-        powerEfficiency: "Good",
-      },
-      usage: {
-        gaming: "Great for gaming",
-        workstation: "Good for content creation",
-        productivity: "Very Good for multitasking",
-        overclocking: "Good overclocking potential",
-      },
-      uniqueFeatures: [
-        "PCIe 4.0 Support",
-        "WiFi 6E",
-        "2.5GbE LAN",
-        "USB 3.2 Gen 2x2",
-        "ROG SupremeFX Audio",
-        "Aura Sync RGB",
-      ],
-      priceAnalysis: {
-        value: "Good",
-        performancePerRupee: "High",
-        targetMarket: "Gamers and Content Creators",
-      },
-    },
-  },
-  {
-    name: "MSI MEG X670E ACE",
-    price: 150000,
-    tier: "high",
-    specs: {
-      chipset: "AMD X670E",
-      socket: "AM5",
-      formFactor: "ATX",
-      memorySlots: "4",
-      maxMemory: "128GB DDR5",
-      memorySpeed: "6666+ MHz",
-    },
-    features: {
-      functionality: {
-        overclocking: "Outstanding",
-        connectivity: "Superb",
-        features: "Outstanding",
-        powerEfficiency: "High",
-      },
-      usage: {
-        gaming: "Perfect for extreme gaming",
-        workstation: "Ideal for professional workstations",
-        productivity: "Superb for heavy workloads",
-        overclocking: "Excellent overclocking potential",
-      },
-      uniqueFeatures: [
-        "PCIe 5.0 Support",
-        "WiFi 6E",
-        "10GbE LAN",
-        "Thunderbolt 4",
-        "USB 3.2 Gen 2x2",
-        "22+2+1 Phase VRM",
-        "M.2 Shield Frozr",
-      ],
-      priceAnalysis: {
-        value: "Premium",
-        performancePerRupee: "High",
-        targetMarket: "Enthusiasts and Professionals",
-      },
-    },
-  },
-  {
-    name: "Gigabyte B660M DS3H",
-    price: 28000,
-    tier: "low",
-    specs: {
-      chipset: "Intel B660",
-      socket: "LGA1700",
-      formFactor: "mATX",
-      memorySlots: "4",
-      maxMemory: "128GB DDR4",
-      memorySpeed: "5333+ MHz",
-    },
-    features: {
-      functionality: {
-        overclocking: "Good",
-        connectivity: "Good",
-        features: "Good",
-        powerEfficiency: "Very High",
-      },
-      usage: {
-        gaming: "Good for gaming",
-        workstation: "Adequate for basic content creation",
-        productivity: "Good for multitasking",
-        overclocking: "Moderate overclocking potential",
-      },
-      uniqueFeatures: [
-        "PCIe 4.0 Support",
-        "1GbE LAN",
-        "USB 3.2 Gen 1",
-        "Q-Flash Plus",
-        "Ultra Durable",
-      ],
-      priceAnalysis: {
-        value: "Excellent",
-        performancePerRupee: "Very High",
-        targetMarket: "Budget Gamers",
-      },
-    },
-  },
-  {
-    name: "ASUS PRIME H410M-E",
-    price: 13000,
-    tier: "low",
-    specs: {
-      chipset: "Intel H410",
-      socket: "LGA1200",
-      formFactor: "mATX",
-      memorySlots: "2",
-      maxMemory: "64GB DDR4",
-      memorySpeed: "2933 MHz",
-    },
-    features: {
-      functionality: {
-        overclocking: "None",
-        connectivity: "Basic",
-        features: "Basic",
-        powerEfficiency: "High",
-      },
-      usage: {
-        gaming: "Entry-level gaming",
-        workstation: "Not recommended",
-        productivity: "Basic office tasks",
-        overclocking: "No overclocking",
-      },
-      uniqueFeatures: ["Affordable", "Compact Size", "Essential Connectivity"],
-      priceAnalysis: {
-        value: "Excellent",
-        performancePerRupee: "High",
-        targetMarket: "Budget Users",
-      },
-    },
-  },
-  {
-    name: "MSI B560M PRO-VDH",
-    price: 20000,
-    tier: "low",
-    specs: {
-      chipset: "Intel B560",
-      socket: "LGA1200",
-      formFactor: "mATX",
-      memorySlots: "4",
-      maxMemory: "128GB DDR4",
-      memorySpeed: "5000 MHz",
-    },
-    features: {
-      functionality: {
-        overclocking: "None",
-        connectivity: "Good",
-        features: "Good",
-        powerEfficiency: "High",
-      },
-      usage: {
-        gaming: "Good for budget gaming",
-        workstation: "Good for light content creation",
-        productivity: "Good for multitasking",
-        overclocking: "No overclocking",
-      },
-      uniqueFeatures: ["Affordable", "4 RAM Slots", "M.2 Support"],
-      priceAnalysis: {
-        value: "Excellent",
-        performancePerRupee: "High",
-        targetMarket: "Budget Users",
-      },
-    },
-  },
-];
-
-// Add internal CSS for responsive table styling
-const motherboardTableResponsiveStyle = `
-  .motherboard-table-sm .mb-img {
-    width: 24px;
-    height: 24px;
-    min-width: 24px;
-    min-height: 24px;
-    max-width: 24px;
-    max-height: 24px;
-    margin-right: 8px;
-    border-radius: 4px;
-    object-fit: cover;
-  }
+const mbTableResponsiveStyle = `
   @media (max-width: 991.98px) {
-    .motherboard-table-sm .mb-img {
+    .mb-table-sm .mb-img {
       width: 18px !important;
       height: 18px !important;
       min-width: 18px !important;
@@ -744,21 +70,21 @@ const motherboardTableResponsiveStyle = `
     }
   }
   @media (max-width: 576px) {
-    .motherboard-table-sm td, .motherboard-table-sm th {
+    .mb-table-sm td, .mb-table-sm th {
       padding: 0.25rem 0.3rem !important;
       font-size: 0.85rem !important;
     }
-    .motherboard-table-sm .mb-name {
+    .mb-table-sm .mb-name {
       font-size: 0.95rem !important;
     }
-    .motherboard-table-sm .btn {
+    .mb-table-sm .btn {
       font-size: 0.8rem !important;
       padding: 0.2rem 0.5rem !important;
     }
   }
 `;
 
-const selectMotherboardHeadingStyle = `
+const selectMbHeadingStyle = `
   .select-mb-heading {
     font-size: 2.1rem;
     font-weight: 700;
@@ -773,6 +99,9 @@ const selectMotherboardHeadingStyle = `
 
 export default function MotherboardPage() {
   const [compareSelection, setCompareSelection] = useState([]);
+  const [motherboards, setMotherboards] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const navigate = useNavigate();
 
   const breakpoint = useBreakpoint();
@@ -780,30 +109,45 @@ export default function MotherboardPage() {
   if (breakpoint === "md") maxCompare = 3;
   if (breakpoint === "sm") maxCompare = 2;
 
-  const [priceSort, setPriceSort] = useState("default"); // 'default', 'asc', or 'desc'
-  const [originalMbOrder] = useState(motherboardOptions);
+  const [priceSort, setPriceSort] = useState("default");
 
-  let sortedMotherboards;
+  useEffect(() => {
+    setLoading(true);
+    setError(null);
+    axios
+      .get(
+        "http://localhost/gearsphere_api/GearSphere-BackEnd/getMotherBoard.php"
+      )
+      .then((response) => {
+        const data = response.data;
+        if (data.success) {
+          setMotherboards(data.data || []);
+        } else {
+          setError(data.message || "Failed to fetch motherboards");
+        }
+        setLoading(false);
+      })
+      .catch((err) => {
+        setError("Failed to fetch motherboards");
+        setLoading(false);
+      });
+  }, []);
+
+  let sortedMotherboards = [...motherboards];
   if (priceSort === "asc") {
-    sortedMotherboards = [...motherboardOptions].sort(
-      (a, b) => a.price - b.price
-    );
+    sortedMotherboards.sort((a, b) => a.price - b.price);
   } else if (priceSort === "desc") {
-    sortedMotherboards = [...motherboardOptions].sort(
-      (a, b) => b.price - a.price
-    );
-  } else {
-    sortedMotherboards = originalMbOrder;
+    sortedMotherboards.sort((a, b) => b.price - a.price);
   }
 
   const handleToggleCompare = (option) => {
     setCompareSelection((prev) => {
-      if (prev.some((item) => item.name === option.name)) {
-        return prev.filter((item) => item.name !== option.name);
+      if (prev.some((item) => item.product_id === option.product_id)) {
+        return prev.filter((item) => item.product_id !== option.product_id);
       } else {
         if (prev.length >= maxCompare) {
           toast.warning(
-            `You can only compare up to ${maxCompare} Motherboards at a time on this device.`
+            `You can only compare up to ${maxCompare} motherboards at a time on this device.`
           );
           return prev;
         }
@@ -813,14 +157,10 @@ export default function MotherboardPage() {
   };
 
   const handleSelectMotherboard = (mb) => {
-    const { icon, ...mbWithoutIcon } = mb;
-    sessionStorage.setItem(
-      "selected_motherboard",
-      JSON.stringify(mbWithoutIcon)
-    );
+    sessionStorage.setItem("selected_motherboard", JSON.stringify(mb));
     toast.success(`Selected ${mb.name}. Redirecting to PC Builder...`);
     setTimeout(() => {
-      navigate("/pc-builder?motherboardSelected=1");
+      navigate("/pc-builder?mbSelected=1");
     }, 1000);
   };
 
@@ -842,7 +182,7 @@ export default function MotherboardPage() {
     <>
       <CustomerNavbar />
       <Container className="py-5">
-        <style>{selectMotherboardHeadingStyle}</style>
+        <style>{selectMbHeadingStyle}</style>
         <div className="d-flex align-items-center justify-content-between mb-4">
           <h1 className="mb-0 select-mb-heading">Select Motherboard</h1>
           <div>
@@ -866,67 +206,97 @@ export default function MotherboardPage() {
             )}
           </div>
         </div>
-        <style>{motherboardTableResponsiveStyle}</style>
-        <Table
-          striped
-          bordered
-          hover
-          responsive
-          className="motherboard-table-sm"
-        >
+        <style>{mbTableResponsiveStyle}</style>
+        <Table striped bordered hover responsive className="mb-table-sm">
           <thead>
             <tr>
               <th></th>
+              <th>Image</th>
               <th>Name</th>
-              <th>Chipset</th>
               <th>Socket</th>
               <th>Form Factor</th>
+              <th>Chipset</th>
               <th>Memory Slots</th>
               <th>Max Memory</th>
-              <th>Memory Speed</th>
-              <th>Rating</th>
+              <th>Memory Type</th>
+              <th>SATA Ports</th>
+              <th>Wi-Fi</th>
               <th>Price</th>
               <th></th>
             </tr>
           </thead>
           <tbody>
-            {sortedMotherboards.map((mb) => (
-              <tr key={mb.name}>
-                <td>
-                  <Form.Check
-                    type="checkbox"
-                    checked={compareSelection.some(
-                      (item) => item.name === mb.name
-                    )}
-                    onChange={() => handleToggleCompare(mb)}
-                  />
-                </td>
-                <td className="d-flex align-items-center">
-                  <img
-                    src={mb.icon || "/profile_images/user_image.jpg"}
-                    alt={mb.name}
-                    className="mb-img"
-                  />
-                  <strong className="mb-name">{mb.name}</strong>
-                </td>
-                <td>{mb.specs.chipset}</td>
-                <td>{mb.specs.socket}</td>
-                <td>{mb.specs.formFactor}</td>
-                <td>{mb.specs.memorySlots}</td>
-                <td>{mb.specs.maxMemory}</td>
-                <td>{mb.specs.memorySpeed}</td>
-                <td>
-                  <span style={{ color: "#f5a623" }}>★★★★★</span>{" "}
-                  <span style={{ color: "#888" }}>(123)</span>
-                </td>
-                <td>LKR {mb.price.toLocaleString()}</td>
-                <td>
-                  <Button size="sm" onClick={() => handleSelectMotherboard(mb)}>
-                    Add
-                  </Button>
+            {loading ? (
+              <tr>
+                <td colSpan="13" className="text-center text-muted">
+                  Loading...
                 </td>
               </tr>
-            ))}
+            ) : error ? (
+              <tr>
+                <td colSpan="13" className="text-center text-danger">
+                  {error}
+                </td>
+              </tr>
+            ) : sortedMotherboards.length === 0 ? (
+              <tr>
+                <td colSpan="13" className="text-center text-muted">
+                  No motherboards available.
+                </td>
+              </tr>
+            ) : (
+              sortedMotherboards.map((mb) => (
+                <tr key={mb.product_id}>
+                  <td>
+                    <Form.Check
+                      type="checkbox"
+                      checked={compareSelection.some(
+                        (item) => item.product_id === mb.product_id
+                      )}
+                      onChange={() => handleToggleCompare(mb)}
+                    />
+                  </td>
+                  <td>
+                    {mb.image_url ? (
+                      <img
+                        src={`http://localhost/gearsphere_api/GearSphere-BackEnd/${mb.image_url}`}
+                        alt={mb.name}
+                        className="mb-img me-2"
+                        style={{
+                          width: 40,
+                          height: 40,
+                          objectFit: "cover",
+                          borderRadius: 4,
+                        }}
+                      />
+                    ) : (
+                      <Motherboard size={24} className="me-2 text-secondary" />
+                    )}
+                  </td>
+                  <td>
+                    <strong className="mb-name">{mb.name}</strong>
+                  </td>
+                  <td>{mb.socket || "—"}</td>
+                  <td>{mb.form_factor || "—"}</td>
+                  <td>{mb.chipset || "—"}</td>
+                  <td>{mb.memory_slots ?? "—"}</td>
+                  <td>{mb.memory_max || "—"}</td>
+                  <td>{mb.memory_type || "—"}</td>
+                  <td>{mb.sata_ports ?? "—"}</td>
+                  <td>{mb.wifi === 1 ? "Yes" : mb.wifi === 0 ? "No" : "—"}</td>
+                  <td>LKR {mb.price ? mb.price.toLocaleString() : "—"}</td>
+                  <td>
+                    <Button
+                      className="btn-darkblue"
+                      size="sm"
+                      onClick={() => handleSelectMotherboard(mb)}
+                    >
+                      Add
+                    </Button>
+                  </td>
+                </tr>
+              ))
+            )}
           </tbody>
         </Table>
       </Container>

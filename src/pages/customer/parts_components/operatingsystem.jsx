@@ -11,150 +11,7 @@ import {
 } from "react-bootstrap";
 import { toast } from "react-toastify";
 import CustomerNavbar from "../../pageNavbars/CustomerNavbar";
-
-export const operatingSystemOptions = [
-  {
-    name: "Windows 10 Home",
-    price: 10000,
-    tier: "low",
-    image: "/profile_images/pp25.jpg",
-    specs: {
-      type: "Windows",
-      version: "10 Home",
-      license: "OEM",
-      bit: "64-bit",
-      support: "2025",
-    },
-    features: ["Familiar UI", "Wide Compatibility", "Cortana"],
-  },
-  {
-    name: "Windows 10 Pro",
-    price: 12000,
-    tier: "mid",
-    image: "/profile_images/pp12.jpg",
-    specs: {
-      type: "Windows",
-      version: "10 Pro",
-      license: "OEM",
-      bit: "64-bit",
-      support: "2025",
-    },
-    features: ["BitLocker", "Remote Desktop", "Group Policy"],
-  },
-  {
-    name: "Windows 11 Home",
-    price: 11000,
-    tier: "mid",
-    image: "/profile_images/pp13.jpg",
-    specs: {
-      type: "Windows",
-      version: "11 Home",
-      license: "OEM",
-      bit: "64-bit",
-      support: "2027",
-    },
-    features: ["Modern UI", "Snap Layouts", "Widgets"],
-  },
-  {
-    name: "Windows 11 Pro",
-    price: 14000,
-    tier: "high",
-    image: "/profile_images/pp14.jpg",
-    specs: {
-      type: "Windows",
-      version: "11 Pro",
-      license: "OEM",
-      bit: "64-bit",
-      support: "2027",
-    },
-    features: ["BitLocker", "Remote Desktop", "Virtualization"],
-  },
-  // 6 more dummy entries
-  {
-    name: "Ubuntu 22.04 LTS",
-    price: 0,
-    tier: "low",
-    image: "/profile_images/pp15.jpg",
-    specs: {
-      type: "Linux",
-      version: "22.04 LTS",
-      license: "Open Source",
-      bit: "64-bit",
-      support: "2027",
-    },
-    features: ["Free", "Stable", "Snap Packages"],
-  },
-  {
-    name: "Fedora Workstation 38",
-    price: 0,
-    tier: "low",
-    image: "/profile_images/pp16.jpg",
-    specs: {
-      type: "Linux",
-      version: "38",
-      license: "Open Source",
-      bit: "64-bit",
-      support: "2025",
-    },
-    features: ["Cutting Edge", "Wayland", "Flatpak"],
-  },
-  {
-    name: "Linux Mint 21.1",
-    price: 0,
-    tier: "low",
-    image: "/profile_images/pp17.jpg",
-    specs: {
-      type: "Linux",
-      version: "21.1",
-      license: "Open Source",
-      bit: "64-bit",
-      support: "2027",
-    },
-    features: ["User Friendly", "Cinnamon Desktop", "Stable"],
-  },
-  {
-    name: "macOS Ventura",
-    price: 0,
-    tier: "low",
-    image: "/profile_images/pp18.png",
-    specs: {
-      type: "macOS",
-      version: "Ventura",
-      license: "Apple EULA",
-      bit: "64-bit",
-      support: "2026",
-    },
-    features: ["Apple Ecosystem", "Universal Control", "Continuity"],
-  },
-  {
-    name: "Windows 8.1 Pro",
-    price: 8000,
-    tier: "mid",
-    image: "/profile_images/pp19.png",
-    specs: {
-      type: "Windows",
-      version: "8.1 Pro",
-      license: "OEM",
-      bit: "64-bit",
-      support: "2023",
-    },
-    features: ["Legacy Support", "BitLocker", "Remote Desktop"],
-  },
-  {
-    name: "Debian 12",
-    price: 0,
-    tier: "low",
-    image: "/profile_images/pp10.jpg",
-    specs: {
-      type: "Linux",
-      version: "12",
-      license: "Open Source",
-      bit: "64-bit",
-      support: "2028",
-    },
-    features: ["Stable", "Secure", "Wide Package Support"],
-  },
-];
+import axios from "axios";
 
 function useBreakpoint() {
   const [breakpoint, setBreakpoint] = useState("lg");
@@ -173,6 +30,8 @@ function useBreakpoint() {
 }
 
 export default function OperatingSystemPage() {
+  const [operatingSystems, setOperatingSystems] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [compareSelection, setCompareSelection] = useState([]);
   const navigate = useNavigate();
   const breakpoint = useBreakpoint();
@@ -180,23 +39,48 @@ export default function OperatingSystemPage() {
   if (breakpoint === "md") maxCompare = 3;
   if (breakpoint === "sm") maxCompare = 2;
   const [priceSort, setPriceSort] = useState("default");
-  const [originalOrder] = useState(operatingSystemOptions);
-  let sortedOptions;
-  if (priceSort === "asc") {
-    sortedOptions = [...operatingSystemOptions].sort(
-      (a, b) => a.price - b.price
-    );
-  } else if (priceSort === "desc") {
-    sortedOptions = [...operatingSystemOptions].sort(
-      (a, b) => b.price - a.price
-    );
-  } else {
-    sortedOptions = originalOrder;
-  }
-  const handleToggleCompare = (option) => {
+
+  useEffect(() => {
+    const fetchOperatingSystems = async () => {
+      try {
+        setLoading(true);
+        const response = await axios.get(
+          "http://localhost/gearsphere_api/GearSphere-BackEnd/getOperatingSystems.php"
+        );
+
+        if (response.data.success) {
+          setOperatingSystems(response.data.data);
+        } else {
+          toast.error("Failed to load operating systems");
+        }
+      } catch (error) {
+        console.error("Error fetching operating systems:", error);
+        toast.error("Error loading operating systems");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchOperatingSystems();
+  }, []);
+
+  // Sort operating systems based on price
+  const sortedOperatingSystems = React.useMemo(() => {
+    let sorted = [...operatingSystems];
+
+    if (priceSort === "asc") {
+      sorted.sort((a, b) => parseFloat(a.price) - parseFloat(b.price));
+    } else if (priceSort === "desc") {
+      sorted.sort((a, b) => parseFloat(b.price) - parseFloat(a.price));
+    }
+
+    return sorted;
+  }, [operatingSystems, priceSort]);
+
+  const handleToggleCompare = (os) => {
     setCompareSelection((prev) => {
-      if (prev.some((item) => item.name === option.name)) {
-        return prev.filter((item) => item.name !== option.name);
+      if (prev.some((item) => item.product_id === os.product_id)) {
+        return prev.filter((item) => item.product_id !== os.product_id);
       } else {
         if (prev.length >= maxCompare) {
           toast.warning(
@@ -204,10 +88,11 @@ export default function OperatingSystemPage() {
           );
           return prev;
         }
-        return [...prev, option];
+        return [...prev, os];
       }
     });
   };
+
   const handleSelect = (os) => {
     sessionStorage.setItem("selected_operatingsystem", JSON.stringify(os));
     toast.success(`Selected ${os.name}. Redirecting to PC Builder...`);
@@ -215,6 +100,7 @@ export default function OperatingSystemPage() {
       navigate("/pc-builder?operatingsystemSelected=1");
     }, 1000);
   };
+
   const handleCompareClick = () => {
     sessionStorage.setItem(
       "compare_operatingsystems",
@@ -222,11 +108,29 @@ export default function OperatingSystemPage() {
     );
     navigate("/compare-operatingsystem");
   };
+
   const handleTogglePriceSort = () => {
     setPriceSort((prev) =>
       prev === "default" ? "asc" : prev === "asc" ? "desc" : "default"
     );
   };
+
+  if (loading) {
+    return (
+      <>
+        <CustomerNavbar />
+        <Container className="py-5">
+          <div className="text-center">
+            <div className="spinner-border" role="status">
+              <span className="visually-hidden">Loading...</span>
+            </div>
+            <p className="mt-3">Loading Operating Systems...</p>
+          </div>
+        </Container>
+      </>
+    );
+  }
+
   return (
     <>
       <CustomerNavbar />
@@ -259,54 +163,72 @@ export default function OperatingSystemPage() {
             <tr>
               <th></th>
               <th>Name</th>
-              <th>Type</th>
-              <th>Bit</th>
-              <th>License</th>
-              <th>Support</th>
+              <th>Model</th>
+              <th>Mode</th>
+              <th>Version</th>
+              <th>Max Memory</th>
               <th>Price</th>
               <th></th>
             </tr>
           </thead>
           <tbody>
-            {sortedOptions.map((os) => (
-              <tr key={os.name}>
-                <td>
-                  <Form.Check
-                    type="checkbox"
-                    checked={compareSelection.some(
-                      (item) => item.name === os.name
-                    )}
-                    onChange={() => handleToggleCompare(os)}
-                  />
-                </td>
-                <td className="d-flex align-items-center">
-                  <img
-                    src={os.image}
-                    alt={os.name}
-                    style={{
-                      width: 32,
-                      height: 32,
-                      marginRight: 8,
-                      borderRadius: 6,
-                      objectFit: "cover",
-                    }}
-                  />
-                  <strong>{os.name}</strong>
-                </td>
-                <td>{os.specs.type}</td>
-                <td>{os.specs.bit}</td>
-                <td>{os.specs.license}</td>
-                <td>{os.specs.support}</td>
-                <td>
-                  {os.price === 0 ? "Free" : `LKR ${os.price.toLocaleString()}`}
-                </td>
-                <td>
-                  <Button size="sm" onClick={() => handleSelect(os)}>
-                    Add
-                  </Button>
+            {sortedOperatingSystems.length === 0 ? (
+              <tr>
+                <td colSpan="8" className="text-center text-muted">
+                  No Operating Systems available.
                 </td>
               </tr>
-            ))}
+            ) : (
+              sortedOperatingSystems.map((os) => (
+                <tr key={os.product_id}>
+                  <td>
+                    <Form.Check
+                      type="checkbox"
+                      checked={compareSelection.some(
+                        (item) => item.product_id === os.product_id
+                      )}
+                      onChange={() => handleToggleCompare(os)}
+                    />
+                  </td>
+                  <td className="d-flex align-items-center">
+                    <img
+                      src={
+                        os.image_url
+                          ? `http://localhost/gearsphere_api/GearSphere-BackEnd/${os.image_url}`
+                          : "/profile_images/user_image.jpg"
+                      }
+                      alt={os.name}
+                      style={{
+                        width: 32,
+                        height: 32,
+                        marginRight: 8,
+                        borderRadius: 6,
+                        objectFit: "cover",
+                      }}
+                    />
+                    <strong>{os.name}</strong>
+                  </td>
+                  <td>{os.model || "—"}</td>
+                  <td>{os.mode || "—"}</td>
+                  <td>{os.version || "—"}</td>
+                  <td>{os.max_supported_memory || "—"}</td>
+                  <td>
+                    {os.price === 0
+                      ? "Free"
+                      : `LKR ${parseFloat(os.price).toLocaleString()}`}
+                  </td>
+                  <td>
+                    <Button
+                      size="sm"
+                      variant="success"
+                      onClick={() => handleSelect(os)}
+                    >
+                      Add
+                    </Button>
+                  </td>
+                </tr>
+              ))
+            )}
           </tbody>
         </Table>
       </Container>

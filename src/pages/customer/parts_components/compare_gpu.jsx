@@ -59,6 +59,53 @@ const comparisonTableStyle = `
   }
 `;
 
+const smallCardStyle = `
+  .gpu-compare-card-sm {
+    min-width: 200px;
+    max-width: 250px;
+    margin: 0 auto;
+    padding: 1rem 1rem 1.2rem 1rem;
+    border-radius: 14px;
+  }
+  .gpu-compare-card-sm .gpu-img {
+    width: 100px;
+    height: 100px;
+    margin-bottom: 0.7rem;
+    border-radius: 8px;
+    object-fit: cover;
+  }
+  .gpu-compare-card-sm .gpu-name {
+    font-size: 0.95rem;
+    margin-bottom: 0.3rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    word-break: break-word;
+  }
+  .gpu-compare-card-sm .price {
+    font-size: 1.05rem;
+    margin-bottom: 0.4rem;
+  }
+  .gpu-compare-card-sm .btn {
+    font-size: 1rem;
+    padding: 0.35rem 1.1rem;
+  }
+  @media (max-width: 991.98px) {
+    .gpu-compare-card-sm {
+      min-width: 170px;
+      max-width: 200px;
+    }
+  }
+  @media (max-width: 575.98px) {
+    .gpu-compare-card-sm {
+      min-width: 140px;
+      max-width: 170px;
+    }
+  }
+`;
+
 export default function CompareGPUPage() {
   const [gpus, setGpus] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -79,8 +126,7 @@ export default function CompareGPUPage() {
   }, []);
 
   const handleSelectGPU = (gpu) => {
-    const { icon, ...gpuWithoutIcon } = gpu;
-    sessionStorage.setItem("selected_gpu", JSON.stringify(gpuWithoutIcon));
+    sessionStorage.setItem("selected_gpu", JSON.stringify(gpu));
     toast.success(`Selected ${gpu.name}. Redirecting to PC Builder...`);
     setTimeout(() => {
       navigate("/pc-builder?gpuSelected=1");
@@ -130,18 +176,33 @@ export default function CompareGPUPage() {
       <Container className="py-5">
         <style>{compareGpuHeadingStyle}</style>
         <style>{comparisonTableStyle}</style>
+        <style>{smallCardStyle}</style>
 
         <div className="d-flex align-items-center justify-content-between mb-4">
           <h1 className="mb-0 compare-gpu-heading">Compare Video Cards</h1>
         </div>
 
-        <Row className="mb-4">
+        <Row
+          className="mb-4 d-flex flex-row justify-content-center"
+          style={{
+            gap: "2rem",
+            flexWrap: "nowrap",
+            overflowX: "auto",
+            whiteSpace: "nowrap",
+            marginTop: "1.5rem",
+            marginLeft: "0rem",
+          }}
+        >
           {gpus.map((gpu, index) => (
-            <Col key={gpu.name} md={12 / gpus.length} className="mb-3">
-              <Card className="h-100 shadow-sm">
+            <Col key={gpu.product_id} xs="auto" className="p-0">
+              <Card className="h-100 shadow-sm gpu-compare-card-sm">
                 <Card.Body className="text-center">
                   <img
-                    src={gpu.icon || "/profile_images/user_image.jpg"}
+                    src={
+                      gpu.image_url
+                        ? `http://localhost/gearsphere_api/GearSphere-BackEnd/${gpu.image_url}`
+                        : "/profile_images/user_image.jpg"
+                    }
                     alt={gpu.name}
                     className="gpu-img mb-2"
                   />
@@ -167,17 +228,41 @@ export default function CompareGPUPage() {
             <tr>
               <th>Specification</th>
               {gpus.map((gpu) => (
-                <th key={gpu.name}>{gpu.name}</th>
+                <th key={gpu.product_id}>{gpu.name}</th>
               ))}
             </tr>
           </thead>
           <tbody>
             <tr>
               <td>
+                <strong>Chipset</strong>
+              </td>
+              {gpus.map((gpu) => (
+                <td key={gpu.product_id}>{gpu.chipset || "—"}</td>
+              ))}
+            </tr>
+            <tr>
+              <td>
                 <strong>Memory</strong>
               </td>
               {gpus.map((gpu) => (
-                <td key={gpu.name}>{gpu.specs?.memory || "—"}</td>
+                <td key={gpu.product_id}>{gpu.memory || "—"}</td>
+              ))}
+            </tr>
+            <tr>
+              <td>
+                <strong>Memory Type</strong>
+              </td>
+              {gpus.map((gpu) => (
+                <td key={gpu.product_id}>{gpu.memory_type || "—"}</td>
+              ))}
+            </tr>
+            <tr>
+              <td>
+                <strong>Core Clock</strong>
+              </td>
+              {gpus.map((gpu) => (
+                <td key={gpu.product_id}>{gpu.core_clock || "—"}</td>
               ))}
             </tr>
             <tr>
@@ -185,23 +270,23 @@ export default function CompareGPUPage() {
                 <strong>Boost Clock</strong>
               </td>
               {gpus.map((gpu) => (
-                <td key={gpu.name}>{gpu.specs?.boostClock || "—"}</td>
+                <td key={gpu.product_id}>{gpu.boost_clock || "—"}</td>
               ))}
             </tr>
             <tr>
               <td>
-                <strong>Cores</strong>
+                <strong>Interface</strong>
               </td>
               {gpus.map((gpu) => (
-                <td key={gpu.name}>{gpu.specs?.cores || "—"}</td>
+                <td key={gpu.product_id}>{gpu.interface || "—"}</td>
               ))}
             </tr>
             <tr>
               <td>
-                <strong>Microarchitecture</strong>
+                <strong>Length</strong>
               </td>
               {gpus.map((gpu) => (
-                <td key={gpu.name}>{gpu.features?.microarchitecture || "—"}</td>
+                <td key={gpu.product_id}>{gpu.length || "—"}</td>
               ))}
             </tr>
             <tr>
@@ -209,28 +294,31 @@ export default function CompareGPUPage() {
                 <strong>TDP</strong>
               </td>
               {gpus.map((gpu) => (
-                <td key={gpu.name}>{gpu.specs?.tdp || "—"}</td>
+                <td key={gpu.product_id}>{gpu.tdp || "—"}</td>
               ))}
             </tr>
             <tr>
               <td>
-                <strong>Integrated Graphics</strong>
+                <strong>Cooling</strong>
               </td>
               {gpus.map((gpu) => (
-                <td key={gpu.name}>
-                  {gpu.features?.integratedGraphics || "—"}
-                </td>
+                <td key={gpu.product_id}>{gpu.cooling || "—"}</td>
               ))}
             </tr>
             <tr>
               <td>
-                <strong>Rating</strong>
+                <strong>Description</strong>
               </td>
               {gpus.map((gpu) => (
-                <td key={gpu.name}>
-                  <span className="rating">★★★★★</span>
-                  <br />
-                  <small className="text-muted">(123 reviews)</small>
+                <td
+                  key={gpu.product_id}
+                  style={{
+                    textAlign: "justify",
+                    fontSize: "0.95em",
+                    whiteSpace: "pre-line",
+                  }}
+                >
+                  {gpu.description || "—"}
                 </td>
               ))}
             </tr>
@@ -239,20 +327,13 @@ export default function CompareGPUPage() {
                 <strong>Price</strong>
               </td>
               {gpus.map((gpu) => (
-                <td key={gpu.name} className="price">
+                <td key={gpu.product_id} className="price">
                   LKR {gpu.price?.toLocaleString() || "N/A"}
                 </td>
               ))}
             </tr>
           </tbody>
         </Table>
-
-        <div className="text-center mt-4">
-          <Button variant="primary" size="lg" onClick={handleBackToSelection}>
-            <ArrowLeft className="me-2" />
-            Back to GPU Selection
-          </Button>
-        </div>
       </Container>
     </>
   );
