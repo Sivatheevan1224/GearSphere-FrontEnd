@@ -44,21 +44,192 @@ const partOptionsMap = {
 
 const getPartOptions = (type) => partOptionsMap[type] || [];
 
+// Add these SVG icons above the PCBuilder function
+const GpuIcon = (
+  <svg
+    width="40"
+    height="40"
+    viewBox="0 0 24 24"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <rect
+      x="2"
+      y="7"
+      width="20"
+      height="10"
+      rx="2"
+      fill="#22c55e"
+      fillOpacity="0.12"
+      stroke="#22c55e"
+      strokeWidth="2"
+    />
+    <rect
+      x="5"
+      y="10"
+      width="3"
+      height="4"
+      rx="1"
+      fill="#22c55e"
+      stroke="#22c55e"
+      strokeWidth="1.5"
+    />
+    <rect
+      x="16"
+      y="10"
+      width="3"
+      height="4"
+      rx="1"
+      fill="#22c55e"
+      stroke="#22c55e"
+      strokeWidth="1.5"
+    />
+    <circle
+      cx="12"
+      cy="12"
+      r="2.2"
+      fill="#22c55e"
+      stroke="#22c55e"
+      strokeWidth="1.5"
+    />
+    <rect
+      x="8.5"
+      y="9.5"
+      width="7"
+      height="5"
+      rx="1.5"
+      fill="#fff"
+      stroke="#22c55e"
+      strokeWidth="1.2"
+    />
+    <rect
+      x="10"
+      y="11"
+      width="4"
+      height="2"
+      rx="1"
+      fill="#22c55e"
+      stroke="#22c55e"
+      strokeWidth="0.8"
+    />
+  </svg>
+);
+
+const MonitorIcon = (
+  <svg
+    width="40"
+    height="40"
+    viewBox="0 0 24 24"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <rect
+      x="3"
+      y="5"
+      width="18"
+      height="12"
+      rx="2"
+      fill="#2563eb"
+      fillOpacity="0.10"
+      stroke="#2563eb"
+      strokeWidth="2"
+    />
+    <rect
+      x="8"
+      y="17"
+      width="8"
+      height="2"
+      rx="1"
+      fill="#2563eb"
+      stroke="#2563eb"
+      strokeWidth="1.5"
+    />
+    <rect
+      x="10"
+      y="19"
+      width="4"
+      height="1.5"
+      rx="0.75"
+      fill="#2563eb"
+      stroke="#2563eb"
+      strokeWidth="1.2"
+    />
+  </svg>
+);
+
+// Add this SVG icon above the PCBuilder function
+const OperatingSystemIcon = (
+  <svg
+    width="40"
+    height="40"
+    viewBox="0 0 24 24"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <rect
+      x="3"
+      y="5"
+      width="18"
+      height="14"
+      rx="2.5"
+      fill="#e0e7ff"
+      stroke="#2563eb"
+      strokeWidth="2"
+    />
+    <rect
+      x="3"
+      y="11"
+      width="18"
+      height="2"
+      fill="#2563eb"
+      fillOpacity="0.15"
+    />
+    <rect
+      x="11"
+      y="5"
+      width="2"
+      height="14"
+      fill="#2563eb"
+      fillOpacity="0.15"
+    />
+    <rect
+      x="3"
+      y="5"
+      width="18"
+      height="14"
+      rx="2.5"
+      stroke="#2563eb"
+      strokeWidth="2"
+    />
+  </svg>
+);
+
 function PCBuilder() {
+  // Helper to get initial state from sessionStorage
+  const getInitialSelectedComponents = () => {
+    const saved = sessionStorage.getItem("pcbuilder_selected_components");
+    return saved
+      ? JSON.parse(saved)
+      : {
+          cpu: null,
+          gpu: null,
+          motherboard: null,
+          ram: null,
+          storage: null,
+          psu: null,
+          case: null,
+          cooling: null,
+          monitor: null,
+          operating_system: null,
+        };
+  };
+
   const [selectedRange, setSelectedRange] = useState("");
   const [usage, setUsage] = useState("");
-  const [selectedComponents, setSelectedComponents] = useState({
-    cpu: null,
-    gpu: null,
-    motherboard: null,
-    ram: null,
-    storage: null,
-    psu: null,
-    case: null,
-    cooling: null,
-    monitor: null,
-    operating_system: null,
-  });
+  // Use function form to initialize from sessionStorage
+  const [selectedComponents, setSelectedComponents] = useState(
+    getInitialSelectedComponents
+  );
   const [recommendations, setRecommendations] = useState(null);
   const [totalPrice, setTotalPrice] = useState(0);
   const [showComparison, setShowComparison] = useState(false);
@@ -146,17 +317,15 @@ function PCBuilder() {
   // Component icons mapping with correct icons
   const componentIcons = {
     cpu: <Cpu size={40} className="text-primary" />,
-    gpu: <Display size={40} className="text-success" />,
+    gpu: GpuIcon,
     motherboard: <Motherboard size={40} className="text-info" />,
     ram: <Memory size={40} className="text-warning" />,
     storage: <Hdd size={40} className="text-danger" />,
     psu: <Power size={40} className="text-secondary" />,
     case: <PcDisplay size={40} className="text-dark" />,
     cooling: <Fan size={40} className="text-primary" />,
-    monitor: <Display size={40} className="text-info" />,
-    operating_system: (
-      <ArrowsAngleExpand size={40} className="text-secondary" />
-    ),
+    monitor: MonitorIcon,
+    operating_system: OperatingSystemIcon,
   };
 
   // Generate recommendations based on budget range and usage
@@ -253,11 +422,26 @@ function PCBuilder() {
     setShowComparison(false);
   };
 
-  // Calculate total price
+  // Only sum prices for valid part keys
+  const validKeys = [
+    "cpu",
+    "gpu",
+    "motherboard",
+    "ram",
+    "storage",
+    "psu",
+    "case",
+    "cooling",
+    "monitor",
+    "operating_system",
+  ];
+
   useEffect(() => {
-    const total = Object.values(selectedComponents).reduce((sum, component) => {
-      return sum + (component?.price ? parseFloat(component.price) : 0);
-    }, 0);
+    const total = Object.entries(selectedComponents)
+      .filter(([key]) => validKeys.includes(key))
+      .reduce((sum, [, component]) => {
+        return sum + (component?.price ? parseFloat(component.price) : 0);
+      }, 0);
     setTotalPrice(total);
   }, [selectedComponents]);
 
@@ -349,9 +533,6 @@ function PCBuilder() {
     const cpuStr = sessionStorage.getItem("selected_cpu");
     if (cpuStr) {
       const cpu = JSON.parse(cpuStr);
-      const cpuOption = getPartOptions("cpu").find(
-        (opt) => opt.name === cpu.name
-      );
       const savedBuild = sessionStorage.getItem(
         "pcbuilder_selected_components"
       );
@@ -386,9 +567,6 @@ function PCBuilder() {
     const gpuStr = sessionStorage.getItem("selected_gpu");
     if (gpuStr) {
       const gpu = JSON.parse(gpuStr);
-      const gpuOption = getPartOptions("gpu").find(
-        (opt) => opt.name === gpu.name
-      );
       const savedBuild = sessionStorage.getItem(
         "pcbuilder_selected_components"
       );
@@ -423,9 +601,6 @@ function PCBuilder() {
     const motherboardStr = sessionStorage.getItem("selected_motherboard");
     if (motherboardStr) {
       const motherboard = JSON.parse(motherboardStr);
-      const motherboardOption = getPartOptions("motherboard")?.find(
-        (opt) => opt.name === motherboard.name
-      );
       const savedBuild = sessionStorage.getItem(
         "pcbuilder_selected_components"
       );
@@ -460,9 +635,6 @@ function PCBuilder() {
     const memoryStr = sessionStorage.getItem("selected_memory");
     if (memoryStr) {
       const memory = JSON.parse(memoryStr);
-      const memoryOption = getPartOptions("ram")?.find(
-        (opt) => opt.name === memory.name
-      );
       const savedBuild = sessionStorage.getItem(
         "pcbuilder_selected_components"
       );
@@ -497,9 +669,6 @@ function PCBuilder() {
     const storageStr = sessionStorage.getItem("selected_storage");
     if (storageStr) {
       const storage = JSON.parse(storageStr);
-      const storageOption = getPartOptions("storage")?.find(
-        (opt) => opt.name === storage.name
-      );
       const savedBuild = sessionStorage.getItem(
         "pcbuilder_selected_components"
       );
@@ -517,7 +686,7 @@ function PCBuilder() {
             monitor: null,
             operating_system: null,
           };
-      const updated = { ...prev, storage: storage };
+      const updated = { ...prev, storage };
       setSelectedComponents(updated);
       sessionStorage.setItem(
         "pcbuilder_selected_components",
@@ -860,7 +1029,7 @@ function PCBuilder() {
                                   }}
                                 />
                               ) : key === "gpu" && !component ? (
-                                <Display size={40} className="text-success" />
+                                componentIcons.gpu
                               ) : key === "motherboard" && component ? (
                                 <img
                                   src={
@@ -979,7 +1148,7 @@ function PCBuilder() {
                                   }}
                                 />
                               ) : key === "monitor" && !component ? (
-                                <Display size={40} className="text-primary" />
+                                componentIcons.monitor
                               ) : key === "operating_system" && component ? (
                                 <img
                                   src={
@@ -996,10 +1165,7 @@ function PCBuilder() {
                                   }}
                                 />
                               ) : key === "operating_system" && !component ? (
-                                <ArrowsAngleExpand
-                                  size={40}
-                                  className="text-secondary"
-                                />
+                                componentIcons.operating_system
                               ) : (
                                 componentIcons[key]
                               )}
@@ -1100,8 +1266,9 @@ function PCBuilder() {
               <div className="mb-3">
                 <h5>Selected Components</h5>
                 <ul className="list-unstyled">
-                  {Object.entries(selectedComponents).map(
-                    ([key, component]) => (
+                  {Object.entries(selectedComponents)
+                    .filter(([key]) => key !== "cooler" && key !== "os")
+                    .map(([key, component]) => (
                       <li key={key} className="mb-2">
                         <strong>
                           {key === "gpu"
@@ -1131,8 +1298,7 @@ function PCBuilder() {
                           "Not selected"
                         )}
                       </li>
-                    )
-                  )}
+                    ))}
                 </ul>
               </div>
               <div className="mb-3">
@@ -1390,8 +1556,9 @@ function PCBuilder() {
               <div className="mb-3">
                 <strong>Selected Components:</strong>
                 <div className="border rounded p-3 mt-2">
-                  {Object.entries(selectedComponents).map(
-                    ([key, component]) => (
+                  {Object.entries(selectedComponents)
+                    .filter(([key]) => key !== "cooler" && key !== "os")
+                    .map(([key, component]) => (
                       <div
                         key={key}
                         className="d-flex justify-content-between align-items-center mb-2"
@@ -1421,8 +1588,7 @@ function PCBuilder() {
                           </span>
                         )}
                       </div>
-                    )
-                  )}
+                    ))}
                   <hr />
                   <div className="d-flex justify-content-between align-items-center">
                     <h5 className="mb-0">Total:</h5>
