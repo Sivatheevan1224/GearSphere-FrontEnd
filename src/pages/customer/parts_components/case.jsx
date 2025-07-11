@@ -198,22 +198,22 @@ export default function CasePage() {
           </div>
         ) : (
           <Table striped bordered hover responsive className="case-table-sm">
-            <thead>
-              <tr>
-                <th></th>
+          <thead>
+            <tr>
+              <th></th>
                 <th>Image</th>
-                <th>Name</th>
-                <th>Type</th>
-                <th>Color</th>
-                <th>Side Panel</th>
-                <th>Max GPU Length</th>
+              <th>Name</th>
+              <th>Type</th>
+              <th>Color</th>
+              <th>Side Panel</th>
+              <th>Max GPU Length</th>
                 <th>Volume</th>
                 <th>Dimensions</th>
-                <th>Price</th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody>
+              <th>Price</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
               {sortedCases.length === 0 ? (
                 <tr>
                   <td colSpan="11" className="text-center text-muted">
@@ -223,29 +223,29 @@ export default function CasePage() {
               ) : (
                 sortedCases.map((pcCase) => (
                   <tr key={pcCase.product_id}>
-                    <td>
-                      <Form.Check
-                        type="checkbox"
-                        checked={compareSelection.some(
+                <td>
+                  <Form.Check
+                    type="checkbox"
+                    checked={compareSelection.some(
                           (item) => item.product_id === pcCase.product_id
-                        )}
-                        onChange={() => handleToggleCompare(pcCase)}
-                      />
-                    </td>
+                    )}
+                    onChange={() => handleToggleCompare(pcCase)}
+                  />
+                </td>
                     <td className="text-center align-middle">
-                      <img
+                  <img
                         src={
                           pcCase.image_url
                             ? `http://localhost/gearsphere_api/GearSphere-BackEnd/${pcCase.image_url}`
                             : "/profile_images/user_image.jpg"
                         }
-                        alt={pcCase.name}
+                    alt={pcCase.name}
                         className="case-img"
                       />
                     </td>
                     <td className="align-middle">
                       <strong className="case-name">{pcCase.name}</strong>
-                    </td>
+                </td>
                     <td>{pcCase.type || "—"}</td>
                     <td>{pcCase.color || "—"}</td>
                     <td>{pcCase.side_panel || "—"}</td>
@@ -253,20 +253,20 @@ export default function CasePage() {
                     <td>{pcCase.volume || "—"}</td>
                     <td>{pcCase.dimensions || "—"}</td>
                     <td>LKR {pcCase.price?.toLocaleString() || "N/A"}</td>
-                    <td>
+                <td>
                       <Button
                         className="btn-darkblue"
                         size="sm"
                         onClick={() => handleSelectCase(pcCase)}
                       >
-                        Add
-                      </Button>
-                    </td>
-                  </tr>
+                    Add
+                  </Button>
+                </td>
+              </tr>
                 ))
               )}
-            </tbody>
-          </Table>
+          </tbody>
+        </Table>
         )}
       </Container>
     </>
