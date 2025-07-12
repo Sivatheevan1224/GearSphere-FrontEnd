@@ -49,9 +49,7 @@ import TechnicianDashboard from "./pages/technician/Dashboard";
 import TechnicianServices from "./pages/technician/Services";
 import BuildRequests from "./pages/technician/BuildRequests";
 import TechnicianProfile from "./pages/technician/Profile";
-import Earnings from "./pages/technician/Earnings";
 import TechnicianReviews from "./pages/technician/Reviews";
-import Appointments from "./pages/technician/Appointments";
 
 // Admin Pages
 import CustomerManagement from "./pages/admin/CustomerManagement";
@@ -126,14 +124,12 @@ function AppContent() {
             path="/technician/dashboard"
             element={<TechnicianDashboard />}
           />
-          <Route path="/technician/appointments" element={<Appointments />} />
           <Route path="/technician/profile" element={<TechnicianProfile />} />
           <Route path="/technician/services" element={<TechnicianServices />} />
           <Route
             path="/technician/build-requests"
             element={<BuildRequests />}
           />
-          <Route path="/technician/earnings" element={<Earnings />} />
           <Route path="/technician/reviews" element={<TechnicianReviews />} />
         </Route>
         {/* Admin Layout for all admin pages */}

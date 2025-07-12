@@ -82,7 +82,7 @@ const GeneralProductEditForm = ({ onSubmit, initialData, onCancel }) => {
             <Col md={6}>
               <Form.Group className="mb-3">
                 <Form.Label>Stock Quantity *</Form.Label>
-                <Form.Control type="number" name="stock" value={formData.stock} onChange={handleChange} required min="0" placeholder="Enter stock quantity" />
+                <Form.Control type="number" name="stock" value={formData.stock} readOnly disabled placeholder="Stock cannot be edited" />
               </Form.Group>
             </Col>
           </Row>

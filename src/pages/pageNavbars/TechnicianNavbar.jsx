@@ -79,8 +79,6 @@ function TechnicianNavbar({ fixed = "top" }) {
               <Nav.Link as={Link} to="/technician/dashboard" onClick={() => setExpanded(false)} className={location.pathname === "/technician/dashboard" ? "text-primary fw-bold" : ""}>Dashboard</Nav.Link>
               <Nav.Link as={Link} to="/technician/services" onClick={() => setExpanded(false)} className={location.pathname === "/technician/services" ? "text-primary fw-bold" : ""}>Services</Nav.Link>
               <Nav.Link as={Link} to="/technician/build-requests" onClick={() => setExpanded(false)} className={location.pathname === "/technician/build-requests" ? "text-primary fw-bold" : ""}>Build Requests</Nav.Link>
-              <Nav.Link as={Link} to="/technician/appointments" onClick={() => setExpanded(false)} className={location.pathname === "/technician/appointments" ? "text-primary fw-bold" : ""}>Appointments</Nav.Link>
-              <Nav.Link as={Link} to="/technician/earnings" onClick={() => setExpanded(false)} className={location.pathname === "/technician/earnings" ? "text-primary fw-bold" : ""}>Earnings</Nav.Link>
               <Nav.Link as={Link} to="/technician/reviews" onClick={() => setExpanded(false)} className={location.pathname === "/technician/reviews" ? "text-primary fw-bold" : ""}>Reviews</Nav.Link>
             </Nav>
             <div className="d-flex align-items-center">
