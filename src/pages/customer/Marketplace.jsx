@@ -1,63 +1,74 @@
-import React, { useState, useContext, useEffect } from 'react';
-import { Container, Row, Col, Card, Button, Form, Badge, Pagination, Toast } from 'react-bootstrap';
-import { useNavigate } from 'react-router-dom';
-import { CartContext } from './CartContext';
+import React, { useState, useContext, useEffect } from "react";
+import {
+  Container,
+  Row,
+  Col,
+  Card,
+  Button,
+  Form,
+  Badge,
+  Pagination,
+  Toast,
+} from "react-bootstrap";
+import { useNavigate } from "react-router-dom";
+import { CartContext } from "./CartContext";
 
 function Marketplace() {
   const navigate = useNavigate();
   const { addToCart, isInCart } = useContext(CartContext);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [categoryFilter, setCategoryFilter] = useState('all');
+  const [searchQuery, setSearchQuery] = useState("");
+  const [categoryFilter, setCategoryFilter] = useState("all");
   const [currentPage, setCurrentPage] = useState(1);
   const [showToast, setShowToast] = useState(false);
   const [addedProduct, setAddedProduct] = useState(null);
+  const [hoveredProduct, setHoveredProduct] = useState(null);
   const productsPerPage = 12;
   const [products, setProducts] = useState([]);
 
   useEffect(() => {
-    fetch('http://localhost/gearsphere_api/GearSphere-BackEnd/getProducts.php')
-      .then(res => res.json())
-      .then(data => {
+    fetch("http://localhost/gearsphere_api/GearSphere-BackEnd/getProducts.php")
+      .then((res) => res.json())
+      .then((data) => {
         if (data.success && Array.isArray(data.products)) {
-          setProducts(data.products.map(p => ({ ...p, id: p.product_id })));
+          setProducts(data.products.map((p) => ({ ...p, id: p.product_id })));
         } else setProducts([]);
       })
       .catch(() => setProducts([]));
   }, []);
 
   const categories = [
-    'Video Card',    // was 'Graphics Card'
-    'CPU',
-    'Memory',
-    'Storage',
-    'Motherboard',
-    'Power Supply',
-    'PC Case',       // was 'Case'
-    'CPU Cooler',    // was 'Cooling'
-    'Monitor',
-    'Keyboard',
-    'Mouse',
-    'Headset',
-    'Microphone',
-    'Webcam',
-    'Speakers',
-    'Network Card',
-    'Sound Card',
-    'Cables',
-    'Thermal Paste',
-    'Fans'
+    "Video Card", // was 'Graphics Card'
+    "CPU",
+    "Memory",
+    "Storage",
+    "Motherboard",
+    "Power Supply",
+    "PC Case", // was 'Case'
+    "CPU Cooler", // was 'Cooling'
+    "Monitor",
+    "Keyboard",
+    "Mouse",
+    "Headset",
+    "Microphone",
+    "Webcam",
+    "Speakers",
+    "Network Card",
+    "Sound Card",
+    "Cables",
+    "Thermal Paste",
+    "Fans",
   ];
 
-  const formatLKR = (amount) => 'LKR ' + Number(amount).toLocaleString('en-LK');
+  const formatLKR = (amount) => "LKR " + Number(amount).toLocaleString("en-LK");
 
   const getStatusBadge = (status) => {
     const variants = {
-      'Active': 'success',
-      'Inactive': 'secondary',
-      'Out of Stock': 'warning',
-      'Discontinued': 'danger'
+      Active: "success",
+      Inactive: "secondary",
+      "Out of Stock": "warning",
+      Discontinued: "danger",
     };
-    return <Badge bg={variants[status] || 'secondary'}>{status}</Badge>;
+    return <Badge bg={variants[status] || "secondary"}>{status}</Badge>;
   };
 
   const handleAddToCart = (product) => {
@@ -66,16 +77,27 @@ function Marketplace() {
     setShowToast(true);
   };
 
-  const filteredProducts = products.filter(product =>
-    (product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    product.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    product.description.toLowerCase().includes(searchQuery.toLowerCase())) &&
-    (categoryFilter === 'all' || product.category === categoryFilter)
+  const truncateDescription = (description, maxLength = 80) => {
+    if (description.length <= maxLength) return description;
+    return description.substring(0, maxLength) + "...";
+  };
+
+  const filteredProducts = products.filter(
+    (product) =>
+      (product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        product.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        product.description
+          .toLowerCase()
+          .includes(searchQuery.toLowerCase())) &&
+      (categoryFilter === "all" || product.category === categoryFilter)
   );
 
   const indexOfLastProduct = currentPage * productsPerPage;
   const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
-  const currentProducts = filteredProducts.slice(indexOfFirstProduct, indexOfLastProduct);
+  const currentProducts = filteredProducts.slice(
+    indexOfFirstProduct,
+    indexOfLastProduct
+  );
   const totalPages = Math.ceil(filteredProducts.length / productsPerPage);
 
   return (
@@ -83,14 +105,14 @@ function Marketplace() {
       <h1 className="text-center mb-5">PC Parts Marketplace</h1>
 
       {/* Success Toast */}
-      <Toast 
-        show={showToast} 
+      <Toast
+        show={showToast}
         onClose={() => setShowToast(false)}
         style={{
-          position: 'fixed',
+          position: "fixed",
           top: 20,
           right: 20,
-          zIndex: 9999
+          zIndex: 9999,
         }}
         delay={3000}
         autohide
@@ -119,8 +141,10 @@ function Marketplace() {
             onChange={(e) => setCategoryFilter(e.target.value)}
           >
             <option value="all">All Categories</option>
-            {categories.map(category => (
-              <option key={category} value={category}>{category}</option>
+            {categories.map((category) => (
+              <option key={category} value={category}>
+                {category}
+              </option>
             ))}
           </Form.Select>
         </Col>
@@ -128,53 +152,113 @@ function Marketplace() {
 
       {/* Products Grid */}
       <Row>
-        {currentProducts.map(product => (
-          <Col key={product.id} lg={4} md={6} className="mb-4">
+        {currentProducts.map((product) => (
+          <Col key={product.id} lg={3} md={4} sm={6} className="mb-4">
             <Card className="h-100 shadow-sm">
-              <Card.Img 
-                variant="top" 
-                src={product.image_url ? `http://localhost/gearsphere_api/GearSphere-BackEnd/${product.image_url}` : '/placeholder.svg?height=200&width=200'}
+              <Card.Img
+                variant="top"
+                src={
+                  product.image_url
+                    ? `http://localhost/gearsphere_api/GearSphere-BackEnd/${product.image_url}`
+                    : "/placeholder.svg?height=200&width=200"
+                }
                 alt={product.name}
-                style={{ height: '120px', objectFit: 'contain', padding: '12px' }}
+                style={{
+                  height: "200px",
+                  objectFit: "contain",
+                  padding: "8px",
+                  background: "rgba(0,255,247,0.04)",
+                  borderRadius: "12px",
+                  margin: "12px",
+                }}
               />
               <Card.Body className="d-flex flex-column">
                 <div className="d-flex justify-content-between align-items-start mb-2">
-                  <Badge bg="primary" className="mb-1">{product.category}</Badge>
+                  <Badge bg="primary" className="mb-1">
+                    {product.category}
+                  </Badge>
                   {getStatusBadge(product.status)}
                 </div>
                 <Card.Title className="h6">{product.name}</Card.Title>
-                <Card.Text className="text-muted small flex-grow-1">
-                  {product.description}
-              </Card.Text>
+                <div
+                  className="text-muted small flex-grow-1"
+                  style={{
+                    cursor: "pointer",
+                    minHeight: "40px",
+                    padding: "8px",
+                    border: "1px solid #e9ecef",
+                    borderRadius: "4px",
+                    backgroundColor: "#f8f9fa",
+                    position: "relative",
+                  }}
+                  onMouseEnter={() => setHoveredProduct(product.id)}
+                  onMouseLeave={() => setHoveredProduct(null)}
+                >
+                  {truncateDescription(product.description)}
+                  {hoveredProduct === product.id && (
+                    <div
+                      style={{
+                        position: "absolute",
+                        bottom: "100%",
+                        left: "50%",
+                        transform: "translateX(-50%)",
+                        background: "#333",
+                        color: "white",
+                        padding: "1px 4px",
+                        fontSize: "14px",
+                        whiteSpace: "pre-wrap",
+                        width: "300px",
+                        maxWidth: "300px",
+                        zIndex: 9999,
+                        boxShadow: "0 4px 12px rgba(0,0,0,0.4)",
+                        marginBottom: "8px",
+                        wordWrap: "break-word",
+                        border: "1px solid #555",
+                        lineHeight: "1.2",
+                        borderRadius: "6px",
+                        opacity: "0.9",
+                      }}
+                    >
+                      {product.description}
+                      <div
+                        style={{
+                          position: "absolute",
+                          top: "100%",
+                          left: "50%",
+                          transform: "translateX(-50%)",
+                          border: "5px solid transparent",
+                          borderTopColor: "#333",
+                        }}
+                      />
+                    </div>
+                  )}
+                </div>
                 <div className="mt-auto">
                   <div className="d-flex justify-content-between align-items-center mb-2">
-                    <span className="h5 mb-0 text-primary">{formatLKR(product.price)}</span>
+                    <span className="h5 mb-0 text-primary">
+                      {formatLKR(product.price)}
+                    </span>
                     <div className="d-flex align-items-center">
                       <span className="me-1 small">{product.rating}</span>
                       <i className="bi bi-star-fill text-warning small"></i>
                     </div>
                   </div>
-                  <div className="d-flex justify-content-between align-items-center mb-3">
-                    <small className="text-muted">Stock: {product.stock}</small>
-                    <small className="text-muted">Sales: {product.sales}</small>
-                  </div>
-                  <Button 
+                  <Button
                     variant={isInCart(product.id) ? "success" : "primary"}
                     className="w-100"
-                    disabled={product.status === 'Out of Stock'}
+                    disabled={product.status === "Out of Stock"}
                     onClick={() => handleAddToCart(product)}
                   >
-                    {product.status === 'Out of Stock' 
-                      ? 'Out of Stock' 
-                      : isInCart(product.id) 
-                        ? 'Added to Cart ✓' 
-                        : 'Add to Cart'
-                    }
+                    {product.status === "Out of Stock"
+                      ? "Out of Stock"
+                      : isInCart(product.id)
+                      ? "Added to Cart ✓"
+                      : "Add to Cart"}
                   </Button>
                 </div>
-            </Card.Body>
-          </Card>
-        </Col>
+              </Card.Body>
+            </Card>
+          </Col>
         ))}
       </Row>
 
@@ -183,7 +267,7 @@ function Marketplace() {
         <div className="d-flex justify-content-center mt-4">
           <Pagination>
             <Pagination.Prev
-              onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+              onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
               disabled={currentPage === 1}
             />
             {[...Array(totalPages)].map((_, index) => (
@@ -196,7 +280,9 @@ function Marketplace() {
               </Pagination.Item>
             ))}
             <Pagination.Next
-              onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+              onClick={() =>
+                setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+              }
               disabled={currentPage === totalPages}
             />
           </Pagination>
@@ -207,11 +293,13 @@ function Marketplace() {
       {currentProducts.length === 0 && (
         <div className="text-center py-5">
           <h4 className="text-muted">No products found</h4>
-          <p className="text-muted">Try adjusting your search or filter criteria</p>
+          <p className="text-muted">
+            Try adjusting your search or filter criteria
+          </p>
         </div>
       )}
     </Container>
   );
 }
 
-export default Marketplace; 
+export default Marketplace;
