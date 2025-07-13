@@ -24,6 +24,8 @@ import pcpic2 from '../images/pcpic2.jpeg';
 import pcpic3 from '../images/pcpic3.jpg';
 import aboutus from '../images/aboutus2.png';
 import serviceimg from '../images/services1.png';
+import { toast } from 'react-toastify';
+import axios from 'axios';
 
 const ourValuesCardHoverStyle = `
 .our-values-card {
@@ -129,6 +131,14 @@ function HomePage() {
   const [partType, setPartType] = useState("All");
   const [products, setProducts] = useState([]);
   const navigate = useNavigate();
+
+  // Contact form state
+  const [contactFirstName, setContactFirstName] = useState('');
+  const [contactLastName, setContactLastName] = useState('');
+  const [contactEmail, setContactEmail] = useState('');
+  const [contactSubject, setContactSubject] = useState('');
+  const [contactMessage, setContactMessage] = useState('');
+  const [contactLoading, setContactLoading] = useState(false);
 
   useEffect(() => {
     const userType = sessionStorage.getItem("user_type");
@@ -736,33 +746,53 @@ function HomePage() {
                       Have questions about our products or services? Need technical support? 
                       Fill out the form and our team will get back to you as soon as possible.
                     </p>
-                    <Form>
+                    <Form onSubmit={async (e) => {
+                      e.preventDefault();
+                      if (!contactFirstName || !contactLastName || !contactEmail || !contactSubject || !contactMessage) {
+                        toast.error('Please fill in all fields.');
+                        return;
+                      }
+                      setContactLoading(true);
+                      try {
+                        const res = await axios.post('http://localhost/gearsphere_api/GearSphere-BackEnd/addMessage.php', {
+                          name: contactFirstName + ' ' + contactLastName,
+                          email: contactEmail,
+                          subject: contactSubject,
+                          message: contactMessage
+                        });
+                        if (res.data.success) {
+                          toast.success('Thanks for contacting admin!');
+                          setContactFirstName(''); setContactLastName(''); setContactEmail(''); setContactSubject(''); setContactMessage('');
+                        } else {
+                          toast.error(res.data.message || 'Failed to send message.');
+                        }
+                      } catch (err) {
+                        toast.error('Failed to send message.');
+                      }
+                      setContactLoading(false);
+                    }}>
                       <Row>
                         <Col md={6}>
                           <Form.Group className="mb-3">
                             <Form.Label>First Name</Form.Label>
-                            <Form.Control type="text" placeholder="Enter first name" />
+                            <Form.Control type="text" placeholder="Enter first name" value={contactFirstName} onChange={e => setContactFirstName(e.target.value)} />
                           </Form.Group>
                         </Col>
                         <Col md={6}>
                           <Form.Group className="mb-3">
                             <Form.Label>Last Name</Form.Label>
-                            <Form.Control type="text" placeholder="Enter last name" />
+                            <Form.Control type="text" placeholder="Enter last name" value={contactLastName} onChange={e => setContactLastName(e.target.value)} />
                           </Form.Group>
                         </Col>
                       </Row>
                       <Form.Group className="mb-3">
                         <Form.Label>Email Address</Form.Label>
-                        <Form.Control type="email" placeholder="Enter email" />
-                      </Form.Group>
-                      <Form.Group className="mb-3">
-                        <Form.Label>Phone Number</Form.Label>
-                        <Form.Control type="tel" placeholder="07X XXX XXXX" pattern="0[0-9]{2} [0-9]{3} [0-9]{4}" title="Enter a valid Sri Lankan phone number (e.g., 077 123 4567)" />
+                        <Form.Control type="email" placeholder="Enter email" value={contactEmail} onChange={e => setContactEmail(e.target.value)} />
                       </Form.Group>
                       <Form.Group className="mb-3">
                         <Form.Label>Subject</Form.Label>
-                        <Form.Select>
-                          <option>Select a subject</option>
+                        <Form.Select value={contactSubject} onChange={e => setContactSubject(e.target.value)}>
+                          <option value="">Select a subject</option>
                           <option>Product Inquiry</option>
                           <option>Technical Support</option>
                           <option>Order Status</option>
@@ -772,10 +802,10 @@ function HomePage() {
                       </Form.Group>
                       <Form.Group className="mb-3">
                         <Form.Label>Message</Form.Label>
-                        <Form.Control as="textarea" rows={5} placeholder="Enter your message" />
+                        <Form.Control as="textarea" rows={5} placeholder="Enter your message" value={contactMessage} onChange={e => setContactMessage(e.target.value)} />
                       </Form.Group>
-                      <Button variant="primary" type="submit" className="w-100">
-                        Send Message
+                      <Button variant="primary" type="submit" className="w-100" disabled={contactLoading}>
+                        {contactLoading ? 'Sending...' : 'Send Message'}
                       </Button>
                     </Form>
                   </Col>
@@ -811,7 +841,7 @@ function HomePage() {
                               </div>
                               <div>
                                 <h5 className="mb-1">Address</h5>
-                                <p className="mb-0">Street Address, City (e.g., Colombo)</p>
+                                <p className="mb-0">Street Address, City</p>
                               </div>
                             </div>
                               <div className="d-flex justify-content-center">
