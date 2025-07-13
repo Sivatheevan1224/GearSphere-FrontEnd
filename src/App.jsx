@@ -57,6 +57,7 @@ import Analytics from "./pages/admin/Analytics";
 import AdminMain from "./pages/admin/AdminMain";
 import Reports from "./pages/admin/Reports";
 import AdminProfile from "./pages/admin/Profile";
+import AdminMessages from "./pages/admin/AdminMessages";
 
 // Seller Pages
 import ProductManagement from "./pages/seller/ProductManagement";
@@ -140,6 +141,7 @@ function AppContent() {
           <Route path="/admin/analytics" element={<Analytics />} />
           <Route path="/admin/reports" element={<Reports />} />
           <Route path="/admin/profile" element={<AdminProfile />} />
+          <Route path="/admin/messages" element={<AdminMessages />} />
         </Route>
         {/* Seller Layout for all seller pages */}
         <Route element={<SellerLayout />}>

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Row, Col, Card } from 'react-bootstrap';
+import { Container, Row, Col, Card, Table, Spinner, Alert } from 'react-bootstrap';
 import { People, ClipboardCheck, GraphUp, Tools, Award } from 'react-bootstrap-icons';
+import axios from 'axios';
 
 function AdminDashboard() {
   const [stats, setStats] = useState({
@@ -12,6 +13,11 @@ function AdminDashboard() {
   });
   const [customerCount, setCustomerCount] = useState(0);
   const [technicianCount, setTechnicianCount] = useState(0);
+
+  // Message state
+  const [messages, setMessages] = useState([]);
+  const [loadingMessages, setLoadingMessages] = useState(true);
+  const [msgError, setMsgError] = useState(null);
 
   // Mock data - Replace with actual API call
   useEffect(() => {
@@ -34,6 +40,8 @@ function AdminDashboard() {
       reports: 12,
       analytics: 1
     }));
+
+    // Remove any code related to fetching, displaying, or managing messages in this file.
   }, []);
 
   const StatCard = ({ title, value, icon: Icon, color }) => (
@@ -166,11 +174,7 @@ function AdminDashboard() {
           </Col>
         </Row>
 
-        <Row className="mt-4">
-          <Col>
-           
-          </Col>
-        </Row>
+        {/* Remove any code related to fetching, displaying, or managing messages in this file. */}
       </Container>
     </>
   );
