@@ -105,7 +105,10 @@ function AppContent() {
           <Route path="/compare-powersupply" element={<ComparePowerSupply />} />
           <Route path="/case" element={<CasePage />} />
           <Route path="/compare-case" element={<CompareCase />} />
-          <Route path="/find-technician" element={<FindTechnician />} />
+          <Route
+            path="/customer/find-technician"
+            element={<FindTechnician />}
+          />
           <Route path="/orders" element={<Orders />} />
           <Route path="/profile" element={<CustomerProfile />} />
           <Route path="/cpucooler" element={<CPUCoolerPage />} />
