@@ -12,6 +12,7 @@ const TechnicianProfile = () => {
     charge_per_day: "",
     profilePic: "https://via.placeholder.com/150",
     email: "",
+    status: "available", // <-- add status to state
   });
   const [profilePicFile, setProfilePicFile] = useState(null);
   const [profilePicPreview, setProfilePicPreview] = useState(null);
@@ -49,6 +50,7 @@ const TechnicianProfile = () => {
             specialization: data.specialization || "",
             experience: data.experience || "",
             technician_id: data.technician_id || "",
+            status: data.status || "available", // <-- set status from backend
           });
 
           sessionStorage.setItem("technician_profile_pic", profilePicUrl);
@@ -78,6 +80,10 @@ const TechnicianProfile = () => {
       setProfilePicFile(file);
       setProfilePicPreview(URL.createObjectURL(file));
     }
+  };
+
+  const handleStatusChange = (e) => {
+    setFormData((prev) => ({ ...prev, status: e.target.value }));
   };
 
   const handleProfileUpdate = async (e) => {
@@ -115,6 +121,7 @@ const TechnicianProfile = () => {
     payload.append("contact_number", formData.contact_number);
     payload.append("address", formData.address);
     payload.append("charge_per_day", formData.charge_per_day);
+    payload.append("status", formData.status); // <-- send status
 
     if (profilePicFile) {
       payload.append("profile_image", profilePicFile);
@@ -193,6 +200,13 @@ const TechnicianProfile = () => {
                 </p>
                 <p>
                   <b>Charge/Day:</b> Rs. {formData.charge_per_day}
+                </p>
+                <p>
+                  <b>Status:</b> {formData.status === 'available' ? (
+                    <span style={{ color: 'white', background: 'green', borderRadius: 8, padding: '2px 10px', fontWeight: 600 }}>Available</span>
+                  ) : (
+                    <span style={{ color: 'white', background: 'red', borderRadius: 8, padding: '2px 10px', fontWeight: 600 }}>Unavailable</span>
+                  )}
                 </p>
                 <p>
                   <b>specialization:</b> {formData.specialization}
@@ -277,6 +291,18 @@ const TechnicianProfile = () => {
                   onChange={handleInputChange}
                   min="0"
                 />
+              </Form.Group>
+
+              <Form.Group className="mb-3">
+                <Form.Label>Availability Status</Form.Label>
+                <Form.Select
+                  name="status"
+                  value={formData.status}
+                  onChange={handleStatusChange}
+                >
+                  <option value="available">Available</option>
+                  <option value="unavailable">Unavailable</option>
+                </Form.Select>
               </Form.Group>
 
               <Button variant="primary" type="submit">
