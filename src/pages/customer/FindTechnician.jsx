@@ -69,25 +69,61 @@ function FindTechnician() {
     "Vavuniya",
   ];
 
-  // Filter technicians based on selected district and service
+  // Static list of specializations
+  const specializations = [
+    "Gaming PCs",
+    "Workstations",
+    "Custom Water Cooling",
+    "Small Form Factor",
+    "General PC Building",
+  ];
+
+  // Filter technicians based on selected district and specialization
   const filteredTechnicians = technicians.filter((tech) => {
     const matchesDistrict =
       !selectedDistrict ||
       (tech.address && tech.address.includes(selectedDistrict));
-    const matchesService =
+    const matchesSpecialization =
       !selectedService ||
-      (tech.specialization && tech.specialization.includes(selectedService));
-    return matchesDistrict && matchesService;
+      (Array.isArray(tech.specialization)
+        ? tech.specialization.includes(selectedService)
+        : tech.specialization && tech.specialization === selectedService);
+    return matchesDistrict && matchesSpecialization;
   });
 
-  const handleAssignTechnician = () => {
-    // Here you would typically send the assignment data to your backend
-    console.log("Assigning technician:", selectedTechnician);
-    console.log("Instructions:", instructions);
-
-    setShowTechnicianModal(false);
-    setShowAssignmentSuccess(true);
-    setInstructions("");
+  const handleAssignTechnician = async () => {
+    if (!selectedTechnician) return;
+    const customer_id = sessionStorage.getItem("user_id");
+    if (!customer_id) {
+      setError("Session expired. Please log in again.");
+      return;
+    }
+    try {
+      const res = await axios.post(
+        "http://localhost/gearsphere_api/GearSphere-BackEnd/assignTechnician.php",
+        {
+          customer_id: customer_id,
+          technician_id:
+            selectedTechnician.technician_id ||
+            selectedTechnician.id ||
+            selectedTechnician.user_id,
+          instructions: instructions,
+        }
+      );
+      if (res.data && res.data.success) {
+        setShowTechnicianModal(false);
+        setShowAssignmentSuccess(true);
+        setInstructions("");
+      } else {
+        setError(res.data.message || "Failed to assign technician.");
+      }
+    } catch (err) {
+      setError(
+        err.response?.data?.message ||
+          err.message ||
+          "Failed to assign technician."
+      );
+    }
   };
 
   const renderStars = (rating) => {
@@ -172,15 +208,12 @@ function FindTechnician() {
                       value={selectedService}
                       onChange={(e) => setSelectedService(e.target.value)}
                     >
-                      <option value="">All Services</option>
-                      <option>PC Repair</option>
-                      <option>PC Building</option>
-                      <option>Hardware Upgrade</option>
-                      <option>Software Installation</option>
-                      <option>Data Recovery</option>
-                      <option>Network Setup</option>
-                      <option>Virus Removal</option>
-                      <option>System Optimization</option>
+                      <option value="">Select Service Type</option>
+                      {specializations.map((spec) => (
+                        <option key={spec} value={spec}>
+                          {spec}
+                        </option>
+                      ))}
                     </Form.Select>
                   </Form.Group>
                 </Col>
@@ -193,7 +226,14 @@ function FindTechnician() {
       {/* Technician List */}
       <Row>
         {filteredTechnicians.map((tech) => (
-          <Col key={tech.id} lg={4} md={4} sm={6} xs={12} className="mb-4">
+          <Col
+            key={tech.technician_id || tech.id || tech.user_id}
+            lg={4}
+            md={4}
+            sm={6}
+            xs={12}
+            className="mb-4"
+          >
             <div
               style={cardStyle}
               className="h-100 technician-card-anim"
@@ -222,10 +262,24 @@ function FindTechnician() {
                   </div>
                   <h5 className="mb-1 fw-bold">{tech.name}</h5>
                   <div className="mb-2">
+                    <span
+                      className={`badge ${
+                        tech.status === "available"
+                          ? "bg-success"
+                          : "bg-secondary"
+                      }`}
+                      style={{ fontSize: "0.9em", borderRadius: 8 }}
+                    >
+                      {tech.status === "available"
+                        ? "Available"
+                        : "Unavailable"}
+                    </span>
+                  </div>
+                  <div className="mb-2">
                     {Array.isArray(tech.specialization) ? (
                       tech.specialization.map((service, index) => (
                         <span
-                          key={index}
+                          key={service + "_" + index}
                           className="badge bg-primary bg-opacity-75 me-1 mb-1"
                           style={{ fontSize: "0.85em", borderRadius: 8 }}
                         >
@@ -270,12 +324,12 @@ function FindTechnician() {
                       {tech.experience === 1 ? "" : "s"}
                     </span>
                   </div>
-                  <div className="d-flex align-items-center gap-2 justify-content-center mb-2">
+                  {/* <div className="d-flex align-items-center gap-2 justify-content-center mb-2">
                     {renderStars(tech.rating)}
                     <span className="text-muted small ms-1">
                       {tech.rating} ({tech.reviews} reviews)
                     </span>
-                  </div>
+                  </div> */}
                   <button
                     style={assignBtnStyle}
                     className="btn btn-sm mt-2"
@@ -329,7 +383,7 @@ function FindTechnician() {
                   <h4>{selectedTechnician.name}</h4>
                   <p className="text-muted mb-2">
                     <GeoAlt className="me-1" /> {selectedTechnician.address}{" "}
-                    District
+                    
                   </p>
                   <div className="mb-2">
                     <strong>Phone:</strong>{" "}
@@ -357,7 +411,7 @@ function FindTechnician() {
                       selectedTechnician.specialization.map(
                         (service, index) => (
                           <span
-                            key={index}
+                            key={service + "_" + index}
                             className="badge bg-primary me-1 mb-1"
                           >
                             {service}
@@ -372,13 +426,13 @@ function FindTechnician() {
                       <span className="text-muted">No specialization</span>
                     )}
                   </div>
-                  <div className="d-flex justify-content-center align-items-center mb-2">
+                  {/* <div className="d-flex justify-content-center align-items-center mb-2">
                     {renderStars(selectedTechnician.rating)}
                     <span className="ms-2">
                       {selectedTechnician.rating} ({selectedTechnician.reviews}{" "}
                       reviews)
                     </span>
-                  </div>
+                  </div> */}
                   <div className="mb-3">
                     <small className="text-muted">
                       {selectedTechnician.experience} year
@@ -399,7 +453,7 @@ function FindTechnician() {
                       selectedTechnician.specialization.map(
                         (service, index) => (
                           <span
-                            key={index}
+                            key={service + "_" + index}
                             className="badge bg-primary me-1 mb-1"
                           >
                             {service}
