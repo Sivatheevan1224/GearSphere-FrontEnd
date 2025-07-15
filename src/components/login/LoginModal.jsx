@@ -63,7 +63,11 @@ function LoginModal({ show, onHide, switchToRegister }) {
           sessionStorage.setItem("email", email);
           // Save technician_id if user is technician
           if (user_type.toLowerCase() === "technician" && technician_id) {
-            sessionStorage.setItem("technician_id", technician_id);
+            const id =
+              typeof technician_id === "object"
+                ? technician_id.technician_id
+                : technician_id;
+            sessionStorage.setItem("technician_id", id);
           } else {
             sessionStorage.removeItem("technician_id"); // Clean up if not technician
           }

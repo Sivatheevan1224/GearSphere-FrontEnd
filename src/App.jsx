@@ -15,6 +15,7 @@ import TechnicianManagement from "./pages/admin/TechnicianManagement";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import ScrollToTop from "./components/ScrollToTop";
+import OfflineBanner from "./components/OfflineBanner";
 
 // Customer Pages
 import Marketplace from "./pages/customer/Marketplace";
@@ -170,6 +171,7 @@ function App() {
         v7_relativeSplatPath: true,
       }}
     >
+      <OfflineBanner />
       <ScrollToTop />
       <ToastContainer
         position="top-right"
