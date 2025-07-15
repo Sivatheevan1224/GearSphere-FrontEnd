@@ -514,8 +514,8 @@ function PCBuilder() {
     setUsage("");
     setSelectedRange("");
     setTotalPrice(0);
-    // Navigate to FindTechnician page
-    window.location.href = "/find-technician";
+    // Use navigate for React Router navigation
+    navigate("/customer/find-technician");
   };
 
   // Create PC build items for checkout
