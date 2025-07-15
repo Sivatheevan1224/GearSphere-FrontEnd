@@ -26,6 +26,15 @@ function LoginModal({ show, onHide, switchToRegister }) {
   const [checkOTP, setCheckOTP] = useState("");
   const [step, setStep] = useState(1);
   const location = useLocation();
+  const [isLargeScreen, setIsLargeScreen] = useState(window.innerWidth >= 992);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsLargeScreen(window.innerWidth >= 992);
+    };
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   //Handle login
   const handleLogin = async (e) => {
@@ -172,77 +181,82 @@ function LoginModal({ show, onHide, switchToRegister }) {
       <Modal
         show={show && !showForgotModal}
         onHide={onHide}
-        className="custom-login-modal"
-        dialogClassName="custom-login-modal"
-        backdropClassName="custom-login-backdrop"
-        keyboard={true}
-        scrollable={false}
+        dialogClassName={`modal-dialog-centered custom-login-modal${isLargeScreen ? ' modal-lg' : ''}`}
       >
-        <div className="modal-content login">
-          <div className="login-img">
-            <img src={loginImage} alt="Login Visual" />
-          </div>
-          <div className="login-form">
-            <Modal.Header closeButton className="border-0 pb-0" />
-            <Modal.Title className="mb-3">Login to GearSphere</Modal.Title>
-            <Modal.Body className="px-0">
-              <Form onSubmit={handleLogin}>
-                <Form.Group className="mb-3">
-                  <Form.Label>Email address</Form.Label>
-                  <Form.Control
-                    type="email"
-                    placeholder="Enter email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required
-                  />
-                </Form.Group>
-                <Form.Group className="mb-4">
-                  <Form.Label>Password</Form.Label>
-                  <InputGroup>
+        <div className="modal-content">
+          <Modal.Body className="p-0">
+            <div className="row g-0">
+              {/* Hide image on small screens, show on md+ */}
+              <div className="col-md-6 d-none d-md-block">
+                <img
+                  src={loginImage}
+                  alt="Login Visual"
+                  className="img-fluid rounded-start"
+                  style={{ height: "100%", objectFit: "cover" }}
+                />
+              </div>
+              {/* Form always visible, full width on small screens */}
+              <div className="col-12 col-md-6 p-4">
+                <Modal.Header closeButton className="border-0 pb-0" />
+                <Modal.Title className="mb-3">Login to GearSphere</Modal.Title>
+                <Form onSubmit={handleLogin}>
+                  <Form.Group className="mb-3">
+                    <Form.Label>Email address</Form.Label>
                     <Form.Control
-                      type={showPassword ? "text" : "password"}
-                      placeholder="Password"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
+                      type="email"
+                      placeholder="Enter email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
                       required
+                      size="sm"
                     />
-                    <Button
-                      variant="outline-secondary"
-                      onClick={() => setShowPassword((prev) => !prev)}
-                      tabIndex={-1}
-                      style={{ borderLeft: 0 }}
-                    >
-                      {showPassword ? <BsEyeSlash /> : <BsEye />}
-                    </Button>
-                  </InputGroup>
-                </Form.Group>
-                <div className="d-flex justify-content-end align-items-center mb-3">
-                  <a href="#" onClick={() => setShowForgotModal(true)}>
-                    Forgot password?
+                  </Form.Group>
+                  <Form.Group className="mb-4">
+                    <Form.Label>Password</Form.Label>
+                    <InputGroup size="sm">
+                      <Form.Control
+                        type={showPassword ? "text" : "password"}
+                        placeholder="Password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        required
+                      />
+                      <Button
+                        variant="outline-secondary"
+                        onClick={() => setShowPassword((prev) => !prev)}
+                        tabIndex={-1}
+                        style={{ borderLeft: 0 }}
+                        size="sm"
+                      >
+                        {showPassword ? <BsEyeSlash /> : <BsEye />}
+                      </Button>
+                    </InputGroup>
+                  </Form.Group>
+                  <div className="d-flex justify-content-end align-items-center mb-3">
+                    <a href="#" onClick={() => setShowForgotModal(true)}>
+                      Forgot password?
+                    </a>
+                  </div>
+                  <Button type="submit" className="w-100 btn-sm" size="sm">
+                    Login
+                  </Button>
+                </Form>
+                <div className="text-center mt-3">
+                  <span>Don't have an account? </span>
+                  <a
+                    href="#"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      onHide();
+                      switchToRegister();
+                    }}
+                  >
+                    Register
                   </a>
                 </div>
-                <Button type="submit" className="w-100">
-                  Login
-                </Button>
-              </Form>
-            </Modal.Body>
-            <Modal.Footer className="justify-content-center border-0 px-0">
-              <p className="mb-0">
-                Don't have an account?{" "}
-                <a
-                  href="#"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    onHide();
-                    switchToRegister();
-                  }}
-                >
-                  Register
-                </a>
-              </p>
-            </Modal.Footer>
-          </div>
+              </div>
+            </div>
+          </Modal.Body>
         </div>
       </Modal>
 

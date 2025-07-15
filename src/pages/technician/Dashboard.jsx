@@ -258,8 +258,8 @@ function TechnicianDashboard() {
                         </div>
                         <div>
                           <h5 className="mb-1">Phone</h5>
-                          <p className="mb-0">+1 (555) 123-4567</p>
-                          <p className="mb-0">+1 (555) 987-6543</p>
+                          <p className="mb-0">+94 (76) 375 3730</p>
+                          <p className="mb-0">+94 (70) 407 9547</p>
                         </div>
                       </div>
                       <div className="d-flex mb-3">
@@ -268,7 +268,7 @@ function TechnicianDashboard() {
                         </div>
                         <div>
                           <h5 className="mb-1">Address</h5>
-                          <p className="mb-0">Street Address, City</p>
+                          <p className="mb-0">Pasara Road, Badulla City, 90 000</p>
                         </div>
                       </div>
                       {/* Logo at bottom */}
