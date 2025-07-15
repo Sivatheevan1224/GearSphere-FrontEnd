@@ -130,7 +130,7 @@ font-size: 12px;
   .form .form-section .button {
     background: linear-gradient(90deg, #4361ee, #3a0ca3);
     margin-top: 30px;
-    width: 80%;
+    width: 90%;
     padding: 10px 0;
     border-radius: 10px;
     outline: none;
@@ -138,6 +138,9 @@ font-size: 12px;
     color: white;
     transition: all 0.3s ease;
     box-shadow: 0 4px 6px rgba(67, 97, 238, 0.2);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
   .form .form-section  .button:hover{
     background: linear-gradient(90deg, #3a0ca3, #4361ee);
@@ -150,9 +153,10 @@ font-size: 12px;
    .button-div{
     display: flex;
     gap: 18px;
-    width: 80%;
+    width: 90%;
     margin-left: 33px;
     margin-top: 20px;
+    flex-wrap: nowrap;
   }
 
   .signup-container .login_signup {
