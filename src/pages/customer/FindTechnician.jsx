@@ -10,6 +10,7 @@ import {
 } from "react-bootstrap";
 import { Star, StarFill, GeoAlt } from "react-bootstrap-icons";
 import axios from "axios";
+import { toast } from "react-toastify";
 
 function FindTechnician() {
   const [selectedDistrict, setSelectedDistrict] = useState("");
@@ -18,6 +19,7 @@ function FindTechnician() {
   const [selectedTechnician, setSelectedTechnician] = useState(null);
   const [instructions, setInstructions] = useState("");
   const [showAssignmentSuccess, setShowAssignmentSuccess] = useState(false);
+  const [assigning, setAssigning] = useState(false);
 
   // Fetch technicians from backend
   const [technicians, setTechnicians] = useState([]);
@@ -92,12 +94,17 @@ function FindTechnician() {
   });
 
   const handleAssignTechnician = async () => {
+    if (!navigator.onLine) {
+      toast.error("You are offline. Cannot assign technician.");
+      return;
+    }
     if (!selectedTechnician) return;
     const customer_id = sessionStorage.getItem("user_id");
     if (!customer_id) {
       setError("Session expired. Please log in again.");
       return;
     }
+    setAssigning(true);
     try {
       const res = await axios.post(
         "http://localhost/gearsphere_api/GearSphere-BackEnd/assignTechnician.php",
@@ -111,6 +118,7 @@ function FindTechnician() {
         }
       );
       if (res.data && res.data.success) {
+        toast.success("Technician Assigned Successfully");
         setShowTechnicianModal(false);
         setShowAssignmentSuccess(true);
         setInstructions("");
@@ -123,6 +131,8 @@ function FindTechnician() {
           err.message ||
           "Failed to assign technician."
       );
+    } finally {
+      setAssigning(false);
     }
   };
 
@@ -383,7 +393,6 @@ function FindTechnician() {
                   <h4>{selectedTechnician.name}</h4>
                   <p className="text-muted mb-2">
                     <GeoAlt className="me-1" /> {selectedTechnician.address}{" "}
-                    
                   </p>
                   <div className="mb-2">
                     <strong>Phone:</strong>{" "}
@@ -504,11 +513,16 @@ function FindTechnician() {
             <Button
               variant="secondary"
               onClick={() => setShowTechnicianModal(false)}
+              disabled={assigning}
             >
               Cancel
             </Button>
-            <Button variant="primary" onClick={handleAssignTechnician}>
-              Assign Technician
+            <Button
+              variant="primary"
+              onClick={handleAssignTechnician}
+              disabled={assigning}
+            >
+              {assigning ? "Processing..." : "Assign Technician"}
             </Button>
           </Modal.Footer>
         </Modal>
