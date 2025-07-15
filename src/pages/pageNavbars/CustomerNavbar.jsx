@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from "react";
+import React, { useState, useContext, useEffect, useRef } from "react";
 import {
   Navbar,
   Container,
@@ -14,6 +14,7 @@ import { Bell, Cart } from "react-bootstrap-icons";
 import { CartContext } from "../customer/CartContext";
 import Checkout from "../customer/Checkout";
 import axios from "axios";
+import CustomerNotification from '../customer/notification/CustomerNotification';
 
 function CustomerNavbar({ fixed = "top" }) {
   const navigate = useNavigate();
@@ -33,6 +34,9 @@ function CustomerNavbar({ fixed = "top" }) {
     getCartTotal,
     getCartCount,
   } = useContext(CartContext);
+  const [showNotif, setShowNotif] = useState(false);
+  const [notifCount, setNotifCount] = useState(0);
+  const bellRef = useRef(null);
 
   const formatLKR = (amount) => "LKR " + Number(amount).toLocaleString("en-LK");
 
@@ -76,6 +80,24 @@ function CustomerNavbar({ fixed = "top" }) {
     window.addEventListener("profilePicUpdated", handleProfileUpdate);
     return () =>
       window.removeEventListener("profilePicUpdated", handleProfileUpdate);
+  }, []);
+
+  useEffect(() => {
+    const fetchNotifCount = async () => {
+      const userId = sessionStorage.getItem('user_id');
+      if (!userId) return;
+      try {
+        const res = await axios.get(
+          `http://localhost/gearsphere_api/GearSphere-BackEnd/getCustomerNotification.php?user_id=${userId}&count=1`
+        );
+        setNotifCount(res.data.count || 0);
+      } catch (err) {
+        setNotifCount(0);
+      }
+    };
+    fetchNotifCount();
+    const interval = setInterval(fetchNotifCount, 10000);
+    return () => clearInterval(interval);
   }, []);
 
   const handleLogout = () => {
@@ -184,10 +206,35 @@ function CustomerNavbar({ fixed = "top" }) {
               </Nav.Link>
             </Nav>
             <div className="d-flex align-items-center">
-              <Bell
-                size={22}
-                className="me-3 cursor-pointer text-secondary"
-                style={{ verticalAlign: "middle" }}
+              <div style={{ position: 'relative', display: 'inline-block' }}>
+                <Bell
+                  ref={bellRef}
+                  size={22}
+                  className="me-3 cursor-pointer text-secondary"
+                  style={{ verticalAlign: "middle" }}
+                  onClick={() => setShowNotif((prev) => !prev)}
+                />
+                {notifCount > 0 && (
+                  <span style={{
+                    position: 'absolute',
+                    top: -4,
+                    right: 2,
+                    background: 'red',
+                    color: 'white',
+                    borderRadius: '50%',
+                    padding: '2px 7px',
+                    fontSize: 12,
+                    fontWeight: 700,
+                    zIndex: 2
+                  }}>
+                    {notifCount}
+                  </span>
+                )}
+              </div>
+              <CustomerNotification
+                show={showNotif}
+                target={bellRef.current}
+                onHide={() => setShowNotif(false)}
               />
               <div className="position-relative me-3">
                 <Cart

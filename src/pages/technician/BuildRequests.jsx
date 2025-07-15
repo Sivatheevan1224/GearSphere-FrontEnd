@@ -319,80 +319,90 @@ const BuildRequests = () => {
     );
   };
 
-  if (loading) return <div>Loading...</div>;
-  if (error) return <div style={{ color: "red" }}>{error}</div>;
-  if (!buildRequests.length) return <div>No build requests found.</div>;
-
   return (
-    <div style={{ margin: 24 }}>
-      <h2 style={{ marginBottom: 16 }}>Build Requests</h2>
-      <div style={{ overflowX: "auto", borderRadius: 8 }}>
-        <table style={tableStyle}>
-          <thead>
-            <tr>
-              <th style={thStyle}>Customer Photo</th>
-              <th style={thStyle}>Customer Name</th>
-              <th style={thStyle}>Email</th>
-              <th style={thStyle}>Phone</th>
-              <th style={thStyle}>Date Assigned</th>
-              <th style={thStyle}>Status</th>
-              <th style={thStyle}>Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            {buildRequests.map((req, idx) => (
-              <tr
-                key={req.assignment_id}
-                style={hoveredRow === idx ? trHover : {}}
-                onMouseEnter={() => setHoveredRow(idx)}
-                onMouseLeave={() => setHoveredRow(null)}
-              >
-                <td style={tdStyle}>
-                  <img
-                    src={getProfileImage(req)}
-                    alt={req.customer_name}
-                    style={imgStyle}
-                  />
-                </td>
-                <td style={tdStyle}>{req.customer_name}</td>
-                <td style={tdStyle}>{req.customer_email}</td>
-                <td style={tdStyle}>{req.customer_phone}</td>
-                <td style={tdStyle}>{req.assigned_at}</td>
-                <td style={tdStyle}>
-                  <span
-                    style={{
-                      ...statusBadge,
-                      ...(statusColors[req.status] || statusColors.pending),
-                    }}
-                  >
-                    {req.status}
-                  </span>
-                </td>
-                <td style={tdStyle}>
-                  <button
-                    style={{
-                      padding: "6px 14px",
-                      background: "transparent",
-                      color: "#1976d2",
-                      border: "2px solid #1976d2",
-                      borderRadius: 5,
-                      cursor: "pointer",
-                      fontWeight: 500,
-                    }}
-                    onClick={() => {
-                      setSelectedRequest(req);
-                      setShowModal(true);
-                      setLocalStatus("");
-                    }}
-                  >
-                    View Details
-                  </button>
-                </td>
+    <div style={{ padding: 24, maxWidth: 1100, margin: '0 auto' }}>
+      <h2 className="mb-4" style={{ fontWeight: 700, color: '#1976d2' }}>Build Requests</h2>
+      {loading ? (
+        <div style={{ textAlign: 'center', marginTop: 60 }}>
+          <span className="spinner-border text-primary" role="status" />
+        </div>
+      ) : error ? (
+        <div style={{ color: 'red', textAlign: 'center', marginTop: 40 }}>{error}</div>
+      ) : buildRequests.length === 0 ? (
+        <div style={{ textAlign: 'center', marginTop: 80, color: '#888' }}>
+          <img src="/no-data.svg" alt="No Requests" style={{ width: 120, marginBottom: 18, opacity: 0.7 }} />
+          <div style={{ fontSize: 22, fontWeight: 500 }}>No build requests found</div>
+          <div style={{ fontSize: 15, marginTop: 6 }}>You have not been assigned any build requests yet.</div>
+        </div>
+      ) : (
+        <div style={{ overflowX: "auto", borderRadius: 8 }}>
+          <table style={tableStyle}>
+            <thead>
+              <tr>
+                <th style={thStyle}>Customer Photo</th>
+                <th style={thStyle}>Customer Name</th>
+                <th style={thStyle}>Email</th>
+                <th style={thStyle}>Phone</th>
+                <th style={thStyle}>Date Assigned</th>
+                <th style={thStyle}>Status</th>
+                <th style={thStyle}>Action</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+            </thead>
+            <tbody>
+              {buildRequests.map((req, idx) => (
+                <tr
+                  key={req.assignment_id}
+                  style={hoveredRow === idx ? trHover : {}}
+                  onMouseEnter={() => setHoveredRow(idx)}
+                  onMouseLeave={() => setHoveredRow(null)}
+                >
+                  <td style={tdStyle}>
+                    <img
+                      src={getProfileImage(req)}
+                      alt={req.customer_name}
+                      style={imgStyle}
+                    />
+                  </td>
+                  <td style={tdStyle}>{req.customer_name}</td>
+                  <td style={tdStyle}>{req.customer_email}</td>
+                  <td style={tdStyle}>{req.customer_phone}</td>
+                  <td style={tdStyle}>{req.assigned_at}</td>
+                  <td style={tdStyle}>
+                    <span
+                      style={{
+                        ...statusBadge,
+                        ...(statusColors[req.status] || statusColors.pending),
+                      }}
+                    >
+                      {req.status}
+                    </span>
+                  </td>
+                  <td style={tdStyle}>
+                    <button
+                      style={{
+                        padding: "6px 14px",
+                        background: "transparent",
+                        color: "#1976d2",
+                        border: "2px solid #1976d2",
+                        borderRadius: 5,
+                        cursor: "pointer",
+                        fontWeight: 500,
+                      }}
+                      onClick={() => {
+                        setSelectedRequest(req);
+                        setShowModal(true);
+                        setLocalStatus("");
+                      }}
+                    >
+                      View Details
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
       {showModal && (
         <CustomerDetailModal
           request={selectedRequest}
