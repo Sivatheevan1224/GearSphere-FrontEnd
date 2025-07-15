@@ -3,6 +3,8 @@ import { Navbar, Container, Nav, Button, Modal } from "react-bootstrap";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { Bell } from "react-bootstrap-icons";
 import axios from 'axios';
+import TechnicianNotification from '../technician/notification/TechnicianNotification';
+import { useRef } from 'react';
 
 function TechnicianNavbar({ fixed = "top" }) {
   const navigate = useNavigate();
@@ -13,6 +15,9 @@ function TechnicianNavbar({ fixed = "top" }) {
     name: '',
     profile_image: 'https://via.placeholder.com/150'
   });
+  const [showNotif, setShowNotif] = useState(false);
+  const [notifCount, setNotifCount] = useState(0);
+  const bellRef = useRef(null);
 
   useEffect(() => {
     const fetchTechnicianData = async () => {
@@ -55,6 +60,24 @@ function TechnicianNavbar({ fixed = "top" }) {
     return () => window.removeEventListener('profilePicUpdated', handleProfileUpdate);
   }, []);
 
+  useEffect(() => {
+    const fetchNotifCount = async () => {
+      const userId = sessionStorage.getItem('user_id');
+      if (!userId) return;
+      try {
+        const res = await axios.get(
+          `http://localhost/gearsphere_api/GearSphere-BackEnd/getSellerNotification.php?user_id=${userId}&count=1`
+        );
+        setNotifCount(res.data.count || 0);
+      } catch (err) {
+        setNotifCount(0);
+      }
+    };
+    fetchNotifCount();
+    const interval = setInterval(fetchNotifCount, 10000); // Poll every 10s
+    return () => clearInterval(interval);
+  }, []);
+
   const handleLogout = () => {
     sessionStorage.clear();
     navigate("/", { replace: true });
@@ -82,7 +105,36 @@ function TechnicianNavbar({ fixed = "top" }) {
               <Nav.Link as={Link} to="/technician/reviews" onClick={() => setExpanded(false)} className={location.pathname === "/technician/reviews" ? "text-primary fw-bold" : ""}>Reviews</Nav.Link>
             </Nav>
             <div className="d-flex align-items-center">
-              <Bell size={22} className="me-3 cursor-pointer text-secondary" style={{ verticalAlign: 'middle' }} />
+              <div style={{ position: 'relative', display: 'inline-block' }}>
+                <Bell
+                  ref={bellRef}
+                  size={22}
+                  className="me-3 cursor-pointer text-secondary"
+                  style={{ verticalAlign: 'middle' }}
+                  onClick={() => setShowNotif((prev) => !prev)}
+                />
+                {notifCount > 0 && (
+                  <span style={{
+                    position: 'absolute',
+                    top: -4,
+                    right: 2,
+                    background: 'red',
+                    color: 'white',
+                    borderRadius: '50%',
+                    padding: '2px 7px',
+                    fontSize: 12,
+                    fontWeight: 700,
+                    zIndex: 2
+                  }}>
+                    {notifCount}
+                  </span>
+                )}
+              </div>
+              <TechnicianNotification
+                show={showNotif}
+                target={bellRef.current}
+                onHide={() => setShowNotif(false)}
+              />
               <Nav.Link as={Link} to="/technician/profile" className="d-flex align-items-center p-0 ms-2">
                 <img
                   src={technicianData.profile_image}
