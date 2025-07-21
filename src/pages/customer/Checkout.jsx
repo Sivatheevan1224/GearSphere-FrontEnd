@@ -1,73 +1,84 @@
-import React, { useState, useContext } from 'react';
-import { Modal, Form, Button, Row, Col, Card, Badge, Alert } from 'react-bootstrap';
-import { CartContext } from './CartContext';
-import { OrdersContext } from './OrdersContext';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useContext } from "react";
+import {
+  Modal,
+  Form,
+  Button,
+  Row,
+  Col,
+  Card,
+  Badge,
+  Alert,
+} from "react-bootstrap";
+import { CartContext } from "./CartContext";
+import { OrdersContext } from "./OrdersContext";
+import { useNavigate } from "react-router-dom";
 
-const Checkout = ({ 
-  show, 
-  onHide, 
+const Checkout = ({
+  show,
+  onHide,
   // Custom order props for PC builds
   customOrderItems = null,
   customOrderTotal = null,
   customOrderType = null,
-  onCustomOrderSuccess = null
+  onCustomOrderSuccess = null,
 }) => {
   const navigate = useNavigate();
   const { cartItems, getCartTotal, clearCart } = useContext(CartContext);
   const { addOrder } = useContext(OrdersContext);
-  const [paymentMethod, setPaymentMethod] = useState('visa');
-  const [cardNumber, setCardNumber] = useState('');
-  const [cardHolder, setCardHolder] = useState('');
-  const [expiryDate, setExpiryDate] = useState('');
-  const [cvv, setCvv] = useState('');
+  const [paymentMethod, setPaymentMethod] = useState("visa");
+  const [cardNumber, setCardNumber] = useState("");
+  const [cardHolder, setCardHolder] = useState("");
+  const [expiryDate, setExpiryDate] = useState("");
+  const [cvv, setCvv] = useState("");
   const [isProcessing, setIsProcessing] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
   const [errors, setErrors] = useState({});
 
   // Use custom order data if provided, otherwise use cart data
-  const orderItems = customOrderItems || cartItems.map(item => ({
-    id: item.id,
-    name: item.name,
-    price: item.price,
-    category: item.category,
-    quantity: item.quantity
-  }));
-  
+  const orderItems =
+    customOrderItems ||
+    cartItems.map((item) => ({
+      id: item.id,
+      name: item.name,
+      price: item.price,
+      category: item.category,
+      quantity: item.quantity,
+    }));
+
   const orderTotal = customOrderTotal || getCartTotal();
   const orderType = customOrderType || "Cart Order";
 
-  const formatLKR = (amount) => 'LKR ' + Number(amount).toLocaleString('en-LK');
+  const formatLKR = (amount) => "LKR " + Number(amount).toLocaleString("en-LK");
 
   const formatCardNumber = (value) => {
-    const v = value.replace(/\s+/g, '').replace(/[^0-9]/gi, '');
+    const v = value.replace(/\s+/g, "").replace(/[^0-9]/gi, "");
     const matches = v.match(/\d{4,16}/g);
-    const match = matches && matches[0] || '';
+    const match = (matches && matches[0]) || "";
     const parts = [];
     for (let i = 0, len = match.length; i < len; i += 4) {
       parts.push(match.substring(i, i + 4));
     }
     if (parts.length) {
-      return parts.join(' ');
+      return parts.join(" ");
     } else {
       return v;
     }
   };
 
   const formatExpiryDate = (value) => {
-    const v = value.replace(/\s+/g, '').replace(/[^0-9]/gi, '');
+    const v = value.replace(/\s+/g, "").replace(/[^0-9]/gi, "");
     if (v.length >= 2) {
-      return v.substring(0, 2) + '/' + v.substring(2, 4);
+      return v.substring(0, 2) + "/" + v.substring(2, 4);
     }
     return v;
   };
 
   const validateExpiryDate = (dateString) => {
     if (!dateString.match(/^\d{2}\/\d{2}$/)) {
-      return 'Please enter expiry date (MM/YY)';
+      return "Please enter expiry date (MM/YY)";
     }
 
-    const [month, year] = dateString.split('/');
+    const [month, year] = dateString.split("/");
     const currentDate = new Date();
     const currentYear = currentDate.getFullYear() % 100; // Get last 2 digits
     const currentMonth = currentDate.getMonth() + 1; // getMonth() returns 0-11
@@ -77,15 +88,15 @@ const Checkout = ({
 
     // Check if month is valid (1-12)
     if (expiryMonth < 1 || expiryMonth > 12) {
-      return 'Please enter a valid month (01-12)';
+      return "Please enter a valid month (01-12)";
     }
     // Check if year is valid (current year or future)
     else if (expiryYear < currentYear) {
-      return 'Card has expired';
+      return "Card has expired";
     }
     // If same year, check if month is in the future
     else if (expiryYear === currentYear && expiryMonth < currentMonth) {
-      return 'Card has expired';
+      return "Card has expired";
     }
 
     return null; // No error
@@ -94,12 +105,12 @@ const Checkout = ({
   const validateForm = () => {
     const newErrors = {};
 
-    if (!cardNumber.replace(/\s/g, '').match(/^\d{16}$/)) {
-      newErrors.cardNumber = 'Please enter a valid 16-digit card number';
+    if (!cardNumber.replace(/\s/g, "").match(/^\d{16}$/)) {
+      newErrors.cardNumber = "Please enter a valid 16-digit card number";
     }
 
     if (!cardHolder.trim()) {
-      newErrors.cardHolder = 'Please enter cardholder name';
+      newErrors.cardHolder = "Please enter cardholder name";
     }
 
     const expiryError = validateExpiryDate(expiryDate);
@@ -108,7 +119,7 @@ const Checkout = ({
     }
 
     if (!cvv.match(/^\d{3,4}$/)) {
-      newErrors.cvv = 'Please enter a valid CVV';
+      newErrors.cvv = "Please enter a valid CVV";
     }
 
     setErrors(newErrors);
@@ -117,7 +128,7 @@ const Checkout = ({
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (!validateForm()) {
       return;
     }
@@ -131,42 +142,88 @@ const Checkout = ({
         total: orderTotal,
         items: orderItems,
         paymentMethod: paymentMethod.toUpperCase(),
-        shippingAddress: 'Default Address' // You can add shipping address form later
+        shippingAddress: "Default Address", // You can add shipping address form later
       };
 
-      if (customOrderItems && onCustomOrderSuccess) {
-        // Handle custom order (PC build)
-        onCustomOrderSuccess(orderData);
-        
-        // For PC builds, don't navigate automatically - let PC Builder handle it
-        setTimeout(() => {
-          onHide();
-          setShowSuccess(false);
-        }, 2000);
+      if (
+        customOrderItems &&
+        customOrderItems.length > 0 &&
+        onCustomOrderSuccess
+      ) {
+        // PC Build order flow: send to backend with product_id for each item
+        const user_id = sessionStorage.getItem("user_id");
+        const items = customOrderItems.map((item) => ({
+          product_id: item.product_id || item.id, // fallback to id if product_id missing
+          quantity: item.quantity,
+          price: item.price,
+        }));
+        const total_amount = orderTotal;
+        const payment_method = paymentMethod.toUpperCase();
+        // assignment_id is not required at this stage
+        const payload = {
+          user_id,
+          items,
+          total_amount,
+          payment_method,
+        };
+        console.log("Order payload (no assignment_id):", payload); // Debug line
+        (async () => {
+          try {
+            const response = await fetch(
+              "http://localhost/gearsphere_api/GearSphere-BackEnd/createOrder.php",
+              {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload),
+              }
+            );
+            const data = await response.json();
+            if (data.success) {
+              setShowSuccess(true);
+              setTimeout(() => {
+                setShowSuccess(false);
+                onHide();
+                onCustomOrderSuccess({
+                  ...orderData,
+                  order_id: data.order_id,
+                  payment_id: data.payment_id,
+                });
+              }, 1500);
+            } else {
+              alert(data.message || "Order failed to save.");
+              setIsProcessing(false);
+              return;
+            }
+          } catch (err) {
+            alert("Network or server error. Please try again.");
+            setIsProcessing(false);
+            return;
+          }
+        })();
       } else {
         // Handle cart order
         const newOrder = addOrder(orderData);
         clearCart();
-        
+
         // Navigate to orders page for cart orders
         setTimeout(() => {
           onHide();
           setShowSuccess(false);
-          navigate('/orders');
+          navigate("/orders");
         }, 2000);
       }
-      
+
       setIsProcessing(false);
       setShowSuccess(true);
     }, 2000);
   };
 
   const getCardIcon = () => {
-    return paymentMethod === 'visa' ? '💳' : '💳';
+    return paymentMethod === "visa" ? "💳" : "💳";
   };
 
   const getCardPrefix = () => {
-    return paymentMethod === 'visa' ? '4' : '5';
+    return paymentMethod === "visa" ? "4" : "5";
   };
 
   const handleCardNumberChange = (e) => {
@@ -179,19 +236,20 @@ const Checkout = ({
     const value = e.target.value;
     const formatted = formatExpiryDate(value);
     setExpiryDate(formatted);
-    
+
     // Real-time validation
-    if (formatted.length === 5) { // MM/YY format
+    if (formatted.length === 5) {
+      // MM/YY format
       const error = validateExpiryDate(formatted);
-      setErrors(prev => ({
+      setErrors((prev) => ({
         ...prev,
-        expiryDate: error
+        expiryDate: error,
       }));
     } else {
       // Clear error if not complete
-      setErrors(prev => ({
+      setErrors((prev) => ({
         ...prev,
-        expiryDate: null
+        expiryDate: null,
       }));
     }
   };
@@ -201,7 +259,9 @@ const Checkout = ({
       <Modal show={show} onHide={onHide} centered>
         <Modal.Body className="text-center py-5">
           <div className="mb-4">
-            <div className="text-success" style={{ fontSize: '4rem' }}>✅</div>
+            <div className="text-success" style={{ fontSize: "4rem" }}>
+              ✅
+            </div>
           </div>
           <h4 className="text-success mb-3">Payment Successful!</h4>
           <p className="text-muted">Your order has been placed successfully.</p>
@@ -223,12 +283,17 @@ const Checkout = ({
             <h5 className="mb-3">Order Summary</h5>
             <div className="border rounded p-3 mb-3">
               {orderItems.map((item) => (
-                <div key={item.id} className="d-flex justify-content-between align-items-center mb-2">
+                <div
+                  key={item.id}
+                  className="d-flex justify-content-between align-items-center mb-2"
+                >
                   <div>
                     <h6 className="mb-0">{item.name}</h6>
                     <small className="text-muted">Qty: {item.quantity}</small>
                   </div>
-                  <span className="fw-bold">{formatLKR(item.price * item.quantity)}</span>
+                  <span className="fw-bold">
+                    {formatLKR(item.price * item.quantity)}
+                  </span>
                 </div>
               ))}
               <hr />
@@ -242,14 +307,16 @@ const Checkout = ({
           {/* Payment Form */}
           <Col md={7}>
             <h5 className="mb-3">Payment Details</h5>
-            
+
             {/* Card Type Selection */}
             <div className="mb-3">
               <Form.Label>Card Type</Form.Label>
               <div className="d-flex gap-2">
                 <Button
-                  variant={paymentMethod === 'visa' ? 'primary' : 'outline-primary'}
-                  onClick={() => setPaymentMethod('visa')}
+                  variant={
+                    paymentMethod === "visa" ? "primary" : "outline-primary"
+                  }
+                  onClick={() => setPaymentMethod("visa")}
                   className="flex-fill"
                 >
                   <div className="d-flex align-items-center justify-content-center">
@@ -258,8 +325,12 @@ const Checkout = ({
                   </div>
                 </Button>
                 <Button
-                  variant={paymentMethod === 'mastercard' ? 'primary' : 'outline-primary'}
-                  onClick={() => setPaymentMethod('mastercard')}
+                  variant={
+                    paymentMethod === "mastercard"
+                      ? "primary"
+                      : "outline-primary"
+                  }
+                  onClick={() => setPaymentMethod("mastercard")}
                   className="flex-fill"
                 >
                   <div className="d-flex align-items-center justify-content-center">
@@ -324,7 +395,9 @@ const Checkout = ({
                       type="text"
                       placeholder="123"
                       value={cvv}
-                      onChange={(e) => setCvv(e.target.value.replace(/\D/g, ''))}
+                      onChange={(e) =>
+                        setCvv(e.target.value.replace(/\D/g, ""))
+                      }
                       maxLength="4"
                       isInvalid={!!errors.cvv}
                     />
@@ -337,8 +410,9 @@ const Checkout = ({
 
               <Alert variant="info" className="mb-3">
                 <small>
-                  <strong>Secure Payment:</strong> Your payment information is encrypted and secure. 
-                  We use industry-standard SSL encryption to protect your data.
+                  <strong>Secure Payment:</strong> Your payment information is
+                  encrypted and secure. We use industry-standard SSL encryption
+                  to protect your data.
                 </small>
               </Alert>
 
@@ -351,7 +425,11 @@ const Checkout = ({
                 >
                   {isProcessing ? (
                     <>
-                      <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                      <span
+                        className="spinner-border spinner-border-sm me-2"
+                        role="status"
+                        aria-hidden="true"
+                      ></span>
                       Processing Payment...
                     </>
                   ) : (
@@ -370,4 +448,4 @@ const Checkout = ({
   );
 };
 
-export default Checkout; 
+export default Checkout;

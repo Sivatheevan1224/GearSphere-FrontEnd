@@ -241,6 +241,7 @@ function PCBuilder() {
   // Restore suggested build state
   const [suggestedBuild, setSuggestedBuild] = useState(null);
   const [suggestDebug, setSuggestDebug] = useState(null);
+  const [lastOrderId, setLastOrderId] = useState(null);
 
   const { addOrder } = useOrders();
   const navigate = useNavigate();
@@ -455,23 +456,34 @@ function PCBuilder() {
   };
 
   const handlePaymentSuccess = (orderData) => {
-    // Create PC build specific order data
-    const pcBuildOrderData = {
-      ...orderData,
-      orderType: "PC Build",
-      buildDetails: {
-        usage: usage,
-        budgetRange: selectedRange,
-        components: selectedComponents,
-      },
-    };
-
-    // Add order to context
-    addOrder(pcBuildOrderData);
-
-    // Close payment modal and show technician choice
     setShowPaymentModal(false);
     setShowTechnicianChoice(true);
+    setLastOrderId(orderData.order_id); // Store the order_id for later
+  };
+
+  // After technician assignment, update the order with assignment_id
+  const handleTechnicianAssigned = async (assignment_id) => {
+    if (!lastOrderId || !assignment_id) return;
+    try {
+      const response = await fetch(
+        "http://localhost/gearsphere_api/GearSphere-BackEnd/updateOrderAssignment.php",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ order_id: lastOrderId, assignment_id }),
+        }
+      );
+      const data = await response.json();
+      if (data.success) {
+        // Optionally show a success message or update UI
+        setShowTechnicianChoice(false);
+        setLastOrderId(null);
+      } else {
+        alert(data.message || "Failed to link technician assignment to order.");
+      }
+    } catch (err) {
+      alert("Network or server error. Please try again.");
+    }
   };
 
   const handleGoToOrders = () => {
@@ -498,36 +510,30 @@ function PCBuilder() {
 
   const handleAssignTechnician = () => {
     setShowTechnicianChoice(false);
-    // Reset the build
-    setSelectedComponents({
-      cpu: null,
-      gpu: null,
-      motherboard: null,
-      ram: null,
-      storage: null,
-      psu: null,
-      case: null,
-      cooling: null,
-      monitor: null,
-      operating_system: null,
+    // Navigate to FindTechnician page and pass the order_id
+    navigate("/customer/find-technician", {
+      state: {
+        order_id: lastOrderId,
+      },
     });
-    setUsage("");
-    setSelectedRange("");
-    setTotalPrice(0);
-    // Use navigate for React Router navigation
-    navigate("/customer/find-technician");
   };
 
   // Create PC build items for checkout
   const pcBuildItems = Object.entries(selectedComponents)
-    .filter(([_, component]) => component)
+    .filter(([_, component]) => component && component.product_id)
     .map(([key, component]) => ({
       id: `${key}_${Date.now()}`,
+      product_id: component.product_id,
       name: component.name,
       price: component.price,
       category: key.toUpperCase(),
       quantity: 1,
-    }));
+    }))
+    // Remove duplicates by product_id
+    .filter(
+      (item, index, self) =>
+        index === self.findIndex((t) => t.product_id === item.product_id)
+    );
 
   useEffect(() => {
     const cpuStr = sessionStorage.getItem("selected_cpu");
