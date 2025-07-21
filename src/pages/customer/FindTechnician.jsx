@@ -11,8 +11,12 @@ import {
 import { Star, StarFill, GeoAlt } from "react-bootstrap-icons";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { useLocation, useNavigate } from "react-router-dom";
 
 function FindTechnician() {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const order_id = location.state?.order_id;
   const [selectedDistrict, setSelectedDistrict] = useState("");
   const [selectedService, setSelectedService] = useState("");
   const [showTechnicianModal, setShowTechnicianModal] = useState(false);
@@ -41,6 +45,23 @@ function FindTechnician() {
         setLoading(false);
       });
   }, []);
+
+  const updateOrderWithAssignment = async (assignment_id) => {
+    if (!order_id || !assignment_id) return;
+
+    try {
+      await axios.post(
+        "http://localhost/gearsphere_api/GearSphere-BackEnd/updateOrderAssignment.php",
+        {
+          order_id,
+          assignment_id,
+        }
+      );
+      // You can add a success message here if you want
+    } catch (error) {
+      toast.error("Failed to link technician to the order.");
+    }
+  };
 
   // Sri Lankan districts
   const districts = [
@@ -122,6 +143,10 @@ function FindTechnician() {
         setShowTechnicianModal(false);
         setShowAssignmentSuccess(true);
         setInstructions("");
+
+        if (order_id && res.data.assignment_id) {
+          await updateOrderWithAssignment(res.data.assignment_id);
+        }
       } else {
         setError(res.data.message || "Failed to assign technician.");
       }
@@ -566,7 +591,12 @@ function FindTechnician() {
         <Modal.Footer>
           <Button
             variant="primary"
-            onClick={() => setShowAssignmentSuccess(false)}
+            onClick={() => {
+              setShowAssignmentSuccess(false);
+              if (order_id) {
+                navigate("/orders"); // Navigate to orders page if coming from PC Builder
+              }
+            }}
           >
             Close
           </Button>
