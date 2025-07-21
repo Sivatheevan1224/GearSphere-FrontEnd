@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import axios from "axios";
+import { useLocation } from "react-router-dom";
 
 const CartContext = createContext();
 const BACKEND_URL = "http://localhost/gearsphere_api/GearSphere-BackEnd/";
@@ -15,10 +16,10 @@ export const useCart = () => {
 export const CartProvider = ({ children }) => {
   const [cartItems, setCartItems] = useState([]);
   const [loading, setLoading] = useState(true);
-
-  const user_id = sessionStorage.getItem("user_id");
+  const location = useLocation();
 
   const fetchCart = async () => {
+    const user_id = sessionStorage.getItem("user_id");
     if (!user_id) {
       setCartItems([]); // Clear cart if no user is logged in
       setLoading(false);
@@ -50,9 +51,10 @@ export const CartProvider = ({ children }) => {
   // Fetch cart on initial load or when user_id changes
   useEffect(() => {
     fetchCart();
-  }, [user_id]);
+  }, [location.pathname]);
 
   const addToCart = async (product) => {
+    const user_id = sessionStorage.getItem("user_id");
     if (!user_id) {
       alert("Please log in to add items to your cart.");
       return;
@@ -71,6 +73,7 @@ export const CartProvider = ({ children }) => {
   };
 
   const removeFromCart = async (productId) => {
+    const user_id = sessionStorage.getItem("user_id");
     if (!user_id) return;
     try {
       await axios.post(`${BACKEND_URL}removeFromCart.php`, {
@@ -84,6 +87,7 @@ export const CartProvider = ({ children }) => {
   };
 
   const updateQuantity = async (productId, newQuantity) => {
+    const user_id = sessionStorage.getItem("user_id");
     if (!user_id) return;
     try {
       await axios.post(`${BACKEND_URL}updateCartQuantity.php`, {
@@ -98,6 +102,7 @@ export const CartProvider = ({ children }) => {
   };
 
   const clearCart = async () => {
+    const user_id = sessionStorage.getItem("user_id");
     if (!user_id) return;
     try {
       await axios.post(`${BACKEND_URL}clearCart.php`, { user_id });
