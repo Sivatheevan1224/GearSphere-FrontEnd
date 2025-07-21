@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import {
   Modal,
   Form,
@@ -33,6 +33,26 @@ const Checkout = ({
   const [isProcessing, setIsProcessing] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
   const [errors, setErrors] = useState({});
+
+  // Reset states when modal is closed
+  const handleClose = () => {
+    setShowSuccess(false);
+    setIsProcessing(false);
+    setCardNumber("");
+    setCardHolder("");
+    setExpiryDate("");
+    setCvv("");
+    setErrors({});
+    onHide();
+  };
+
+  // Reset success state when modal is opened
+  useEffect(() => {
+    if (show) {
+      setShowSuccess(false);
+      setIsProcessing(false);
+    }
+  }, [show]);
 
   // Use custom order data if provided, otherwise use cart data
   const orderItems =
@@ -135,87 +155,74 @@ const Checkout = ({
 
     setIsProcessing(true);
 
-    // Simulate payment processing
-    setTimeout(() => {
-      // Create order data
-      const orderData = {
-        total: orderTotal,
-        items: orderItems,
-        paymentMethod: paymentMethod.toUpperCase(),
-        shippingAddress: "Default Address", // You can add shipping address form later
-      };
-
-      if (
-        customOrderItems &&
-        customOrderItems.length > 0 &&
-        onCustomOrderSuccess
-      ) {
-        // PC Build order flow: send to backend with product_id for each item
-        const user_id = sessionStorage.getItem("user_id");
-        const items = customOrderItems.map((item) => ({
-          product_id: item.product_id || item.id, // fallback to id if product_id missing
-          quantity: item.quantity,
-          price: item.price,
-        }));
-        const total_amount = orderTotal;
-        const payment_method = paymentMethod.toUpperCase();
-        // assignment_id is not required at this stage
-        const payload = {
-          user_id,
-          items,
-          total_amount,
-          payment_method,
-        };
-        console.log("Order payload (no assignment_id):", payload); // Debug line
-        (async () => {
-          try {
-            const response = await fetch(
-              "http://localhost/gearsphere_api/GearSphere-BackEnd/createOrder.php",
-              {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(payload),
-              }
-            );
-            const data = await response.json();
-            if (data.success) {
-              setShowSuccess(true);
-              setTimeout(() => {
-                setShowSuccess(false);
-                onHide();
-                onCustomOrderSuccess({
-                  ...orderData,
-                  order_id: data.order_id,
-                  payment_id: data.payment_id,
-                });
-              }, 1500);
-            } else {
-              alert(data.message || "Order failed to save.");
-              setIsProcessing(false);
-              return;
-            }
-          } catch (err) {
-            alert("Network or server error. Please try again.");
-            setIsProcessing(false);
-            return;
-          }
-        })();
-      } else {
-        // Handle cart order
-        const newOrder = addOrder(orderData);
-        clearCart();
-
-        // Navigate to orders page for cart orders
-        setTimeout(() => {
-          onHide();
-          setShowSuccess(false);
-          navigate("/orders");
-        }, 2000);
+    // Simulate payment processing to mimic a real-world scenario
+    setTimeout(async () => {
+      const user_id = sessionStorage.getItem("user_id");
+      if (!user_id) {
+        alert("You must be logged in to place an order.");
+        setIsProcessing(false);
+        return;
       }
 
-      setIsProcessing(false);
-      setShowSuccess(true);
-    }, 2000);
+      // Prepare payload for the backend. `orderItems` is already defined
+      // to handle both cart and custom PC builds.
+      const payload = {
+        user_id,
+        items: orderItems.map((item) => ({
+          product_id: item.product_id || item.id, // Use product_id or fallback to id
+          quantity: item.quantity,
+          price: item.price,
+        })),
+        total_amount: orderTotal,
+        payment_method: paymentMethod.toUpperCase(),
+      };
+
+      try {
+        const response = await fetch(
+          "http://localhost/gearsphere_api/GearSphere-BackEnd/createOrder.php",
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload),
+          }
+        );
+
+        const data = await response.json();
+
+        if (data.success) {
+          setShowSuccess(true);
+
+          // Handle post-order actions based on order type
+          if (onCustomOrderSuccess) {
+            // PC Builder flow: trigger the success callback
+            setTimeout(() => {
+              onHide();
+              onCustomOrderSuccess({
+                total: orderTotal,
+                items: orderItems,
+                paymentMethod: payload.payment_method,
+                order_id: data.order_id,
+                payment_id: data.payment_id,
+              });
+            }, 1500);
+          } else {
+            // Standard cart flow: clear cart and navigate
+            clearCart();
+            setTimeout(() => {
+              onHide();
+              navigate("/orders");
+            }, 1500);
+          }
+        } else {
+          alert(data.message || "Failed to save the order. Please try again.");
+          setIsProcessing(false);
+        }
+      } catch (err) {
+        console.error("Order submission error:", err);
+        alert("A network or server error occurred. Please try again later.");
+        setIsProcessing(false);
+      }
+    }, 1500); // Simulating network delay
   };
 
   const getCardIcon = () => {
@@ -256,7 +263,7 @@ const Checkout = ({
 
   if (showSuccess) {
     return (
-      <Modal show={show} onHide={onHide} centered>
+      <Modal show={show} onHide={handleClose} centered>
         <Modal.Body className="text-center py-5">
           <div className="mb-4">
             <div className="text-success" style={{ fontSize: "4rem" }}>
@@ -272,7 +279,7 @@ const Checkout = ({
   }
 
   return (
-    <Modal show={show} onHide={onHide} size="lg" centered>
+    <Modal show={show} onHide={handleClose} size="lg" centered>
       <Modal.Header closeButton>
         <Modal.Title>Checkout</Modal.Title>
       </Modal.Header>
@@ -436,7 +443,7 @@ const Checkout = ({
                     `Pay ${formatLKR(orderTotal)}`
                   )}
                 </Button>
-                <Button variant="outline-secondary" onClick={onHide}>
+                <Button variant="outline-secondary" onClick={handleClose}>
                   Cancel
                 </Button>
               </div>

@@ -247,6 +247,30 @@ function PCBuilder() {
   const navigate = useNavigate();
   const location = useLocation();
 
+  // Function to reset the entire PC Builder state
+  const resetBuildState = () => {
+    const initialComponents = {
+      cpu: null,
+      gpu: null,
+      motherboard: null,
+      ram: null,
+      storage: null,
+      psu: null,
+      case: null,
+      cooling: null,
+      monitor: null,
+      operating_system: null,
+    };
+    setSelectedComponents(initialComponents);
+    setUsage("");
+    setSelectedRange("");
+    setTotalPrice(0);
+    setLastOrderId(null);
+    setRecommendations(null);
+    // Clear the saved state from sessionStorage to ensure a fresh start next time
+    sessionStorage.removeItem("pcbuilder_selected_components");
+  };
+
   // Budget ranges in LKR
   const budgetRanges = [
     // {
@@ -488,32 +512,18 @@ function PCBuilder() {
 
   const handleGoToOrders = () => {
     setShowTechnicianChoice(false);
-    // Reset the build
-    setSelectedComponents({
-      cpu: null,
-      gpu: null,
-      motherboard: null,
-      ram: null,
-      storage: null,
-      psu: null,
-      case: null,
-      cooling: null,
-      monitor: null,
-      operating_system: null,
-    });
-    setUsage("");
-    setSelectedRange("");
-    setTotalPrice(0);
-    // Navigate to orders page
-    window.location.href = "/orders";
+    resetBuildState(); // Reset the state before navigating
+    navigate("/orders");
   };
 
   const handleAssignTechnician = () => {
     setShowTechnicianChoice(false);
-    // Navigate to FindTechnician page and pass the order_id
+    // Store order_id temporarily since state will be reset
+    const orderIdToPass = lastOrderId;
+    resetBuildState(); // Reset the state before navigating
     navigate("/customer/find-technician", {
       state: {
-        order_id: lastOrderId,
+        order_id: orderIdToPass,
       },
     });
   };

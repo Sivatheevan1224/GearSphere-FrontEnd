@@ -184,18 +184,6 @@ function CustomerNavbar({ fixed = "top" }) {
               </Nav.Link>
               <Nav.Link
                 as={Link}
-                to="/customer/find-technician"
-                onClick={() => setExpanded(false)}
-                className={
-                  location.pathname === "/customer/find-technician"
-                    ? "text-primary fw-bold"
-                    : ""
-                }
-              >
-                Find Technician
-              </Nav.Link>
-              <Nav.Link
-                as={Link}
                 to="/orders"
                 onClick={() => setExpanded(false)}
                 className={

@@ -233,8 +233,8 @@ const BuildRequests = () => {
           setModalLoading(false);
           setConfirmModal({ show: false, action: null });
           setModalError("Failed to update status.");
-        });
-    };
+    });
+  };
 
     return (
       <div style={modalOverlay}>
@@ -409,8 +409,8 @@ const BuildRequests = () => {
           onClose={() => setShowModal(false)}
         />
       )}
-    </div>
+            </div>
   );
 };
 
-export default BuildRequests;
+export default BuildRequests; 
