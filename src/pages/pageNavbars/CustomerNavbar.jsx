@@ -14,7 +14,7 @@ import { Bell, Cart } from "react-bootstrap-icons";
 import { CartContext } from "../customer/CartContext";
 import Checkout from "../customer/Checkout";
 import axios from "axios";
-import CustomerNotification from '../customer/notification/CustomerNotification';
+import CustomerNotification from "../customer/notification/CustomerNotification";
 
 function CustomerNavbar({ fixed = "top" }) {
   const navigate = useNavigate();
@@ -84,7 +84,7 @@ function CustomerNavbar({ fixed = "top" }) {
 
   useEffect(() => {
     const fetchNotifCount = async () => {
-      const userId = sessionStorage.getItem('user_id');
+      const userId = sessionStorage.getItem("user_id");
       if (!userId) return;
       try {
         const res = await axios.get(
@@ -206,7 +206,7 @@ function CustomerNavbar({ fixed = "top" }) {
               </Nav.Link>
             </Nav>
             <div className="d-flex align-items-center">
-              <div style={{ position: 'relative', display: 'inline-block' }}>
+              <div style={{ position: "relative", display: "inline-block" }}>
                 <Bell
                   ref={bellRef}
                   size={22}
@@ -215,18 +215,20 @@ function CustomerNavbar({ fixed = "top" }) {
                   onClick={() => setShowNotif((prev) => !prev)}
                 />
                 {notifCount > 0 && (
-                  <span style={{
-                    position: 'absolute',
-                    top: -4,
-                    right: 2,
-                    background: 'red',
-                    color: 'white',
-                    borderRadius: '50%',
-                    padding: '2px 7px',
-                    fontSize: 12,
-                    fontWeight: 700,
-                    zIndex: 2
-                  }}>
+                  <span
+                    style={{
+                      position: "absolute",
+                      top: -4,
+                      right: 2,
+                      background: "red",
+                      color: "white",
+                      borderRadius: "50%",
+                      padding: "2px 7px",
+                      fontSize: 12,
+                      fontWeight: 700,
+                      zIndex: 2,
+                    }}
+                  >
                     {notifCount}
                   </span>
                 )}
@@ -309,7 +311,9 @@ function CustomerNavbar({ fixed = "top" }) {
                     className="d-flex align-items-center"
                   >
                     <img
-                      src={item.image || "/placeholder.svg?height=60&width=60"}
+                      src={
+                        item.image_url || "/placeholder.svg?height=60&width=60"
+                      }
                       alt={item.name}
                       style={{
                         width: "60px",
