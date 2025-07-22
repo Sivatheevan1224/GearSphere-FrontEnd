@@ -442,7 +442,8 @@ const SellerOrders = () => {
                   value={updateStatus}
                   onChange={(e) => setUpdateStatus(e.target.value)}
                 >
-                  {["pending", "processing", "shipped", "delivered"]
+                  <option value="Select Status">Select Status</option>
+                  {["processing", "shipped", "delivered"]
                     .filter(
                       (status) =>
                         statusDisplayMap[status] !== selectedOrder.status
