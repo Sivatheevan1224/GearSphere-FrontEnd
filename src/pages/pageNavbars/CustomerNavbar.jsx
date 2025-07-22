@@ -192,6 +192,16 @@ function CustomerNavbar({ fixed = "top" }) {
               >
                 My Orders
               </Nav.Link>
+              <Nav.Link
+                as={Link}
+                to="/customer/reviews"
+                onClick={() => setExpanded(false)}
+                className={
+                  location.pathname === "/customer/reviews" ? "text-primary fw-bold" : ""
+                }
+              >
+                My Reviews
+              </Nav.Link>
             </Nav>
             <div className="d-flex align-items-center">
               <div style={{ position: "relative", display: "inline-block" }}>

@@ -44,6 +44,9 @@ import MonitorPage from "./pages/customer/parts_components/monitor";
 import CompareMonitor from "./pages/customer/parts_components/compare_monitor";
 import OperatingSystemPage from "./pages/customer/parts_components/operatingsystem";
 import CompareOperatingSystem from "./pages/customer/parts_components/compare_operatingsystem";
+import CustomerReviews from "./pages/customer/CustomerReviews";
+import TechnicianFeedback from "./pages/technician/TechnicianFeedback";
+import AdminModerateReviews from "./pages/admin/AdminModerateReviews";
 
 // Technician Pages
 import TechnicianDashboard from "./pages/technician/Dashboard";
@@ -98,18 +101,7 @@ function AppContent() {
           <Route path="/compare-gpu" element={<CompareGPU />} />
           <Route path="/motherboard" element={<MotherboardPage />} />
           <Route path="/compare-motherboard" element={<CompareMotherboard />} />
-          <Route path="/memory" element={<MemoryPage />} />
-          <Route path="/compare-memory" element={<CompareMemory />} />
-          <Route path="/storage" element={<StoragePage />} />
-          <Route path="/compare-storage" element={<CompareStorage />} />
-          <Route path="/powersupply" element={<PowerSupplyPage />} />
-          <Route path="/compare-powersupply" element={<ComparePowerSupply />} />
-          <Route path="/case" element={<CasePage />} />
-          <Route path="/compare-case" element={<CompareCase />} />
-          <Route
-            path="/customer/find-technician"
-            element={<FindTechnician />}
-          />
+          <Route path="/customer/reviews" element={<CustomerReviews userId={sessionStorage.getItem('user_id')} />} />
           <Route path="/orders" element={<Orders />} />
           <Route path="/profile" element={<CustomerProfile />} />
           <Route path="/cpucooler" element={<CPUCoolerPage />} />
@@ -135,7 +127,7 @@ function AppContent() {
             path="/technician/build-requests"
             element={<BuildRequests />}
           />
-          <Route path="/technician/reviews" element={<TechnicianReviews />} />
+          <Route path="/technician/reviews" element={<TechnicianFeedback technicianId={sessionStorage.getItem('technician_id')} />} />
         </Route>
         {/* Admin Layout for all admin pages */}
         <Route element={<AdminLayout />}>
@@ -146,6 +138,7 @@ function AppContent() {
           <Route path="/admin/reports" element={<Reports />} />
           <Route path="/admin/profile" element={<AdminProfile />} />
           <Route path="/admin/messages" element={<AdminMessages />} />
+          <Route path="/admin/reviews" element={<AdminModerateReviews />} />
         </Route>
         {/* Seller Layout for all seller pages */}
         <Route element={<SellerLayout />}>
