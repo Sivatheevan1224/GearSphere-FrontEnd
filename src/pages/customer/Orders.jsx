@@ -1,23 +1,48 @@
-import React, { useState, useContext } from 'react';
-import { Container, Row, Col, Card, Table, Badge, Button, Modal } from 'react-bootstrap';
-import { OrdersContext } from './OrdersContext';
+import React, { useState, useEffect } from "react";
+import {
+  Container,
+  Row,
+  Col,
+  Card,
+  Table,
+  Badge,
+  Button,
+  Modal,
+  Spinner,
+} from "react-bootstrap";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
+// import { OrdersContext } from './OrdersContext';
 
 const Orders = () => {
   const [showOrderDetails, setShowOrderDetails] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState(null);
-  const { orders } = useContext(OrdersContext);
+  const [orders, setOrders] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
+  const [showTechnicianModal, setShowTechnicianModal] = useState(false);
+  const [technicianDetails, setTechnicianDetails] = useState(null);
 
-  const formatLKR = (amount) => 'LKR ' + Number(amount).toLocaleString('en-LK');
+  const formatLKR = (amount) => "LKR " + Number(amount).toLocaleString("en-LK");
 
-  const getStatusBadge = (status) => {
-    const variants = {
-      'Pending': 'warning',
-      'Processing': 'info',
-      'Shipped': 'primary',
-      'Delivered': 'success',
-      'Cancelled': 'danger'
-    };
-    return <Badge bg={variants[status] || 'secondary'}>{status}</Badge>;
+  const getStatusBadge = (status, isRequest = false) => {
+    if (isRequest) {
+      const variants = {
+        Pending: "primary", // blue
+        Accepted: "success", // green
+        Rejected: "danger", // red
+      };
+      return <Badge bg={variants[status] || "secondary"}>{status}</Badge>;
+    } else {
+      const variants = {
+        Pending: "warning",
+        Processing: "info",
+        Shipped: "primary",
+        Delivered: "success",
+        Cancelled: "danger",
+      };
+      return <Badge bg={variants[status] || "secondary"}>{status}</Badge>;
+    }
   };
 
   const handleViewDetails = (order) => {
@@ -25,11 +50,58 @@ const Orders = () => {
     setShowOrderDetails(true);
   };
 
+  const handleViewTechnician = async (technicianId) => {
+    try {
+      const response = await axios.get(
+        `http://localhost/gearsphere_api/GearSphere-BackEnd/getTechnicianDetail.php?technician_id=${technicianId}`
+      );
+      if (response.data.success) {
+        setTechnicianDetails(response.data.technician);
+        setShowTechnicianModal(true);
+      }
+    } catch (err) {
+      setTechnicianDetails(null);
+      setShowTechnicianModal(false);
+    }
+  };
+
+  useEffect(() => {
+    const fetchOrders = async () => {
+      setLoading(true);
+      const user_id = sessionStorage.getItem("user_id");
+      if (!user_id) {
+        setOrders([]);
+        setLoading(false);
+        return;
+      }
+      try {
+        const response = await fetch(
+          `http://localhost/gearsphere_api/GearSphere-BackEnd/getOrders.php?user_id=${user_id}`
+        );
+        const data = await response.json();
+        if (data.success && Array.isArray(data.orders)) {
+          setOrders(data.orders);
+        } else {
+          setOrders([]);
+        }
+      } catch (err) {
+        setOrders([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchOrders();
+  }, []);
+
   return (
     <Container className="py-5">
       <h1 className="text-center mb-5">My Orders</h1>
 
-      {orders.length === 0 ? (
+      {loading ? (
+        <div className="text-center py-5">
+          <Spinner animation="border" variant="primary" />
+        </div>
+      ) : orders.length === 0 ? (
         <Card className="shadow-sm">
           <Card.Body className="text-center py-5">
             <h4 className="text-muted mb-3">No Orders Yet</h4>
@@ -47,21 +119,18 @@ const Orders = () => {
                 <tr>
                   <th>Order ID</th>
                   <th>Date</th>
-                  <th>Status</th>
-                  <th>Payment Method</th>
+                  <th>Order Status</th>
                   <th>Total</th>
                   <th>Actions</th>
+                  <th>Request Status</th>
                 </tr>
               </thead>
               <tbody>
-                {orders.map(order => (
-                  <tr key={order.id}>
-                    <td>{order.id}</td>
+                {orders.map((order) => (
+                  <tr key={order.order_id}>
+                    <td>{order.order_id}</td>
                     <td>{order.date}</td>
-                    <td>{getStatusBadge(order.status)}</td>
-                    <td>
-                      <Badge bg="success">{order.paymentMethod}</Badge>
-                    </td>
+                    <td>{getStatusBadge(order.orderStatus)}</td>
                     <td>{formatLKR(order.total)}</td>
                     <td>
                       <Button
@@ -71,6 +140,54 @@ const Orders = () => {
                       >
                         View Details
                       </Button>
+                    </td>
+                    <td>
+                      {order.requestStatus ? (
+                        <div
+                          style={{
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "space-between",
+                            gap: 8,
+                          }}
+                        >
+                          <span>
+                            {getStatusBadge(order.requestStatus, true)}
+                          </span>
+                          <div>
+                            {order.requestStatus.toLowerCase() ===
+                              "rejected" && (
+                              <Button
+                                variant="primary"
+                                size="sm"
+                                onClick={() =>
+                                  navigate("/customer/find-technician", {
+                                    state: { order_id: order.order_id },
+                                  })
+                                }
+                              >
+                                Add Technician
+                              </Button>
+                            )}
+                            {["pending", "accepted"].includes(
+                              order.requestStatus?.toLowerCase()
+                            ) &&
+                              order.technicianId && (
+                                <Button
+                                  variant="primary"
+                                  size="sm"
+                                  onClick={() =>
+                                    handleViewTechnician(order.technicianId)
+                                  }
+                                >
+                                  View Technician
+                                </Button>
+                              )}
+                          </div>
+                        </div>
+                      ) : (
+                        <span>-</span>
+                      )}
                     </td>
                   </tr>
                 ))}
@@ -95,17 +212,29 @@ const Orders = () => {
               <Row className="mb-4">
                 <Col md={6}>
                   <h5>Order Information</h5>
-                  <p className="mb-1"><strong>Order ID:</strong> {selectedOrder.id}</p>
-                  <p className="mb-1"><strong>Date:</strong> {selectedOrder.date}</p>
-                  <p className="mb-1"><strong>Status:</strong> {getStatusBadge(selectedOrder.status)}</p>
-                  <p className="mb-1"><strong>Payment Method:</strong> <Badge bg="success">{selectedOrder.paymentMethod}</Badge></p>
-                  <p className="mb-1"><strong>Payment Status:</strong> <Badge bg="success">{selectedOrder.paymentStatus}</Badge></p>
-                  <p className="mb-1"><strong>Total:</strong> {formatLKR(selectedOrder.total)}</p>
+                  <p className="mb-1">
+                    <strong>Order ID:</strong> {selectedOrder.order_id}
+                  </p>
+                  <p className="mb-1">
+                    <strong>Date:</strong> {selectedOrder.date}
+                  </p>
+
+                  <p className="mb-1">
+                    <strong>Payment Status:</strong>{" "}
+                    <Badge bg="success">{selectedOrder.paymentStatus}</Badge>
+                  </p>
+                  <p className="mb-1">
+                    <strong>Total:</strong> {formatLKR(selectedOrder.total)}
+                  </p>
                 </Col>
                 <Col md={6}>
                   <h5>Shipping Information</h5>
-                  <p className="mb-1"><strong>Address:</strong> {selectedOrder.shippingAddress}</p>
-                  <p className="mb-1"><strong>Tracking Number:</strong> {selectedOrder.trackingNumber}</p>
+                  <p className="mb-1">
+                    <strong>Address:</strong> {selectedOrder.shippingAddress}
+                  </p>
+                  <p className="mb-1">
+                    <strong>Phone Number:</strong> {selectedOrder.phoneNumber}
+                  </p>
                 </Col>
               </Row>
 
@@ -113,6 +242,7 @@ const Orders = () => {
               <Table responsive>
                 <thead>
                   <tr>
+                    <th>Photo</th>
                     <th>Item</th>
                     <th>Category</th>
                     <th>Quantity</th>
@@ -123,6 +253,22 @@ const Orders = () => {
                 <tbody>
                   {selectedOrder.items.map((item, index) => (
                     <tr key={index}>
+                      <td>
+                        {item.image_url ? (
+                          <img
+                            src={`http://localhost/gearsphere_api/GearSphere-BackEnd/${item.image_url}`}
+                            alt={item.name}
+                            style={{
+                              width: 56,
+                              height: 56,
+                              objectFit: "cover",
+                              borderRadius: 6,
+                            }}
+                          />
+                        ) : (
+                          <span className="text-muted">No Image</span>
+                        )}
+                      </td>
                       <td>{item.name}</td>
                       <td>{item.category}</td>
                       <td>{item.quantity}</td>
@@ -133,8 +279,12 @@ const Orders = () => {
                 </tbody>
                 <tfoot>
                   <tr>
-                    <td colSpan="4" className="text-end"><strong>Total:</strong></td>
-                    <td><strong>{formatLKR(selectedOrder.total)}</strong></td>
+                    <td colSpan="5" className="text-end">
+                      <strong>Total:</strong>
+                    </td>
+                    <td>
+                      <strong>{formatLKR(selectedOrder.total)}</strong>
+                    </td>
                   </tr>
                 </tfoot>
               </Table>
@@ -142,18 +292,85 @@ const Orders = () => {
           )}
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={() => setShowOrderDetails(false)}>
+          <Button
+            variant="secondary"
+            onClick={() => setShowOrderDetails(false)}
+          >
             Close
           </Button>
-          {selectedOrder?.status === 'Delivered' && (
-            <Button variant="primary">
-              Leave Review
-            </Button>
+          {selectedOrder?.status === "Delivered" && (
+            <Button variant="primary">Leave Review</Button>
           )}
         </Modal.Footer>
+      </Modal>
+
+      {/* Technician Details Modal */}
+      <Modal
+        show={showTechnicianModal}
+        onHide={() => setShowTechnicianModal(false)}
+        centered
+      >
+        <Modal.Header closeButton>
+          <Modal.Title>Technician Details</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          {technicianDetails ? (
+            <div className="text-center">
+              <img
+                src={
+                  technicianDetails.profile_image
+                    ? `http://localhost/gearsphere_api/GearSphere-BackEnd/profile_images/${technicianDetails.profile_image}`
+                    : "/profile_images/user_image.jpg"
+                }
+                alt={technicianDetails.name}
+                style={{
+                  width: 120,
+                  height: 120,
+                  objectFit: "cover",
+                  borderRadius: "50%",
+                  marginBottom: 12,
+                }}
+              />
+              <h4 className="mt-2 mb-1">{technicianDetails.name}</h4>
+              <Badge
+                bg={
+                  technicianDetails.status === "available"
+                    ? "success"
+                    : "secondary"
+                }
+                className="mb-2"
+              >
+                {technicianDetails.status === "available"
+                  ? "Available"
+                  : "Unavailable"}
+              </Badge>
+              <div className="mb-2">
+                <Badge bg="primary">{technicianDetails.specialization}</Badge>
+              </div>
+              <div className="mb-2">
+                <i className="bi bi-geo-alt"></i> {technicianDetails.address}
+              </div>
+              <div className="mb-2">
+                <strong>Phone:</strong> {technicianDetails.contact_number}{" "}
+                &nbsp;
+                <strong>Charge:</strong> Rs.{" "}
+                {Number(technicianDetails.charge_per_day).toLocaleString()} /
+                day
+              </div>
+              <div className="mb-2">
+                <strong>Experience:</strong> {technicianDetails.experience}{" "}
+                years
+              </div>
+            </div>
+          ) : (
+            <div className="text-center text-muted">
+              Technician details not found.
+            </div>
+          )}
+        </Modal.Body>
       </Modal>
     </Container>
   );
 };
 
-export default Orders; 
+export default Orders;
