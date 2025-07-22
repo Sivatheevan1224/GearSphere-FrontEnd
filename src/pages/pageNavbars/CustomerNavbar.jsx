@@ -25,7 +25,7 @@ function CustomerNavbar({ fixed = "top" }) {
   const [expanded, setExpanded] = useState(false);
   const [customerData, setCustomerData] = useState({
     name: "",
-    profile_image: "https://via.placeholder.com/150",
+    profile_image: "/profile_images/user_image.jpg",
   });
   const {
     cartItems,
@@ -58,7 +58,7 @@ function CustomerNavbar({ fixed = "top" }) {
         if (data) {
           const profilePicUrl = data.profile_image
             ? `http://localhost/gearsphere_api/GearSphere-Backend/profile_images/${data.profile_image}`
-            : "https://via.placeholder.com/150";
+            : "/profile_images/user_image.jpg";
 
           setCustomerData({
             name: data.name || "",

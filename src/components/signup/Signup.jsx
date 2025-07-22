@@ -1,21 +1,21 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
-import 'react-toastify/dist/ReactToastify.css';
-import './Signup.css';
+import "react-toastify/dist/ReactToastify.css";
+import "./Signup.css";
 import ClearIcon from "@mui/icons-material/Clear";
 import EmailIcon from "@mui/icons-material/Email";
 import LockIcon from "@mui/icons-material/Lock";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import registerimg from "../../images/register.png";
 import TechnicianInstruction from "../technicianInstruction/TechnicianInstruction";
-import PersonIcon from '@mui/icons-material/Person';
-import LocationOnIcon from '@mui/icons-material/LocationOn';
+import PersonIcon from "@mui/icons-material/Person";
+import LocationOnIcon from "@mui/icons-material/LocationOn";
 import { Button, Modal } from "react-bootstrap";
 import PhoneIcon from "@mui/icons-material/Phone";
 import providerImg from "../../images/provider_img.jpg";
 import TechnicianRegistration from "../technicianRegister/TechnicianRegistration";
-import techStyles from '../technicianRegister/TechnicianRegistration.module.css';
+import techStyles from "../technicianRegister/TechnicianRegistration.module.css";
 
 const Signup = ({ signupClose, loginClose, setShowTechnicianInstruction }) => {
   const [firstName, setFirstName] = useState("");
@@ -44,15 +44,40 @@ const Signup = ({ signupClose, loginClose, setShowTechnicianInstruction }) => {
   const [techCV, setTechCV] = useState(null);
 
   const districts = [
-    '', 'Ampara', 'Anuradhapura', 'Badulla', 'Batticaloa', 'Colombo', 'Galle', 'Gampaha',
-    'Hambantota', 'Jaffna', 'Kalutara', 'Kandy', 'Kegalle', 'Kilinochchi', 'Kurunegala',
-    'Mannar', 'Matale', 'Matara', 'Monaragala', 'Mullaitivu', 'Nuwara Eliya', 'Polonnaruwa',
-    'Puttalam', 'Ratnapura', 'Trincomalee', 'Vavuniya'
+    "",
+    "Ampara",
+    "Anuradhapura",
+    "Badulla",
+    "Batticaloa",
+    "Colombo",
+    "Galle",
+    "Gampaha",
+    "Hambantota",
+    "Jaffna",
+    "Kalutara",
+    "Kandy",
+    "Kegalle",
+    "Kilinochchi",
+    "Kurunegala",
+    "Mannar",
+    "Matale",
+    "Matara",
+    "Monaragala",
+    "Mullaitivu",
+    "Nuwara Eliya",
+    "Polonnaruwa",
+    "Puttalam",
+    "Ratnapura",
+    "Trincomalee",
+    "Vavuniya",
   ];
 
   const sendOTP = async () => {
     try {
-      const res = await axios.post("http://localhost/gearsphere_api/GearSphere-BackEnd/emailValidationOTP.php", { email });
+      const res = await axios.post(
+        "http://localhost/gearsphere_api/GearSphere-BackEnd/emailValidationOTP.php",
+        { email }
+      );
       if (res.data.success) {
         setSentOtp(res.data.otp);
         toast.success("OTP sent to your email.");
@@ -99,9 +124,13 @@ const Signup = ({ signupClose, loginClose, setShowTechnicianInstruction }) => {
     formData.append("specialization", techSpecialization);
     if (techCV) formData.append("cv", techCV);
     try {
-      const res = await axios.post("http://localhost/gearsphere_api/GearSphere-BackEnd/customersignup.php", formData, {
-        headers: { 'Content-Type': 'multipart/form-data' }
-      });
+      const res = await axios.post(
+        "http://localhost/gearsphere_api/GearSphere-BackEnd/customersignup.php",
+        formData,
+        {
+          headers: { "Content-Type": "multipart/form-data" },
+        }
+      );
       if (res.data.status === "success") {
         toast.success("Registration successful!");
         setTimeout(() => {
@@ -114,9 +143,13 @@ const Signup = ({ signupClose, loginClose, setShowTechnicianInstruction }) => {
       }
     } catch (err) {
       if (err.response) {
-        toast.error(`Server Error: ${err.response.data.message || "Check PHP error log"}`);
+        toast.error(
+          `Server Error: ${err.response.data.message || "Check PHP error log"}`
+        );
       } else if (err.request) {
-        toast.error("No response from server. Check if PHP backend is running.");
+        toast.error(
+          "No response from server. Check if PHP backend is running."
+        );
       } else {
         toast.error("Request setup error.");
       }
@@ -128,31 +161,44 @@ const Signup = ({ signupClose, loginClose, setShowTechnicianInstruction }) => {
     const fullAddress = `${city} | ${district} | ${postalCode}`;
 
     const formData = new FormData();
-    formData.append('name', fullName);
-    formData.append('email', email);
-    formData.append('password', password);
-    formData.append('contact_number', contactNumber);
-    formData.append('address', fullAddress);
-    formData.append('userType', 'customer');
+    formData.append("name", fullName);
+    formData.append("email", email);
+    formData.append("password", password);
+    formData.append("contact_number", contactNumber);
+    formData.append("address", fullAddress);
+    formData.append("userType", "customer");
 
     try {
-      const response = await axios.post("http://localhost/gearsphere_api/GearSphere-BackEnd/customersignup.php", formData, {
-        headers: { 'Content-Type': 'multipart/form-data' }
-      });
-      if (response.data.status === 'success') {
+      const response = await axios.post(
+        "http://localhost/gearsphere_api/GearSphere-BackEnd/customersignup.php",
+        formData,
+        {
+          headers: { "Content-Type": "multipart/form-data" },
+        }
+      );
+      if (response.data.status === "success") {
         toast.success("Registered Successfully, You can login now...");
         setTimeout(() => {
           if (signupClose) signupClose(false);
           if (loginClose) loginClose(true);
         }, 3000);
       } else {
-        toast.error(response.data.message || "Registration failed. Please check your credentials and try again.");
+        toast.error(
+          response.data.message ||
+            "Registration failed. Please check your credentials and try again."
+        );
       }
     } catch (error) {
       if (error.response) {
-        toast.error(`Server Error: ${error.response.data.message || "Check PHP error log"}`);
+        toast.error(
+          `Server Error: ${
+            error.response.data.message || "Check PHP error log"
+          }`
+        );
       } else if (error.request) {
-        toast.error("No response from server. Check if PHP backend is running.");
+        toast.error(
+          "No response from server. Check if PHP backend is running."
+        );
       } else {
         toast.error("Customer email already exists.");
       }
@@ -171,7 +217,17 @@ const Signup = ({ signupClose, loginClose, setShowTechnicianInstruction }) => {
 
   const handleSignup = async (e) => {
     e.preventDefault();
-    if (!firstName || !lastName || !city || !district || !email || !password || !confirmPassword || !postalCode || !contactNumber) {
+    if (
+      !firstName ||
+      !lastName ||
+      !city ||
+      !district ||
+      !email ||
+      !password ||
+      !confirmPassword ||
+      !postalCode ||
+      !contactNumber
+    ) {
       toast.error("All fields are required.");
       return;
     }
@@ -180,7 +236,7 @@ const Signup = ({ signupClose, loginClose, setShowTechnicianInstruction }) => {
       toast.error("First name and last name should only contain letters.");
       return;
     }
-    if (!email.includes('@gmail.com')) {
+    if (!email.includes("@gmail.com")) {
       toast.error("Please enter valid email..");
       return;
     }
@@ -188,9 +244,12 @@ const Signup = ({ signupClose, loginClose, setShowTechnicianInstruction }) => {
       toast.error("Passwords do not match.");
       return;
     }
-    const passwordRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{6,}$/;
+    const passwordRegex =
+      /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{6,}$/;
     if (!passwordRegex.test(password)) {
-      toast.error("Password must be at least 6 characters long and include at least one uppercase letter, one special character, and one number.");
+      toast.error(
+        "Password must be at least 6 characters long and include at least one uppercase letter, one special character, and one number."
+      );
       return;
     }
     await sendOTP();
@@ -200,7 +259,15 @@ const Signup = ({ signupClose, loginClose, setShowTechnicianInstruction }) => {
     e.preventDefault();
     setIsTechnician(true);
     // Validate fields (reuse your validation logic from handleProviderRegister)
-    if (!firstName || !lastName || !city || !district || !email || !password || !confirmPassword) {
+    if (
+      !firstName ||
+      !lastName ||
+      !city ||
+      !district ||
+      !email ||
+      !password ||
+      !confirmPassword
+    ) {
       toast.error("Please fill in all fields.");
       return;
     }
@@ -209,7 +276,7 @@ const Signup = ({ signupClose, loginClose, setShowTechnicianInstruction }) => {
       toast.error("First name and last name should only contain letters.");
       return;
     }
-    if (!email.includes('@gmail.com')) {
+    if (!email.includes("@gmail.com")) {
       toast.error("Please enter valid email..");
       return;
     }
@@ -217,9 +284,12 @@ const Signup = ({ signupClose, loginClose, setShowTechnicianInstruction }) => {
       toast.error("Passwords do not match.");
       return;
     }
-    const passwordRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{6,}$/;
+    const passwordRegex =
+      /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{6,}$/;
     if (!passwordRegex.test(password)) {
-      toast.error("Password must be at least 6 characters long and include at least one uppercase letter, one special character, and one number.");
+      toast.error(
+        "Password must be at least 6 characters long and include at least one uppercase letter, one special character, and one number."
+      );
       return;
     }
     await sendOTP(email);
@@ -229,11 +299,14 @@ const Signup = ({ signupClose, loginClose, setShowTechnicianInstruction }) => {
     <>
       {/* Only show signup form if instruction popup and tech details form are not open */}
       {!openInstruct && !showTechDetailsForm && (
-        <div className={techStyles['tech-essential-registration']} onClick={(e) => {
-          if (e.target === e.currentTarget) {
-            if (signupClose) signupClose(false);
-          }
-        }}>
+        <div
+          className={techStyles["tech-essential-registration"]}
+          onClick={(e) => {
+            if (e.target === e.currentTarget) {
+              if (signupClose) signupClose(false);
+            }
+          }}
+        >
           <div className="signup-container">
             <ClearIcon
               className="cancel-btn"
@@ -254,6 +327,7 @@ const Signup = ({ signupClose, loginClose, setShowTechnicianInstruction }) => {
                         value={firstName}
                         onChange={(e) => setFirstName(e.target.value)}
                         required
+                        autoComplete="given-name"
                       />
                       <PersonIcon className="icon" />
                     </div>
@@ -264,6 +338,7 @@ const Signup = ({ signupClose, loginClose, setShowTechnicianInstruction }) => {
                         value={lastName}
                         onChange={(e) => setLastName(e.target.value)}
                         required
+                        autoComplete="family-name"
                       />
                       <PersonIcon className="icon" />
                     </div>
@@ -276,6 +351,7 @@ const Signup = ({ signupClose, loginClose, setShowTechnicianInstruction }) => {
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       required
+                      autoComplete="email"
                     />
                     <EmailIcon className="icon" />
                   </div>
@@ -287,6 +363,7 @@ const Signup = ({ signupClose, loginClose, setShowTechnicianInstruction }) => {
                       value={contactNumber}
                       onChange={(e) => setContactNumber(e.target.value)}
                       required
+                      autoComplete="tel"
                     />
                     <PhoneIcon className="icon" />
                   </div>
@@ -298,6 +375,7 @@ const Signup = ({ signupClose, loginClose, setShowTechnicianInstruction }) => {
                       value={city}
                       onChange={(e) => setCity(e.target.value)}
                       required
+                      autoComplete="address-level2"
                     />
                     <LocationOnIcon className="icon" />
                   </div>
@@ -327,6 +405,7 @@ const Signup = ({ signupClose, loginClose, setShowTechnicianInstruction }) => {
                         value={postalCode}
                         onChange={(e) => setPostalCode(e.target.value)}
                         required
+                        autoComplete="postal-code"
                       />
                       <LocationOnIcon className="icon" />
                     </div>
@@ -340,6 +419,7 @@ const Signup = ({ signupClose, loginClose, setShowTechnicianInstruction }) => {
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       required
+                      autoComplete="new-password"
                     />
                     <LockIcon className="icon" />
                   </div>
@@ -350,6 +430,7 @@ const Signup = ({ signupClose, loginClose, setShowTechnicianInstruction }) => {
                       value={confirmPassword}
                       onChange={(e) => setConfirmPassword(e.target.value)}
                       required
+                      autoComplete="new-password"
                     />
                     <LockIcon className="icon" />
                   </div>
@@ -386,7 +467,12 @@ const Signup = ({ signupClose, loginClose, setShowTechnicianInstruction }) => {
         </div>
       )}
       {/* OTP Modal */}
-      <Modal show={otpModalVisible} onHide={() => setOtpModalVisible(false)} centered className="otp-modal-front">
+      <Modal
+        show={otpModalVisible}
+        onHide={() => setOtpModalVisible(false)}
+        centered
+        className="otp-modal-front"
+      >
         <Modal.Header closeButton>
           <Modal.Title>OTP Verification</Modal.Title>
         </Modal.Header>
@@ -411,11 +497,22 @@ const Signup = ({ signupClose, loginClose, setShowTechnicianInstruction }) => {
       </Modal>
       {/* Technician Instruction Popup */}
       {openInstruct && (
-        <TechnicianInstruction show={openInstruct} onHide={() => setOpenInstruct(false)} onAgree={handleTechnicianAgree} imgSrc={providerImg} />
+        <TechnicianInstruction
+          show={openInstruct}
+          onHide={() => setOpenInstruct(false)}
+          onAgree={handleTechnicianAgree}
+          imgSrc={providerImg}
+        />
       )}
       {/* Technician Details Form */}
       {showTechDetailsForm && (
-        <Modal show={showTechDetailsForm} onHide={() => setShowTechDetailsForm(false)} size="xl" backdrop="static" centered>
+        <Modal
+          show={showTechDetailsForm}
+          onHide={() => setShowTechDetailsForm(false)}
+          size="xl"
+          backdrop="static"
+          centered
+        >
           <TechnicianRegistration
             technicianData={{
               name: `${firstName} ${lastName}`,
@@ -423,7 +520,7 @@ const Signup = ({ signupClose, loginClose, setShowTechnicianInstruction }) => {
               password,
               contact_number: contactNumber,
               address: `${city} | ${district} | ${postalCode}`,
-              userType: 'technician',
+              userType: "technician",
             }}
             onBack={() => setShowTechDetailsForm(false)}
             onSuccess={() => {
@@ -439,4 +536,4 @@ const Signup = ({ signupClose, loginClose, setShowTechnicianInstruction }) => {
   );
 };
 
-export default Signup; 
+export default Signup;

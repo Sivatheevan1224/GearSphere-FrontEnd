@@ -185,7 +185,9 @@ function LoginModal({ show, onHide, switchToRegister }) {
       <Modal
         show={show && !showForgotModal}
         onHide={onHide}
-        dialogClassName={`modal-dialog-centered custom-login-modal${isLargeScreen ? ' modal-lg' : ''}`}
+        dialogClassName={`modal-dialog-centered custom-login-modal${
+          isLargeScreen ? " modal-lg" : ""
+        }`}
       >
         <div className="modal-content">
           <Modal.Body className="p-0">
@@ -213,6 +215,7 @@ function LoginModal({ show, onHide, switchToRegister }) {
                       onChange={(e) => setEmail(e.target.value)}
                       required
                       size="sm"
+                      autoComplete="email"
                     />
                   </Form.Group>
                   <Form.Group className="mb-4">
@@ -224,6 +227,7 @@ function LoginModal({ show, onHide, switchToRegister }) {
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         required
+                        autoComplete="current-password"
                       />
                       <Button
                         variant="outline-secondary"

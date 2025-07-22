@@ -9,7 +9,7 @@ const AdminProfile = () => {
     name: "",
     contact_number: "",
     address: "",
-    profilePic: "https://via.placeholder.com/150",
+    profilePic: "/profile_images/user_image.jpg",
   });
   const [profilePicFile, setProfilePicFile] = useState(null);
   const [profilePicPreview, setProfilePicPreview] = useState(null);
@@ -33,7 +33,7 @@ const AdminProfile = () => {
         if (data) {
           const profilePicUrl = data.profile_image
             ? `http://localhost/gearsphere_api/GearSphere-BackEnd/profile_images/${data.profile_image}`
-            : "https://via.placeholder.com/150";
+            : "/profile_images/user_image.jpg";
 
           setFormData({
             name: data.name || "",
@@ -102,7 +102,7 @@ const AdminProfile = () => {
         const data = profileRes.data;
         const profilePicUrl = data.profile_image
           ? `http://localhost/gearsphere_api/GearSphere-BackEnd/profile_images/${data.profile_image}`
-          : "https://via.placeholder.com/150";
+          : "/profile_images/user_image.jpg";
 
         setFormData((prev) => ({
           ...prev,
@@ -175,6 +175,7 @@ const AdminProfile = () => {
                   style={{ display: "none" }}
                   ref={fileInputRef}
                   onChange={handleProfilePicChange}
+                  autoComplete="off"
                 />
                 <Button
                   variant="outline-primary"
@@ -196,6 +197,7 @@ const AdminProfile = () => {
                   name="name"
                   value={formData.name}
                   onChange={handleInputChange}
+                  autoComplete="name"
                 />
               </Form.Group>
 
@@ -209,6 +211,7 @@ const AdminProfile = () => {
                   placeholder="07X XXX XXXX"
                   pattern="0[0-9]{9}"
                   title="Enter a valid Sri Lankan phone number"
+                  autoComplete="tel"
                 />
               </Form.Group>
 
@@ -220,6 +223,7 @@ const AdminProfile = () => {
                   value={formData.address}
                   onChange={handleInputChange}
                   placeholder="e.g., Point Pedro | Jaffna"
+                  autoComplete="street-address"
                 />
               </Form.Group>
 
