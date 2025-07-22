@@ -9,7 +9,7 @@ const CustomerProfile = () => {
     name: "",
     contact_number: "",
     address: "",
-    profilePic: "https://via.placeholder.com/150",
+    profilePic: "/profile_images/user_image.jpg",
   });
   const [profilePicFile, setProfilePicFile] = useState(null);
   const [profilePicPreview, setProfilePicPreview] = useState(null);
@@ -32,8 +32,8 @@ const CustomerProfile = () => {
 
         if (data) {
           const profilePicUrl = data.profile_image
-            ? `http://localhost/gearsphere_api/GearSphere-Backend/profile_images/${data.profile_image}`
-            : "https://via.placeholder.com/150";
+            ? `http://localhost/gearsphere_api/GearSphere-BackEnd/profile_images/${data.profile_image}`
+            : "/profile_images/user_image.jpg";
 
           setFormData({
             name: data.name || "",
@@ -101,8 +101,8 @@ const CustomerProfile = () => {
         );
         const data = profileRes.data;
         const profilePicUrl = data.profile_image
-          ? `http://localhost/gearsphere_api/GearSphere-Backend/profile_images/${data.profile_image}`
-          : "https://via.placeholder.com/150";
+          ? `http://localhost/gearsphere_api/GearSphere-BackEnd/profile_images/${data.profile_image}`
+          : "/profile_images/user_image.jpg";
 
         setFormData((prev) => ({
           ...prev,
@@ -125,7 +125,11 @@ const CustomerProfile = () => {
 
   return (
     <Container>
-      <br /><br /><br /><br /><br />
+      <br />
+      <br />
+      <br />
+      <br />
+      <br />
       <div className="profile-border-wrapper">
         <Row>
           <Col md={5}>
@@ -142,7 +146,7 @@ const CustomerProfile = () => {
                   }}
                 />
                 <h5>{formData.name}</h5>
-                <p> 
+                <p>
                   <b>Email:</b> {formData.email}
                 </p>
                 <p>
@@ -171,6 +175,7 @@ const CustomerProfile = () => {
                   style={{ display: "none" }}
                   ref={fileInputRef}
                   onChange={handleProfilePicChange}
+                  autoComplete="off"
                 />
                 <Button
                   variant="outline-primary"
@@ -192,6 +197,7 @@ const CustomerProfile = () => {
                   name="name"
                   value={formData.name}
                   onChange={handleInputChange}
+                  autoComplete="name"
                 />
               </Form.Group>
 
@@ -205,6 +211,7 @@ const CustomerProfile = () => {
                   placeholder="07X XXX XXXX"
                   pattern="0[0-9]{9}"
                   title="Enter a valid Sri Lankan phone number"
+                  autoComplete="tel"
                 />
               </Form.Group>
 
@@ -216,6 +223,7 @@ const CustomerProfile = () => {
                   value={formData.address}
                   onChange={handleInputChange}
                   placeholder="e.g., Point Pedro | Jaffna"
+                  autoComplete="street-address"
                 />
               </Form.Group>
 

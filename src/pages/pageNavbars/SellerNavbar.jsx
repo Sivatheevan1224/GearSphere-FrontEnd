@@ -2,9 +2,9 @@ import React, { useState, useEffect } from "react";
 import { Navbar, Container, Nav, Button, Modal } from "react-bootstrap";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { Bell } from "react-bootstrap-icons";
-import axios from 'axios';
-import Notification from '../seller/notification/Notification';
-import { useRef } from 'react';
+import axios from "axios";
+import Notification from "../seller/notification/Notification";
+import { useRef } from "react";
 
 function SellerNavbar({ fixed = "top" }) {
   const navigate = useNavigate();
@@ -12,19 +12,21 @@ function SellerNavbar({ fixed = "top" }) {
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [expanded, setExpanded] = useState(false);
   const [sellerData, setSellerData] = useState({
-    name: '',
-    profile_image: 'https://via.placeholder.com/150'
+    name: "",
+    profile_image: "/profile_images/user_image.jpg",
   });
   const [showNotification, setShowNotification] = useState(false);
   const [notificationCount, setNotificationCount] = useState(0);
   const bellRef = useRef(null);
-  const userId = sessionStorage.getItem('user_id');
+  const userId = sessionStorage.getItem("user_id");
 
   // Fetch notification count
   const fetchNotificationCount = async () => {
     if (!userId) return;
     try {
-      const response = await axios.get(`http://localhost/gearsphere_api/GearSphere-BackEnd/getSellerNotification.php?user_id=${userId}&count=1`);
+      const response = await axios.get(
+        `http://localhost/gearsphere_api/GearSphere-BackEnd/getSellerNotification.php?user_id=${userId}&count=1`
+      );
       setNotificationCount(response.data.count || 0);
     } catch (err) {
       setNotificationCount(0);
@@ -34,10 +36,10 @@ function SellerNavbar({ fixed = "top" }) {
   useEffect(() => {
     const fetchSellerData = async () => {
       try {
-        const userId = sessionStorage.getItem('user_id');
+        const userId = sessionStorage.getItem("user_id");
         if (!userId) return;
 
-        const token = localStorage.getItem('token');
+        const token = localStorage.getItem("token");
         const response = await axios.get(
           `http://localhost/gearsphere_api/GearSphere-BackEnd/getSeller.php?user_id=${userId}`,
           {
@@ -49,15 +51,15 @@ function SellerNavbar({ fixed = "top" }) {
         if (data) {
           const profilePicUrl = data.profile_image
             ? `http://localhost/gearsphere_api/GearSphere-BackEnd/profile_images/${data.profile_image}`
-            : 'https://via.placeholder.com/150';
+            : "/profile_images/user_image.jpg";
 
           setSellerData({
-            name: data.name || '',
+            name: data.name || "",
             profile_image: profilePicUrl,
           });
         }
       } catch (err) {
-        console.error('Failed to fetch seller data:', err);
+        console.error("Failed to fetch seller data:", err);
       }
     };
 
@@ -68,8 +70,9 @@ function SellerNavbar({ fixed = "top" }) {
       fetchSellerData();
     };
 
-    window.addEventListener('profilePicUpdated', handleProfileUpdate);
-    return () => window.removeEventListener('profilePicUpdated', handleProfileUpdate);
+    window.addEventListener("profilePicUpdated", handleProfileUpdate);
+    return () =>
+      window.removeEventListener("profilePicUpdated", handleProfileUpdate);
   }, []);
 
   useEffect(() => {
@@ -98,9 +101,20 @@ function SellerNavbar({ fixed = "top" }) {
 
   return (
     <>
-      <Navbar bg="light" expand="lg" className="" fixed={fixed} expanded={expanded} onToggle={setExpanded}>
+      <Navbar
+        bg="light"
+        expand="lg"
+        className=""
+        fixed={fixed}
+        expanded={expanded}
+        onToggle={setExpanded}
+      >
         <Container>
-          <Navbar.Brand as={Link} to="/seller/dashboard" onClick={() => setExpanded(false)}>
+          <Navbar.Brand
+            as={Link}
+            to="/seller/dashboard"
+            onClick={() => setExpanded(false)}
+          >
             <img
               src="/src/images/logo.PNG"
               alt="GearSphere Logo"
@@ -111,28 +125,117 @@ function SellerNavbar({ fixed = "top" }) {
           <Navbar.Toggle aria-controls="seller-navbar-nav" />
           <Navbar.Collapse id="seller-navbar-nav">
             <Nav className="me-auto">
-              <Nav.Link as={Link} to="/seller/dashboard" onClick={() => setExpanded(false)} className={location.pathname === "/seller/dashboard" ? "text-primary fw-bold" : ""}>Dashboard</Nav.Link>
-              <Nav.Link as={Link} to="/seller/products" onClick={() => setExpanded(false)} className={location.pathname === "/seller/products" ? "text-primary fw-bold" : ""}>Products</Nav.Link>
-              <Nav.Link as={Link} to="/seller/inventory" onClick={() => setExpanded(false)} className={location.pathname === "/seller/inventory" ? "text-primary fw-bold" : ""}>Inventory</Nav.Link>
-              <Nav.Link as={Link} to="/seller/orders" onClick={() => setExpanded(false)} className={location.pathname === "/seller/orders" ? "text-primary fw-bold" : ""}>Orders</Nav.Link>
-              <Nav.Link as={Link} to="/seller/analytics" onClick={() => setExpanded(false)} className={location.pathname === "/seller/analytics" ? "text-primary fw-bold" : ""}>Analytics</Nav.Link>
+              <Nav.Link
+                as={Link}
+                to="/seller/dashboard"
+                onClick={() => setExpanded(false)}
+                className={
+                  location.pathname === "/seller/dashboard"
+                    ? "text-primary fw-bold"
+                    : ""
+                }
+              >
+                Dashboard
+              </Nav.Link>
+              <Nav.Link
+                as={Link}
+                to="/seller/products"
+                onClick={() => setExpanded(false)}
+                className={
+                  location.pathname === "/seller/products"
+                    ? "text-primary fw-bold"
+                    : ""
+                }
+              >
+                Products
+              </Nav.Link>
+              <Nav.Link
+                as={Link}
+                to="/seller/inventory"
+                onClick={() => setExpanded(false)}
+                className={
+                  location.pathname === "/seller/inventory"
+                    ? "text-primary fw-bold"
+                    : ""
+                }
+              >
+                Inventory
+              </Nav.Link>
+              <Nav.Link
+                as={Link}
+                to="/seller/orders"
+                onClick={() => setExpanded(false)}
+                className={
+                  location.pathname === "/seller/orders"
+                    ? "text-primary fw-bold"
+                    : ""
+                }
+              >
+                Orders
+              </Nav.Link>
+              <Nav.Link
+                as={Link}
+                to="/seller/analytics"
+                onClick={() => setExpanded(false)}
+                className={
+                  location.pathname === "/seller/analytics"
+                    ? "text-primary fw-bold"
+                    : ""
+                }
+              >
+                Analytics
+              </Nav.Link>
             </Nav>
             <div className="d-flex align-items-center">
-              <div style={{ position: 'relative' }}>
-                <Bell ref={bellRef} size={22} className="me-3 cursor-pointer text-secondary" style={{ verticalAlign: 'middle' }} onClick={handleBellClick} />
+              <div style={{ position: "relative" }}>
+                <Bell
+                  ref={bellRef}
+                  size={22}
+                  className="me-3 cursor-pointer text-secondary"
+                  style={{ verticalAlign: "middle" }}
+                  onClick={handleBellClick}
+                />
                 {notificationCount > 0 && (
-                  <span style={{ position: 'absolute', top: 0, right: 2, background: 'red', color: 'white', borderRadius: '50%', fontSize: 12, padding: '2px 6px', minWidth: 18, textAlign: 'center' }}>{notificationCount}</span>
+                  <span
+                    style={{
+                      position: "absolute",
+                      top: 0,
+                      right: 2,
+                      background: "red",
+                      color: "white",
+                      borderRadius: "50%",
+                      fontSize: 12,
+                      padding: "2px 6px",
+                      minWidth: 18,
+                      textAlign: "center",
+                    }}
+                  >
+                    {notificationCount}
+                  </span>
                 )}
               </div>
-              <Nav.Link as={Link} to="/seller/profile" className="d-flex align-items-center p-0 ms-2">
+              <Nav.Link
+                as={Link}
+                to="/seller/profile"
+                className="d-flex align-items-center p-0 ms-2"
+              >
                 <img
                   src={sellerData.profile_image}
                   alt="Profile"
                   className="rounded-circle"
-                  style={{ width: 40, height: 40, objectFit: 'cover', border: '2px solid #4361ee' }}
+                  style={{
+                    width: 40,
+                    height: 40,
+                    objectFit: "cover",
+                    border: "2px solid #4361ee",
+                  }}
                 />
               </Nav.Link>
-              <Button variant="outline-danger" onClick={() => setShowLogoutModal(true)} className="ms-3">
+              <Button
+                variant="outline-danger"
+                onClick={() => setShowLogoutModal(true)}
+                className="ms-3"
+              >
                 Logout
               </Button>
             </div>
@@ -140,13 +243,15 @@ function SellerNavbar({ fixed = "top" }) {
         </Container>
       </Navbar>
       {/* Logout Confirmation Modal */}
-      <Modal show={showLogoutModal} onHide={() => setShowLogoutModal(false)} centered>
+      <Modal
+        show={showLogoutModal}
+        onHide={() => setShowLogoutModal(false)}
+        centered
+      >
         <Modal.Header closeButton>
           <Modal.Title>Confirm Logout</Modal.Title>
         </Modal.Header>
-        <Modal.Body>
-          Are you sure you want to logout?
-        </Modal.Body>
+        <Modal.Body>Are you sure you want to logout?</Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={() => setShowLogoutModal(false)}>
             Cancel
@@ -156,9 +261,14 @@ function SellerNavbar({ fixed = "top" }) {
           </Button>
         </Modal.Footer>
       </Modal>
-      <Notification show={showNotification} target={bellRef.current} onHide={() => setShowNotification(false)} onDeleted={handleNotificationDeleted} />
+      <Notification
+        show={showNotification}
+        target={bellRef.current}
+        onHide={() => setShowNotification(false)}
+        onDeleted={handleNotificationDeleted}
+      />
     </>
   );
 }
 
-export default SellerNavbar; 
+export default SellerNavbar;

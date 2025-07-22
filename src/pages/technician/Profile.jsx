@@ -10,7 +10,7 @@ const TechnicianProfile = () => {
     contact_number: "",
     address: "",
     charge_per_day: "",
-    profilePic: "https://via.placeholder.com/150",
+    profilePic: "/profile_images/user_image.jpg",
     email: "",
     status: "available", // <-- add status to state
   });
@@ -22,35 +22,40 @@ const TechnicianProfile = () => {
     const fetchTechnicianData = async () => {
       try {
         const userId = sessionStorage.getItem("user_id");
-        const technician_id = sessionStorage.getItem("technician_id");
-        if (!userId || !technician_id)
-          return toast.error("Session expired. Please log in.");
+        if (!userId) return toast.error("Session expired. Please log in.");
 
         const token = localStorage.getItem("token");
+        // Step 1: Get technician_id from user_id
+        const techIdRes = await axios.get(
+          `http://localhost/gearsphere_api/GearSphere-BackEnd/getTechnicianIdByUser.php?user_id=${userId}`,
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+        const technicianId = techIdRes.data.technician_id;
+        if (!technicianId) return toast.error("Technician ID not found.");
+
+        // Step 2: Get technician details by technician_id
         const response = await axios.get(
-          `http://localhost/gearsphere_api/GearSphere-Backend/getTechnicianDetail.php?user_id=${userId}`,
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
+          `http://localhost/gearsphere_api/GearSphere-BackEnd/getTechnicianDetail.php?technician_id=${technicianId}`,
+          { headers: { Authorization: `Bearer ${token}` } }
         );
         const data = response.data;
 
-        if (data) {
-          const profilePicUrl = data.profile_image
-            ? `http://localhost/gearsphere_api/GearSphere-Backend/profile_images/${data.profile_image}`
-            : "https://via.placeholder.com/150";
+        if (data && data.success && data.technician) {
+          const profilePicUrl = data.technician.profile_image
+            ? `http://localhost/gearsphere_api/GearSphere-BackEnd/profile_images/${data.technician.profile_image}`
+            : "/profile_images/user_image.jpg";
 
           setFormData({
-            name: data.name || "",
-            contact_number: data.contact_number || "",
-            address: data.address || "",
-            charge_per_day: data.charge_per_day || "",
+            name: data.technician.name || "",
+            contact_number: data.technician.contact_number || "",
+            address: data.technician.address || "",
+            charge_per_day: data.technician.charge_per_day || "",
             profilePic: profilePicUrl,
-            email: data.email || "",
-            specialization: data.specialization || "",
-            experience: data.experience || "",
-            technician_id: data.technician_id || "",
-            status: data.status || "available", // <-- set status from backend
+            email: data.technician.email || "",
+            specialization: data.technician.specialization || "",
+            experience: data.technician.experience || "",
+            technician_id: data.technician.technician_id || "",
+            status: data.technician.status || "available",
           });
 
           sessionStorage.setItem("technician_profile_pic", profilePicUrl);
@@ -138,23 +143,33 @@ const TechnicianProfile = () => {
       if (response.data.success) {
         toast.success("Profile updated successfully");
 
-        const profileRes = await axios.get(
-          `http://localhost/gearsphere_api/GearSphere-Backend/getTechnicianDetail.php?user_id=${userId}`,
+        // Fetch updated profile using the new two-step backend
+        const techIdRes = await axios.get(
+          `http://localhost/gearsphere_api/GearSphere-BackEnd/getTechnicianIdByUser.php?user_id=${userId}`,
           { headers: { Authorization: `Bearer ${token}` } }
         );
-        const data = profileRes.data;
-        const profilePicUrl = data.profile_image
-          ? `http://localhost/gearsphere_api/GearSphere-Backend/profile_images/${data.profile_image}`
-          : "https://via.placeholder.com/150";
+        const technicianId = techIdRes.data.technician_id;
+        if (technicianId) {
+          const profileRes = await axios.get(
+            `http://localhost/gearsphere_api/GearSphere-BackEnd/getTechnicianDetail.php?technician_id=${technicianId}`,
+            { headers: { Authorization: `Bearer ${token}` } }
+          );
+          const data = profileRes.data;
+          if (data && data.success && data.technician) {
+            const profilePicUrl = data.technician.profile_image
+              ? `http://localhost/gearsphere_api/GearSphere-BackEnd/profile_images/${data.technician.profile_image}`
+              : "/profile_images/user_image.jpg";
 
-        setFormData((prev) => ({
-          ...prev,
-          profilePic: profilePicUrl,
-        }));
-        sessionStorage.setItem("technician_profile_pic", profilePicUrl);
-        window.dispatchEvent(new Event("profilePicUpdated"));
-        setProfilePicFile(null);
-        setProfilePicPreview(null);
+            setFormData((prev) => ({
+              ...prev,
+              profilePic: profilePicUrl,
+            }));
+            sessionStorage.setItem("technician_profile_pic", profilePicUrl);
+            window.dispatchEvent(new Event("profilePicUpdated"));
+            setProfilePicFile(null);
+            setProfilePicPreview(null);
+          }
+        }
       } else {
         toast.error(
           "Update failed: " + (response.data.message || "Unknown error")
@@ -202,10 +217,31 @@ const TechnicianProfile = () => {
                   <b>Charge/Day:</b> Rs. {formData.charge_per_day}
                 </p>
                 <p>
-                  <b>Status:</b> {formData.status === 'available' ? (
-                    <span style={{ color: 'white', background: 'green', borderRadius: 8, padding: '2px 10px', fontWeight: 600 }}>Available</span>
+                  <b>Status:</b>{" "}
+                  {formData.status === "available" ? (
+                    <span
+                      style={{
+                        color: "white",
+                        background: "green",
+                        borderRadius: 8,
+                        padding: "2px 10px",
+                        fontWeight: 600,
+                      }}
+                    >
+                      Available
+                    </span>
                   ) : (
-                    <span style={{ color: 'white', background: 'red', borderRadius: 8, padding: '2px 10px', fontWeight: 600 }}>Unavailable</span>
+                    <span
+                      style={{
+                        color: "white",
+                        background: "red",
+                        borderRadius: 8,
+                        padding: "2px 10px",
+                        fontWeight: 600,
+                      }}
+                    >
+                      Unavailable
+                    </span>
                   )}
                 </p>
                 <p>
@@ -234,6 +270,7 @@ const TechnicianProfile = () => {
                   style={{ display: "none" }}
                   ref={fileInputRef}
                   onChange={handleProfilePicChange}
+                  autoComplete="off"
                 />
                 <Button
                   variant="outline-primary"
@@ -255,6 +292,7 @@ const TechnicianProfile = () => {
                   name="name"
                   value={formData.name}
                   onChange={handleInputChange}
+                  autoComplete="name"
                 />
               </Form.Group>
 
@@ -268,6 +306,7 @@ const TechnicianProfile = () => {
                   placeholder="07X XXX XXXX"
                   pattern="0[0-9]{9}"
                   title="Enter a valid Sri Lankan phone number"
+                  autoComplete="tel"
                 />
               </Form.Group>
 
@@ -279,6 +318,7 @@ const TechnicianProfile = () => {
                   value={formData.address}
                   onChange={handleInputChange}
                   placeholder="e.g., Point Pedro | Jaffna"
+                  autoComplete="street-address"
                 />
               </Form.Group>
 
@@ -290,6 +330,7 @@ const TechnicianProfile = () => {
                   value={formData.charge_per_day}
                   onChange={handleInputChange}
                   min="0"
+                  autoComplete="off"
                 />
               </Form.Group>
 
