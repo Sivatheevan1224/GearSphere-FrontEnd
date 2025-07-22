@@ -82,6 +82,7 @@ function AdminNavbar({ fixed = "top" }) {
               <Nav.Link as={Link} to="/admin/analytics" onClick={() => setExpanded(false)} className={location.pathname === "/admin/analytics" ? "text-primary fw-bold" : ""}>Analytics</Nav.Link>
               <Nav.Link as={Link} to="/admin/reports" onClick={() => setExpanded(false)} className={location.pathname === "/admin/reports" ? "text-primary fw-bold" : ""}>Reports</Nav.Link>
               <Nav.Link as={Link} to="/admin/messages" onClick={() => setExpanded(false)} className={location.pathname === "/admin/messages" ? "text-primary fw-bold" : ""}>Messages</Nav.Link>
+              <Nav.Link as={Link} to="/admin/reviews" onClick={() => setExpanded(false)} className={location.pathname === "/admin/reviews" ? "text-primary fw-bold" : ""}>Reviews</Nav.Link>
             </Nav>
             <div className="d-flex align-items-center">
               <Bell size={22} className="me-3 cursor-pointer text-secondary" style={{ verticalAlign: 'middle' }} />
