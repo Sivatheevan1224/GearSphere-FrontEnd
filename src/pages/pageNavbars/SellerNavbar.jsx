@@ -185,6 +185,18 @@ function SellerNavbar({ fixed = "top" }) {
               >
                 Analytics
               </Nav.Link>
+              <Nav.Link
+                as={Link}
+                to="/seller/monitoring"
+                onClick={() => setExpanded(false)}
+                className={
+                  location.pathname === "/seller/monitoring"
+                    ? "text-primary fw-bold"
+                    : ""
+                }
+              >
+                Monitoring
+              </Nav.Link>
             </Nav>
             <div className="d-flex align-items-center">
               <div style={{ position: "relative" }}>
