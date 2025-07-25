@@ -62,6 +62,7 @@ import AdminMain from "./pages/admin/AdminMain";
 import Reports from "./pages/admin/Reports";
 import AdminProfile from "./pages/admin/Profile";
 import AdminMessages from "./pages/admin/AdminMessages";
+import AdminMonitoring from "./pages/admin/AdminMonitoring";
 
 // Seller Pages
 import ProductManagement from "./pages/seller/ProductManagement";
@@ -71,6 +72,8 @@ import SalesAnalytics from "./pages/seller/Analytics";
 import SellerProfile from "./pages/seller/Profile";
 import SellerMain from "./pages/seller/SellerMain";
 import Dashboard from "./pages/seller/Dashboard";
+
+import SellerMonitoring from "./pages/seller/SellerMonitoring";
 
 import CustomerLayout from "./pages/customer/CustomerLayout";
 import AdminLayout from "./pages/admin/AdminLayout";
@@ -101,7 +104,12 @@ function AppContent() {
           <Route path="/compare-gpu" element={<CompareGPU />} />
           <Route path="/motherboard" element={<MotherboardPage />} />
           <Route path="/compare-motherboard" element={<CompareMotherboard />} />
-          <Route path="/customer/reviews" element={<CustomerReviews userId={sessionStorage.getItem('user_id')} />} />
+          <Route
+            path="/customer/reviews"
+            element={
+              <CustomerReviews userId={sessionStorage.getItem("user_id")} />
+            }
+          />
           <Route path="/orders" element={<Orders />} />
           <Route path="/profile" element={<CustomerProfile />} />
           <Route path="/cpucooler" element={<CPUCoolerPage />} />
@@ -112,6 +120,10 @@ function AppContent() {
           <Route
             path="/compare-operatingsystem"
             element={<CompareOperatingSystem />}
+          />
+          <Route
+            path="/customer/find-technician"
+            element={<FindTechnician />}
           />
         </Route>
         {/* Technician Layout for all technician pages */}
@@ -127,11 +139,19 @@ function AppContent() {
             path="/technician/build-requests"
             element={<BuildRequests />}
           />
-          <Route path="/technician/reviews" element={<TechnicianFeedback technicianId={sessionStorage.getItem('technician_id')} />} />
+          <Route
+            path="/technician/reviews"
+            element={
+              <TechnicianFeedback
+                technicianId={sessionStorage.getItem("technician_id")}
+              />
+            }
+          />
         </Route>
         {/* Admin Layout for all admin pages */}
         <Route element={<AdminLayout />}>
           <Route path="/admin" element={<AdminMain />} />
+          <Route path="/admin/monitoring" element={<AdminMonitoring />} />
           <Route path="/admin/customers" element={<CustomerManagement />} />
           <Route path="/admin/technicians" element={<TechnicianManagement />} />
           <Route path="/admin/analytics" element={<Analytics />} />
@@ -149,6 +169,7 @@ function AppContent() {
           <Route path="/seller/analytics" element={<SalesAnalytics />} />
           <Route path="/seller/profile" element={<SellerProfile />} />
           <Route path="/seller/dashboard" element={<Dashboard />} />
+          <Route path="/seller/monitoring" element={<SellerMonitoring />} />
         </Route>
       </Routes>
       <ToastContainer />
