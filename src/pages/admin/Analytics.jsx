@@ -1,6 +1,14 @@
-import React, { useState } from 'react';
-import { Container, Row, Col, Card, Table, Button, Form } from 'react-bootstrap';
-import { Line, Bar, Pie } from 'react-chartjs-2';
+import React, { useState, useEffect } from "react";
+import {
+  Container,
+  Row,
+  Col,
+  Card,
+  Table,
+  Button,
+  Form,
+} from "react-bootstrap";
+import { Line, Bar, Pie } from "react-chartjs-2";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -11,8 +19,8 @@ import {
   ArcElement,
   Title,
   Tooltip,
-  Legend
-} from 'chart.js';
+  Legend,
+} from "chart.js";
 
 // Register ChartJS components
 ChartJS.register(
@@ -28,75 +36,74 @@ ChartJS.register(
 );
 
 const Analytics = () => {
-  const [timeRange, setTimeRange] = useState('month');
-  const [metricType, setMetricType] = useState('revenue');
+  const [timeRange, setTimeRange] = useState("month");
+  const [metricType, setMetricType] = useState("revenue");
+  const [analyticsData, setAnalyticsData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  // Mock data - replace with actual API calls
-  const analyticsData = {
-    summary: {
-      totalRevenue: 125000,
-      totalOrders: 450,
-      averageOrderValue: 277.78,
-      conversionRate: 3.2,
-    },
-    salesTrend: [
-      { date: "2024-01", revenue: 25000, orders: 90 },
-      { date: "2024-02", revenue: 30000, orders: 110 },
-      { date: "2024-03", revenue: 35000, orders: 130 },
-      { date: "2024-04", revenue: 40000, orders: 150 },
-    ],
-    topProducts: [
-      {
-        id: "P001",
-        name: "RTX 4070",
-        sales: 120,
-        revenue: 72000,
-        growth: 15,
-      },
-      {
-        id: "P002",
-        name: "32GB DDR5 RAM",
-        sales: 200,
-        revenue: 70000,
-        growth: 8,
-      },
-      {
-        id: "P003",
-        name: "1TB NVMe SSD",
-        sales: 150,
-        revenue: 60000,
-        growth: 12,
-      },
-    ],
-    categoryPerformance: [
-      {
-        category: "Graphics Cards",
-        sales: 150,
-        revenue: 90000,
-        percentage: 40,
-      },
-      {
-        category: "Memory",
-        sales: 250,
-        revenue: 87500,
-        percentage: 35,
-      },
-      {
-        category: "Storage",
-        sales: 200,
-        revenue: 80000,
-        percentage: 25,
-      },
-    ],
-  };
+  useEffect(() => {
+    setLoading(true);
+    setError(null);
+    // Get user_id from localStorage or context
+    const url = `http://localhost/gearsphere_api/GearSphere-BackEnd/getSellerAnalytics.php`;
+    fetch(url)
+      .then((res) => res.json())
+      .then((data) => {
+        if (!data.success) throw new Error(data.message || "Unknown error");
+        setAnalyticsData(data);
+      })
+      .catch((err) => setError(err.message))
+      .finally(() => setLoading(false));
+  }, []);
 
-  // Chart data and options
+  if (loading)
+    return (
+      <div className="text-center py-5">
+        <h4>Loading analytics...</h4>
+      </div>
+    );
+  if (error)
+    return (
+      <div className="text-center py-5 text-danger">
+        <h4>{error}</h4>
+      </div>
+    );
+  if (!analyticsData) return null;
+
+  // Show a sliding window of up to 5 months, always including current month, and up to 1 future month if present in data
+  function getLastNMonths(latestMonth, n = 5) {
+    const months = [];
+    const [year, month] = latestMonth.split('-').map(Number);
+    for (let i = n - 1; i >= 0; i--) {
+      const d = new Date(year, month - 1 - i, 1);
+      months.push(d.toISOString().slice(0, 7));
+    }
+    return months;
+  }
+  // Find the latest month in analytics data or use current month
+  const salesTrendPeriods = (analyticsData.salesTrend || []).map(item => item.period);
+  const currentMonth = new Date().toISOString().slice(0, 7);
+  let latestMonth = currentMonth;
+  if (salesTrendPeriods.length > 0) {
+    latestMonth = salesTrendPeriods.reduce((a, b) => (a > b ? a : b), currentMonth);
+  }
+  const lastNMonths = getLastNMonths(latestMonth, 5);
+  const salesTrendMap = {};
+  (analyticsData.salesTrend || []).forEach(item => {
+    salesTrendMap[item.period] = item;
+  });
+  const normalizedSalesTrend = lastNMonths.map(period => ({
+    period,
+    revenue: salesTrendMap[period]?.revenue || 0,
+    orders: salesTrendMap[period]?.orders || 0,
+  }));
   const salesTrendData = {
-    labels: analyticsData.salesTrend.map((item) => item.date),
+    labels: normalizedSalesTrend.map(item => item.period),
     datasets: [
       {
         label: metricType === "revenue" ? "Revenue" : "Orders",
-        data: analyticsData.salesTrend.map((item) =>
+        data: normalizedSalesTrend.map(item =>
           metricType === "revenue" ? item.revenue : item.orders
         ),
         borderColor: "rgb(75, 192, 192)",
@@ -104,6 +111,7 @@ const Analytics = () => {
       },
     ],
   };
+
 
   const salesTrendOptions = {
     responsive: true,
@@ -119,10 +127,14 @@ const Analytics = () => {
   };
 
   const categoryData = {
-    labels: analyticsData.categoryPerformance.map((item) => item.category),
+    labels: (analyticsData.categoryPerformance || []).map(
+      (item) => item.category
+    ),
     datasets: [
       {
-        data: analyticsData.categoryPerformance.map((item) => item.percentage),
+        data: (analyticsData.categoryPerformance || []).map(
+          (item) => item.percentage
+        ),
         backgroundColor: [
           "rgba(255, 99, 132, 0.5)",
           "rgba(54, 162, 235, 0.5)",
@@ -152,7 +164,7 @@ const Analytics = () => {
   };
 
   const formatCurrency = (amount) => {
-    return 'LKR ' + amount.toLocaleString('en-LK');
+    return "LKR " + Number(amount).toLocaleString("en-LK");
   };
 
   const formatPercentage = (value) => {
@@ -164,42 +176,34 @@ const Analytics = () => {
       <h1 className="text-center mb-5">Analytics Dashboard</h1>
 
       <Row className="mb-4">
-        <Col md={3}>
+        <Col md={4}>
           <Card className="shadow-sm h-100">
             <Card.Body>
               <h6 className="text-muted mb-2">Total Revenue</h6>
               <h3>{formatCurrency(analyticsData.summary.totalRevenue)}</h3>
-              <small className="text-success">↑ 12% from last period</small>
+              
             </Card.Body>
           </Card>
         </Col>
-        <Col md={3}>
+        <Col md={4}>
           <Card className="shadow-sm h-100">
             <Card.Body>
               <h6 className="text-muted mb-2">Total Orders</h6>
               <h3>{analyticsData.summary.totalOrders}</h3>
-              <small className="text-success">↑ 8% from last period</small>
+             
             </Card.Body>
           </Card>
         </Col>
-        <Col md={3}>
+        <Col md={4}>
           <Card className="shadow-sm h-100">
             <Card.Body>
               <h6 className="text-muted mb-2">Average Order Value</h6>
               <h3>{formatCurrency(analyticsData.summary.averageOrderValue)}</h3>
-              <small className="text-success">↑ 5% from last period</small>
+            
             </Card.Body>
           </Card>
         </Col>
-        <Col md={3}>
-          <Card className="shadow-sm h-100">
-            <Card.Body>
-              <h6 className="text-muted mb-2">Conversion Rate</h6>
-              <h3>{formatPercentage(analyticsData.summary.conversionRate)}</h3>
-              <small className="text-success">↑ 2% from last period</small>
-            </Card.Body>
-          </Card>
-        </Col>
+        
       </Row>
 
       <Row className="mb-4">
@@ -209,16 +213,7 @@ const Analytics = () => {
               <div className="d-flex justify-content-between align-items-center mb-4">
                 <h5 className="mb-0">Sales Trend</h5>
                 <div className="d-flex gap-2">
-                  <Form.Select
-                    style={{ width: "150px" }}
-                    value={timeRange}
-                    onChange={(e) => setTimeRange(e.target.value)}
-                  >
-                    <option value="week">Last Week</option>
-                    <option value="month">Last Month</option>
-                    <option value="quarter">Last Quarter</option>
-                    <option value="year">Last Year</option>
-                  </Form.Select>
+                  
                   <Form.Select
                     style={{ width: "150px" }}
                     value={metricType}
@@ -258,16 +253,16 @@ const Analytics = () => {
                     <th>Product</th>
                     <th>Sales</th>
                     <th>Revenue</th>
-                    <th>Growth</th>
+                    
                   </tr>
                 </thead>
                 <tbody>
-                  {analyticsData.topProducts.map((product) => (
-                    <tr key={product.id}>
+                  {(analyticsData.topProducts || []).map((product) => (
+                    <tr key={product.product_id}>
                       <td>{product.name}</td>
                       <td>{product.sales}</td>
                       <td>{formatCurrency(product.revenue)}</td>
-                      <td className="text-success">↑ {product.growth}%</td>
+                     
                     </tr>
                   ))}
                 </tbody>
@@ -277,16 +272,14 @@ const Analytics = () => {
         </Col>
       </Row>
 
-      <Row>
+      {/* <Row>
         <Col md={12}>
           <Card className="shadow-sm">
             <Card.Body>
               <div className="d-flex justify-content-between align-items-center mb-4">
                 <h5 className="mb-0">Export Reports</h5>
                 <div className="d-flex gap-2">
-                  <Button variant="outline-primary">
-                    Export Sales Report
-                  </Button>
+                  <Button variant="outline-primary">Export Sales Report</Button>
                   <Button variant="outline-primary">
                     Export Product Report
                   </Button>
@@ -299,9 +292,9 @@ const Analytics = () => {
             </Card.Body>
           </Card>
         </Col>
-      </Row>
+      </Row> */}
     </Container>
   );
 };
 
-export default Analytics; 
+export default Analytics;

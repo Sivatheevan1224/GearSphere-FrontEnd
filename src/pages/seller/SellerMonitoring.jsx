@@ -47,7 +47,7 @@ const SellerMonitoring = () => {
     <>
       <div
         className="seller-monitoring"
-        style={{ minHeight: "100vh", background: "#f8f9fa" }}
+        style={{ minHeight: "60vh", background: "#f8f9fa" }}
       >
         <SellerNavbar />
         <h2 className="text-center fw-bold my-4">Monitoring Section</h2>
@@ -133,7 +133,7 @@ const SellerMonitoring = () => {
           </Card>
         </div>
       </div>
-      <Footer />
+      
     </>
   );
 };

@@ -131,18 +131,7 @@ function TechnicianNavbar({ fixed = "top" }) {
               >
                 Dashboard
               </Nav.Link>
-              <Nav.Link
-                as={Link}
-                to="/technician/services"
-                onClick={() => setExpanded(false)}
-                className={
-                  location.pathname === "/technician/services"
-                    ? "text-primary fw-bold"
-                    : ""
-                }
-              >
-                Services
-              </Nav.Link>
+              
               <Nav.Link
                 as={Link}
                 to="/technician/build-requests"
