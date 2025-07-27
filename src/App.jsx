@@ -53,7 +53,6 @@ import TechnicianDashboard from "./pages/technician/Dashboard";
 import TechnicianServices from "./pages/technician/Services";
 import BuildRequests from "./pages/technician/BuildRequests";
 import TechnicianProfile from "./pages/technician/Profile";
-import TechnicianReviews from "./pages/technician/Reviews";
 
 // Admin Pages
 import CustomerManagement from "./pages/admin/CustomerManagement";

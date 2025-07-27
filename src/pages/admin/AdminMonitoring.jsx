@@ -47,7 +47,7 @@ const AdminMonitoring = () => {
     <>
       <div
         className="admin-monitoring"
-        style={{ minHeight: "100vh", background: "#f8f9fa" }}
+        style={{ minHeight: "60vh", background: "#f8f9fa" }}
       >
         <AdminNavbar />
         <h2 className="text-center fw-bold my-4">Monitoring Section</h2>
@@ -133,7 +133,7 @@ const AdminMonitoring = () => {
           </Card>
         </div>
       </div>
-      <Footer />
+      
     </>
   );
 };
