@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Card, Button, Spinner, Table, Modal } from "react-bootstrap";
-import { toast } from 'react-toastify';
+import { toast } from "react-toastify";
 
 export default function AdminModerateReviews() {
   const [reviews, setReviews] = useState([]);
@@ -11,26 +11,29 @@ export default function AdminModerateReviews() {
   useEffect(() => {
     setLoading(true);
     fetch("http://localhost/gearsphere_api/GearSphere-BackEnd/getReviews.php")
-      .then(res => res.json())
-      .then(data => {
+      .then((res) => res.json())
+      .then((data) => {
         setReviews(Array.isArray(data) ? data : []);
         setLoading(false);
       })
-      .catch(e => {
+      .catch((e) => {
         setLoading(false);
       });
   }, []);
 
   const moderate = async (id, status) => {
     try {
-      const res = await fetch("http://localhost/gearsphere_api/GearSphere-BackEnd/moderateReview.php", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id, status }),
-      });
+      const res = await fetch(
+        "http://localhost/gearsphere_api/GearSphere-BackEnd/moderateReview.php",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ id, status }),
+        }
+      );
       const data = await res.json();
       if (data.success) {
-        setReviews(reviews.map(r => r.id === id ? { ...r, status } : r));
+        setReviews(reviews.map((r) => (r.id === id ? { ...r, status } : r)));
         toast.success(`Review ${status}`);
       } else {
         toast.error(data.error || "Error moderating review");
@@ -48,20 +51,23 @@ export default function AdminModerateReviews() {
   const confirmDelete = async () => {
     if (!deleteId) return;
     try {
-      const res = await fetch('http://localhost/gearsphere_api/GearSphere-BackEnd/deleteReview.php', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id: deleteId }),
-      });
+      const res = await fetch(
+        "http://localhost/gearsphere_api/GearSphere-BackEnd/deleteReview.php",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ id: deleteId }),
+        }
+      );
       const data = await res.json();
       if (data.success) {
-        setReviews(reviews.filter(r => r.id !== deleteId));
-        toast.success('Review deleted');
+        setReviews(reviews.filter((r) => r.id !== deleteId));
+        toast.success("Review deleted");
       } else {
-        toast.error(data.error || 'Error deleting review');
+        toast.error(data.error || "Error deleting review");
       }
     } catch (e) {
-      toast.error('Error deleting review');
+      toast.error("Error deleting review");
     }
     setShowDeleteModal(false);
     setDeleteId(null);
@@ -72,13 +78,16 @@ export default function AdminModerateReviews() {
       <Card>
         <Card.Body>
           <Card.Title>All Reviews</Card.Title>
-          {loading ? <Spinner animation="border" /> : (
+          {loading ? (
+            <Spinner animation="border" />
+          ) : (
             <Table striped bordered hover responsive>
               <thead>
                 <tr>
                   <th>Reviewer</th>
                   <th>Reviewer Type</th>
                   <th>Target</th>
+                  <th>Target Email</th>
                   <th>Rating</th>
                   <th>Comment</th>
                   <th>Status</th>
@@ -87,20 +96,53 @@ export default function AdminModerateReviews() {
               </thead>
               <tbody>
                 {reviews.length === 0 && (
-                  <tr><td colSpan={7}><span className="text-muted">No reviews found.</span></td></tr>
+                  <tr>
+                    <td colSpan={7}>
+                      <span className="text-muted">No reviews found.</span>
+                    </td>
+                  </tr>
                 )}
-                {reviews.map(r => (
+                {reviews.map((r) => (
                   <tr key={r.id}>
                     <td>{r.sender_name}</td>
                     <td>{r.sender_type}</td>
-                    <td>{r.target_type === 'system' ? 'System' : `Technician #${r.target_id}`}</td>
+                    <td>
+                      {r.target_type === "system"
+                        ? "System"
+                        : `Technician #${r.target_id}`}
+                    </td>
+                    <td>{r.target_email ? r.target_email : "-"}</td>
                     <td>{r.rating}★</td>
                     <td>{r.comment}</td>
                     <td>{r.status}</td>
                     <td>
-                      {r.status !== 'approved' && <Button size="sm" variant="success" className="me-1" onClick={() => moderate(r.id, 'approved')}>Approve</Button>}
-                      {r.status !== 'rejected' && <Button size="sm" variant="warning" className="me-1" onClick={() => moderate(r.id, 'rejected')}>Reject</Button>}
-                      <Button size="sm" variant="danger" onClick={() => handleDeleteClick(r.id)}>Delete</Button>
+                      {r.status !== "approved" && (
+                        <Button
+                          size="sm"
+                          variant="success"
+                          className="me-1"
+                          onClick={() => moderate(r.id, "approved")}
+                        >
+                          Approve
+                        </Button>
+                      )}
+                      {r.status !== "rejected" && (
+                        <Button
+                          size="sm"
+                          variant="warning"
+                          className="me-1"
+                          onClick={() => moderate(r.id, "rejected")}
+                        >
+                          Reject
+                        </Button>
+                      )}
+                      <Button
+                        size="sm"
+                        variant="danger"
+                        onClick={() => handleDeleteClick(r.id)}
+                      >
+                        Delete
+                      </Button>
                     </td>
                   </tr>
                 ))}
@@ -109,7 +151,11 @@ export default function AdminModerateReviews() {
           )}
         </Card.Body>
       </Card>
-      <Modal show={showDeleteModal} onHide={() => setShowDeleteModal(false)} centered>
+      <Modal
+        show={showDeleteModal}
+        onHide={() => setShowDeleteModal(false)}
+        centered
+      >
         <Modal.Header closeButton>
           <Modal.Title>Confirm Delete</Modal.Title>
         </Modal.Header>
@@ -125,4 +171,4 @@ export default function AdminModerateReviews() {
       </Modal>
     </div>
   );
-} 
+}

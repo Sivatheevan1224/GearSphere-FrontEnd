@@ -134,7 +134,7 @@ function AdminNavbar({ fixed = "top" }) {
               >
                 Analytics
               </Nav.Link>
-              <Nav.Link
+              {/* <Nav.Link
                 as={Link}
                 to="/admin/reports"
                 onClick={() => setExpanded(false)}
@@ -145,7 +145,7 @@ function AdminNavbar({ fixed = "top" }) {
                 }
               >
                 Reports
-              </Nav.Link>
+              </Nav.Link> */}
               <Nav.Link
                 as={Link}
                 to="/admin/messages"
