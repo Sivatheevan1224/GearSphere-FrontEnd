@@ -1,0 +1,62 @@
+.dashboard-section {
+  margin-bottom: 2.5rem;
+}
+
+.dashboard-title {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  color: #22223b;
+  letter-spacing: 0.5px;
+}
+
+.dashboard-table {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(34, 34, 59, 0.07);
+  overflow: hidden;
+}
+
+.dashboard-table th {
+  background: #22223b;
+  color: #fff;
+  font-weight: 600;
+  border: none;
+}
+
+.dashboard-table td {
+  background: #f8f9fa;
+  color: #22223b;
+  border: none;
+  vertical-align: middle;
+}
+
+.dashboard-table tr:nth-child(even) td {
+  background: #e9ecef;
+}
+
+.dashboard-table tbody tr:hover td {
+  background: #dbeafe;
+  transition: background 0.2s;
+}
+
+.dashboard-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-right: 0.5rem;
+  vertical-align: middle;
+}
+
+@media (max-width: 900px) {
+  .dashboard-title {
+    font-size: 1.3rem;
+  }
+  .dashboard-section {
+    margin-bottom: 1.2rem;
+  }
+  .dashboard-table {
+    font-size: 0.95rem;
+  }
+} 
