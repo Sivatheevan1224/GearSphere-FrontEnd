@@ -12,6 +12,7 @@ import {
 } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { CartContext } from "./CartContext";
+import LoadingScreen from "../../components/loading/LoadingScreen";
 
 function Marketplace() {
   const navigate = useNavigate();
@@ -24,8 +25,10 @@ function Marketplace() {
   const [hoveredProduct, setHoveredProduct] = useState(null);
   const productsPerPage = 12;
   const [products, setProducts] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    setIsLoading(true);
     fetch("http://localhost/gearsphere_api/GearSphere-BackEnd/getProducts.php")
       .then((res) => res.json())
       .then((data) => {
@@ -33,7 +36,8 @@ function Marketplace() {
           setProducts(data.products.map((p) => ({ ...p, id: p.product_id })));
         } else setProducts([]);
       })
-      .catch(() => setProducts([]));
+      .catch(() => setProducts([]))
+      .finally(() => setIsLoading(false));
   }, []);
 
   const categories = [
@@ -99,6 +103,16 @@ function Marketplace() {
     indexOfLastProduct
   );
   const totalPages = Math.ceil(filteredProducts.length / productsPerPage);
+
+  // Show loading screen while data is being fetched
+  if (isLoading) {
+    return (
+      <LoadingScreen
+        message="Loading Marketplace"
+        subMessage="Fetching available PC components"
+      />
+    );
+  }
 
   return (
     <Container className="py-5">

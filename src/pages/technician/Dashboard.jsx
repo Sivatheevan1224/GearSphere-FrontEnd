@@ -1,19 +1,29 @@
-import React, { useState, useEffect } from 'react';
-import { Container, Row, Col, Card, Button, Form, InputGroup, Accordion } from 'react-bootstrap';
-import { Link } from 'react-router-dom';
-import { 
-  Calendar, 
-  CurrencyDollar, 
-  Star, 
-  Tools, 
-  People, 
-  Clock 
-} from 'react-bootstrap-icons';
-import { Envelope, Telephone, GeoAlt } from 'react-bootstrap-icons';
-import logo from '../../images/logo.PNG';
-import pcpic2 from '../../images/pcpic2.jpeg';
-import { toast } from 'react-toastify';
-import axios from 'axios';
+import React, { useState, useEffect } from "react";
+import {
+  Container,
+  Row,
+  Col,
+  Card,
+  Button,
+  Form,
+  InputGroup,
+  Accordion,
+} from "react-bootstrap";
+import { Link } from "react-router-dom";
+import {
+  Calendar,
+  CurrencyDollar,
+  Star,
+  Tools,
+  People,
+  Clock,
+} from "react-bootstrap-icons";
+import { Envelope, Telephone, GeoAlt } from "react-bootstrap-icons";
+import logo from "../../images/logo.PNG";
+import pcpic2 from "../../images/pcpic2.jpeg";
+import { toast } from "react-toastify";
+import axios from "axios";
+import LoadingScreen from "../../components/loading/LoadingScreen";
 
 function TechnicianDashboard() {
   const [stats, setStats] = useState({
@@ -22,27 +32,33 @@ function TechnicianDashboard() {
     totalEarnings: 0,
     averageRating: 0,
     activeServices: 0,
-    totalCustomers: 0
+    totalCustomers: 0,
   });
+  const [isLoading, setIsLoading] = useState(true);
 
   // Mock data - Replace with actual API call
   useEffect(() => {
-    setStats({
-      pendingAppointments: 5,
-      completedAppointments: 28,
-      totalEarnings: 125000,
-      averageRating: 4.8,
-      activeServices: 3,
-      totalCustomers: 15
-    });
+    setIsLoading(true);
+    // Simulate API call delay
+    setTimeout(() => {
+      setStats({
+        pendingAppointments: 5,
+        completedAppointments: 28,
+        totalEarnings: 125000,
+        averageRating: 4.8,
+        activeServices: 3,
+        totalCustomers: 15,
+      });
+      setIsLoading(false);
+    }, 1000);
   }, []);
 
   // Contact form state
-  const [contactFirstName, setContactFirstName] = useState('');
-  const [contactLastName, setContactLastName] = useState('');
-  const [contactEmail, setContactEmail] = useState('');
-  const [contactSubject, setContactSubject] = useState('');
-  const [contactMessage, setContactMessage] = useState('');
+  const [contactFirstName, setContactFirstName] = useState("");
+  const [contactLastName, setContactLastName] = useState("");
+  const [contactEmail, setContactEmail] = useState("");
+  const [contactSubject, setContactSubject] = useState("");
+  const [contactMessage, setContactMessage] = useState("");
   const [contactLoading, setContactLoading] = useState(false);
 
   const StatCard = ({ title, value, icon: Icon, color }) => (
@@ -61,39 +77,74 @@ function TechnicianDashboard() {
     </Card>
   );
 
+  // Show loading screen while data is being fetched
+  if (isLoading) {
+    return (
+      <LoadingScreen
+        message="Loading Technician Dashboard"
+        subMessage="Fetching your appointment data"
+      />
+    );
+  }
+
   return (
     <>
       {/* Hero Section */}
-      <section className="py-0 bg-black text-white position-relative overflow-hidden mb-5" style={{borderTopLeftRadius: 0, borderTopRightRadius: 0, borderBottomLeftRadius: '2rem', borderBottomRightRadius: '2rem', boxShadow: '0 4px 32px rgba(0,0,0,0.10)', marginTop: '-1px', marginBottom: 0, position: 'relative', paddingTop: 0}}>
+      <section
+        className="py-0 bg-black text-white position-relative overflow-hidden mb-5"
+        style={{
+          borderTopLeftRadius: 0,
+          borderTopRightRadius: 0,
+          borderBottomLeftRadius: "2rem",
+          borderBottomRightRadius: "2rem",
+          boxShadow: "0 4px 32px rgba(0,0,0,0.10)",
+          marginTop: "-1px",
+          marginBottom: 0,
+          position: "relative",
+          paddingTop: 0,
+        }}
+      >
         {/* Sharp background image (no blur) */}
         <div
           className="position-absolute top-0 start-0 w-100 h-100"
           style={{
             backgroundImage: `url(${pcpic2})`,
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
+            backgroundSize: "cover",
+            backgroundPosition: "center",
             zIndex: 0,
-            opacity: 0.7
+            opacity: 0.7,
           }}
         ></div>
         {/* Overlay for darkening and contrast */}
         <div
           className="position-absolute top-0 start-0 w-100 h-100"
           style={{
-            background: "radial-gradient(circle at 30% 50%, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0) 70%)",
+            background:
+              "radial-gradient(circle at 30% 50%, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0) 70%)",
             zIndex: 1,
           }}
         ></div>
         <Container className="py-0 position-relative" style={{ zIndex: 2 }}>
           <Row className="align-items-center">
             <Col lg={6} className="mb-5 mb-lg-0">
-              <h1 className="display-3 fw-bold mb-4 rise-up" style={{ animationDelay: '0s' }}>
-                Welcome to Your Dashboard, <span className="text-primary">GearSphere Technician</span>
+              <h1
+                className="display-3 fw-bold mb-4 rise-up"
+                style={{ animationDelay: "0s" }}
+              >
+                Welcome to Your Dashboard,{" "}
+                <span className="text-primary">GearSphere Technician</span>
               </h1>
-              <p className="lead mb-5 rise-up" style={{ animationDelay: '0.3s' }}>
-                Manage your appointments, services, earnings, and more. Deliver the best PC building experience!
+              <p
+                className="lead mb-5 rise-up"
+                style={{ animationDelay: "0.3s" }}
+              >
+                Manage your appointments, services, earnings, and more. Deliver
+                the best PC building experience!
               </p>
-              <div className="d-flex gap-3 rise-up" style={{ animationDelay: '0.6s' }}>
+              <div
+                className="d-flex gap-3 rise-up"
+                style={{ animationDelay: "0.6s" }}
+              >
                 {/* Add dashboard-specific buttons here if needed */}
               </div>
             </Col>
@@ -159,67 +210,109 @@ function TechnicianDashboard() {
         </Row>
 
         <Row className="mt-4">
-          <Col>
-            
-          </Col>
+          <Col></Col>
         </Row>
       </Container>
       {/* Contact Section */}
-      <section className="py-0 bg-white" style={{borderRadius: '2rem', boxShadow: '0 4px 32px rgba(0,0,0,0.10)', marginTop: '2rem', marginBottom: 0}}>
+      <section
+        className="py-0 bg-white"
+        style={{
+          borderRadius: "2rem",
+          boxShadow: "0 4px 32px rgba(0,0,0,0.10)",
+          marginTop: "2rem",
+          marginBottom: 0,
+        }}
+      >
         <Container>
           <h1 className="text-center mb-5">Contact Us</h1>
           <Row className="mb-5">
             <Col lg={6} className="mb-4 mb-lg-0">
               <h2 className="mb-4">Get In Touch</h2>
               <p className="mb-4">
-                Have questions about your appointments or need support? Fill out the form and our team will get back to you as soon as possible.
+                Have questions about your appointments or need support? Fill out
+                the form and our team will get back to you as soon as possible.
               </p>
-              <Form onSubmit={async (e) => {
-                e.preventDefault();
-                if (!contactFirstName || !contactLastName || !contactEmail || !contactSubject || !contactMessage) {
-                  toast.error('Please fill in all fields.');
-                  return;
-                }
-                setContactLoading(true);
-                try {
-                  const res = await axios.post('http://localhost/gearsphere_api/GearSphere-BackEnd/addMessage.php', {
-                    name: contactFirstName + ' ' + contactLastName,
-                    email: contactEmail,
-                    subject: contactSubject,
-                    message: contactMessage
-                  });
-                  if (res.data.success) {
-                    toast.success('Thanks for contacting admin!');
-                    setContactFirstName(''); setContactLastName(''); setContactEmail(''); setContactSubject(''); setContactMessage('');
-                  } else {
-                    toast.error(res.data.message || 'Failed to send message.');
+              <Form
+                onSubmit={async (e) => {
+                  e.preventDefault();
+                  if (
+                    !contactFirstName ||
+                    !contactLastName ||
+                    !contactEmail ||
+                    !contactSubject ||
+                    !contactMessage
+                  ) {
+                    toast.error("Please fill in all fields.");
+                    return;
                   }
-                } catch (err) {
-                  toast.error('Failed to send message.');
-                }
-                setContactLoading(false);
-              }}>
+                  setContactLoading(true);
+                  try {
+                    const res = await axios.post(
+                      "http://localhost/gearsphere_api/GearSphere-BackEnd/addMessage.php",
+                      {
+                        name: contactFirstName + " " + contactLastName,
+                        email: contactEmail,
+                        subject: contactSubject,
+                        message: contactMessage,
+                      }
+                    );
+                    if (res.data.success) {
+                      toast.success("Thanks for contacting admin!");
+                      setContactFirstName("");
+                      setContactLastName("");
+                      setContactEmail("");
+                      setContactSubject("");
+                      setContactMessage("");
+                    } else {
+                      toast.error(
+                        res.data.message || "Failed to send message."
+                      );
+                    }
+                  } catch (err) {
+                    toast.error("Failed to send message.");
+                  }
+                  setContactLoading(false);
+                }}
+              >
                 <Row>
                   <Col md={6}>
                     <Form.Group className="mb-3">
                       <Form.Label>First Name</Form.Label>
-                      <Form.Control type="text" placeholder="Enter first name" value={contactFirstName} onChange={e => setContactFirstName(e.target.value)} />
+                      <Form.Control
+                        type="text"
+                        placeholder="Enter first name"
+                        value={contactFirstName}
+                        onChange={(e) => setContactFirstName(e.target.value)}
+                      />
                     </Form.Group>
                   </Col>
                   <Col md={6}>
                     <Form.Group className="mb-3">
                       <Form.Label>Last Name</Form.Label>
-                      <Form.Control type="text" placeholder="Enter last name" value={contactLastName} onChange={e => setContactLastName(e.target.value)} />
+                      <Form.Control
+                        type="text"
+                        placeholder="Enter last name"
+                        value={contactLastName}
+                        onChange={(e) => setContactLastName(e.target.value)}
+                      />
                     </Form.Group>
                   </Col>
                 </Row>
                 <Form.Group className="mb-3">
                   <Form.Label>Email Address</Form.Label>
-                  <Form.Control type="email" placeholder="Enter email" value={contactEmail} onChange={e => setContactEmail(e.target.value)} />
+                  <Form.Control
+                    type="email"
+                    placeholder="Enter email"
+                    value={contactEmail}
+                    onChange={(e) => setContactEmail(e.target.value)}
+                  />
                 </Form.Group>
                 <Form.Group className="mb-3">
                   <Form.Label>Subject</Form.Label>
-                  <Form.Select value={contactSubject} onChange={e => setContactSubject(e.target.value)}>
+                  <Form.Select
+                    value={contactSubject}
+                    onChange={(e) => setContactSubject(e.target.value)}
+                  >
                     <option value="">Select a subject</option>
                     <option>Appointment Inquiry</option>
                     <option>Technical Support</option>
@@ -229,10 +322,21 @@ function TechnicianDashboard() {
                 </Form.Group>
                 <Form.Group className="mb-3">
                   <Form.Label>Message</Form.Label>
-                  <Form.Control as="textarea" rows={5} placeholder="Enter your message" value={contactMessage} onChange={e => setContactMessage(e.target.value)} />
+                  <Form.Control
+                    as="textarea"
+                    rows={5}
+                    placeholder="Enter your message"
+                    value={contactMessage}
+                    onChange={(e) => setContactMessage(e.target.value)}
+                  />
                 </Form.Group>
-                <Button variant="primary" type="submit" className="w-100" disabled={contactLoading}>
-                  {contactLoading ? 'Sending...' : 'Send Message'}
+                <Button
+                  variant="primary"
+                  type="submit"
+                  className="w-100"
+                  disabled={contactLoading}
+                >
+                  {contactLoading ? "Sending..." : "Send Message"}
                 </Button>
               </Form>
             </Col>
@@ -268,12 +372,24 @@ function TechnicianDashboard() {
                         </div>
                         <div>
                           <h5 className="mb-1">Address</h5>
-                          <p className="mb-0">Pasara Road, Badulla City, 90 000</p>
+                          <p className="mb-0">
+                            Pasara Road, Badulla City, 90 000
+                          </p>
                         </div>
                       </div>
                       {/* Logo at bottom */}
                       <div className="d-flex justify-content-center mt-4">
-                        <img src={logo} alt="GearSphere Logo" style={{height: 60, width: 'auto', background: '#fff', padding: 4, borderRadius: 8}} />
+                        <img
+                          src={logo}
+                          alt="GearSphere Logo"
+                          style={{
+                            height: 60,
+                            width: "auto",
+                            background: "#fff",
+                            padding: 4,
+                            borderRadius: 8,
+                          }}
+                        />
                       </div>
                     </Card.Body>
                   </Card>
@@ -287,4 +403,4 @@ function TechnicianDashboard() {
   );
 }
 
-export default TechnicianDashboard; 
+export default TechnicianDashboard;

@@ -35,7 +35,7 @@ const useLayoutSessionValidation = (requiredUserType) => {
           sessionStorage.removeItem('original_user_id');
           
           console.log('Session expired, redirecting to home page');
-          navigate('/');
+          navigate('/', { replace: true });
           return;
         }
 
@@ -54,11 +54,11 @@ const useLayoutSessionValidation = (requiredUserType) => {
           setIsAuthenticated(true);
         } else {
           // Wrong user type, redirect to appropriate dashboard
-          navigate('/');
+          navigate('/', { replace: true });
         }
       } catch (error) {
         console.error('Session validation error:', error);
-        navigate('/');
+        navigate('/', { replace: true });
       } finally {
         setIsLoading(false);
       }

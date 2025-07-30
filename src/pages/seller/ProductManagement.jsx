@@ -1,20 +1,34 @@
-import React, { useState, useEffect } from 'react';
-import { Container, Row, Col, Card, Table, Button, Form, Modal, Badge, Pagination, Spinner, Alert } from 'react-bootstrap';
-import { toast, ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-import ImagePreview from '../../components/ImagePreview';
-import CPUForm from './productForms/CPUForm';
-import CPUCoolerForm from './productForms/CPUCoolerForm';
-import MotherboardForm from './productForms/MotherboardForm';
-import MemoryForm from './productForms/MemoryForm';
-import StorageForm from './productForms/StorageForm';
-import VideoCardForm from './productForms/VideoCardForm';
-import PowerSupplyForm from './productForms/PowerSupplyForm';
-import OperatingSystemForm from './productForms/OperatingSystemForm';
-import MonitorForm from './productForms/MonitorForm';
-import PCCaseForm from './productForms/PCCaseForm';
-import GeneralProductForm from './productForms/GeneralProductForm';
-import GeneralProductEditForm from './editForms/GeneralProductEditForm';
+import React, { useState, useEffect } from "react";
+import {
+  Container,
+  Row,
+  Col,
+  Card,
+  Table,
+  Button,
+  Form,
+  Modal,
+  Badge,
+  Pagination,
+  Spinner,
+  Alert,
+} from "react-bootstrap";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import LoadingScreen from "../../components/loading/LoadingScreen";
+import ImagePreview from "../../components/ImagePreview";
+import CPUForm from "./productForms/CPUForm";
+import CPUCoolerForm from "./productForms/CPUCoolerForm";
+import MotherboardForm from "./productForms/MotherboardForm";
+import MemoryForm from "./productForms/MemoryForm";
+import StorageForm from "./productForms/StorageForm";
+import VideoCardForm from "./productForms/VideoCardForm";
+import PowerSupplyForm from "./productForms/PowerSupplyForm";
+import OperatingSystemForm from "./productForms/OperatingSystemForm";
+import MonitorForm from "./productForms/MonitorForm";
+import PCCaseForm from "./productForms/PCCaseForm";
+import GeneralProductForm from "./productForms/GeneralProductForm";
+import GeneralProductEditForm from "./editForms/GeneralProductEditForm";
 
 const ProductManagement = () => {
   const [currentPage, setCurrentPage] = useState(1);
@@ -23,10 +37,10 @@ const ProductManagement = () => {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [editProduct, setEditProduct] = useState(null);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [categoryFilter, setCategoryFilter] = useState('all');
+  const [searchQuery, setSearchQuery] = useState("");
+  const [categoryFilter, setCategoryFilter] = useState("all");
   const productsPerPage = 10;
-  
+
   // API state
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -34,47 +48,51 @@ const ProductManagement = () => {
   const [submitting, setSubmitting] = useState(false);
 
   // Backend API URL
-  const API_BASE_URL = 'http://localhost/gearsphere_api/GearSphere-Backend';
+  const API_BASE_URL = "http://localhost/gearsphere_api/GearSphere-Backend";
 
   const categories = [
-    'CPU',
-    'CPU Cooler',
-    'Motherboard',
-    'Memory',
-    'Storage',
-    'Video Card',
-    'Power Supply',
-    'Operating System',
-    'Monitor',
-    'PC Case',
-    'Keyboard',
-    'Mouse',
-    'Headset',
-    'Microphone',
-    'Webcam',
-    'Speakers',
-    'Network Card',
-    'Sound Card',
-    'Cables',
-    'Thermal Paste',
-    'Fans'
+    "CPU",
+    "CPU Cooler",
+    "Motherboard",
+    "Memory",
+    "Storage",
+    "Video Card",
+    "Power Supply",
+    "Operating System",
+    "Monitor",
+    "PC Case",
+    "Keyboard",
+    "Mouse",
+    "Headset",
+    "Microphone",
+    "Webcam",
+    "Speakers",
+    "Network Card",
+    "Sound Card",
+    "Cables",
+    "Thermal Paste",
+    "Fans",
   ];
 
   const [selectedType, setSelectedType] = useState("");
   const [addProductFormKey, setAddProductFormKey] = useState(0);
 
   const productTypeOptions = [
-    { key: 'general', label: 'General Product', component: GeneralProductForm },
-    { key: 'cpu', label: 'CPU', component: CPUForm },
-    { key: 'cpu_cooler', label: 'CPU Cooler', component: CPUCoolerForm },
-    { key: 'motherboard', label: 'Motherboard', component: MotherboardForm },
-    { key: 'memory', label: 'Memory', component: MemoryForm },
-    { key: 'storage', label: 'Storage', component: StorageForm },
-    { key: 'video_card', label: 'Video Card', component: VideoCardForm },
-    { key: 'power_supply', label: 'Power Supply', component: PowerSupplyForm },
-    { key: 'operating_system', label: 'Operating System', component: OperatingSystemForm },
-    { key: 'monitor', label: 'Monitor', component: MonitorForm },
-    { key: 'pc_case', label: 'PC Case', component: PCCaseForm },
+    { key: "general", label: "General Product", component: GeneralProductForm },
+    { key: "cpu", label: "CPU", component: CPUForm },
+    { key: "cpu_cooler", label: "CPU Cooler", component: CPUCoolerForm },
+    { key: "motherboard", label: "Motherboard", component: MotherboardForm },
+    { key: "memory", label: "Memory", component: MemoryForm },
+    { key: "storage", label: "Storage", component: StorageForm },
+    { key: "video_card", label: "Video Card", component: VideoCardForm },
+    { key: "power_supply", label: "Power Supply", component: PowerSupplyForm },
+    {
+      key: "operating_system",
+      label: "Operating System",
+      component: OperatingSystemForm,
+    },
+    { key: "monitor", label: "Monitor", component: MonitorForm },
+    { key: "pc_case", label: "PC Case", component: PCCaseForm },
   ];
 
   // Fetch products from backend API
@@ -82,22 +100,22 @@ const ProductManagement = () => {
     try {
       setLoading(true);
       setError(null);
-      
-      console.log('Fetching products from:', `${API_BASE_URL}/getProducts.php`);
-      
+
+      console.log("Fetching products from:", `${API_BASE_URL}/getProducts.php`);
+
       const response = await fetch(`${API_BASE_URL}/getProducts.php`);
-      console.log('Response status:', response.status);
-      
+      console.log("Response status:", response.status);
+
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-      
+
       const data = await response.json();
-      console.log('API response:', data);
-      
+      console.log("API response:", data);
+
       if (data.success) {
         // Transform the data to match frontend expectations
-        const transformedProducts = data.products.map(product => ({
+        const transformedProducts = data.products.map((product) => ({
           id: product.product_id,
           name: product.name,
           category: product.category,
@@ -106,20 +124,22 @@ const ProductManagement = () => {
           status: product.status,
           rating: 0, // You might want to add rating field to your database
           sales: 0, // You might want to add sales field to your database
-          image: product.image_url ? `${API_BASE_URL}/${product.image_url}` : '/placeholder.svg?height=200&width=200',
+          image: product.image_url
+            ? `${API_BASE_URL}/${product.image_url}`
+            : "/placeholder.svg?height=200&width=200",
           description: product.description,
           manufacturer: product.manufacturer,
-          specific_details: product.specific_details
+          specific_details: product.specific_details,
         }));
-        
-        console.log('Transformed products:', transformedProducts);
+
+        console.log("Transformed products:", transformedProducts);
         setProducts(transformedProducts);
       } else {
-        setError(data.message || 'Failed to fetch products');
+        setError(data.message || "Failed to fetch products");
       }
     } catch (err) {
-      console.error('Error fetching products:', err);
-      setError('Error connecting to server: ' + err.message);
+      console.error("Error fetching products:", err);
+      setError("Error connecting to server: " + err.message);
     } finally {
       setLoading(false);
     }
@@ -132,89 +152,89 @@ const ProductManagement = () => {
 
   const getStatusBadge = (status) => {
     const variants = {
-      'Active': 'success',
-      'Inactive': 'secondary',
-      'Out of Stock': 'warning',
-      'Discontinued': 'danger'
+      Active: "success",
+      Inactive: "secondary",
+      "Out of Stock": "warning",
+      Discontinued: "danger",
     };
-    return <Badge bg={variants[status] || 'secondary'}>{status}</Badge>;
+    return <Badge bg={variants[status] || "secondary"}>{status}</Badge>;
   };
 
   const handleAddProduct = async (productData) => {
     try {
       setSubmitting(true);
-      
-      console.log('Adding product:', productData);
-      
+
+      console.log("Adding product:", productData);
+
       // Create FormData for file upload
       const formData = new FormData();
-      
+
       // Add all form data
-      Object.keys(productData).forEach(key => {
-        if (key === 'image' && productData[key]) {
-          formData.append('image', productData[key]);
-          console.log('Added image file:', productData[key].name);
-        } else if (key !== 'image') {
+      Object.keys(productData).forEach((key) => {
+        if (key === "image" && productData[key]) {
+          formData.append("image", productData[key]);
+          console.log("Added image file:", productData[key].name);
+        } else if (key !== "image") {
           formData.append(key, productData[key]);
         }
       });
-      
+
       // Add product type based on category
       const categoryToType = {
-        'CPU': 'cpu',
-        'CPU Cooler': 'cpu_cooler',
-        'Motherboard': 'motherboard',
-        'Memory': 'memory',
-        'Storage': 'storage',
-        'Video Card': 'video_card',
-        'Power Supply': 'power_supply',
-        'Operating System': 'operating_system',
-        'Monitor': 'monitor',
-        'PC Case': 'pc_case'
+        CPU: "cpu",
+        "CPU Cooler": "cpu_cooler",
+        Motherboard: "motherboard",
+        Memory: "memory",
+        Storage: "storage",
+        "Video Card": "video_card",
+        "Power Supply": "power_supply",
+        "Operating System": "operating_system",
+        Monitor: "monitor",
+        "PC Case": "pc_case",
       };
-      
-      const productType = categoryToType[productData.category] || 'general';
-      formData.append('type', productType);
-      
-      console.log('Sending request to:', `${API_BASE_URL}/addProduct.php`);
-      
+
+      const productType = categoryToType[productData.category] || "general";
+      formData.append("type", productType);
+
+      console.log("Sending request to:", `${API_BASE_URL}/addProduct.php`);
+
       const response = await fetch(`${API_BASE_URL}/addProduct.php`, {
-        method: 'POST',
-        body: formData
+        method: "POST",
+        body: formData,
       });
-      
-      console.log('Add product response status:', response.status);
-      
+
+      console.log("Add product response status:", response.status);
+
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-      
+
       const result = await response.json();
-      console.log('Add product result:', result);
-      
+      console.log("Add product result:", result);
+
       if (result.success) {
         // Refresh products list
         await fetchProducts();
         setShowAddModal(false);
-        setSelectedType('');
-        setAddProductFormKey(prev => prev + 1);
-        
+        setSelectedType("");
+        setAddProductFormKey((prev) => prev + 1);
+
         // Show success toast
         toast.success(`Product "${productData.name}" added successfully!`, {
           autoClose: 2000,
-          hideProgressBar: false
+          hideProgressBar: false,
         });
       } else {
-        toast.error(result.message || 'Failed to add product', {
+        toast.error(result.message || "Failed to add product", {
           autoClose: 2000,
-          hideProgressBar: false
+          hideProgressBar: false,
         });
       }
     } catch (err) {
-      console.error('Error adding product:', err);
-      toast.error('Error adding product: ' + err.message, {
+      console.error("Error adding product:", err);
+      toast.error("Error adding product: " + err.message, {
         autoClose: 2000,
-        hideProgressBar: false
+        hideProgressBar: false,
       });
     } finally {
       setSubmitting(false);
@@ -224,90 +244,93 @@ const ProductManagement = () => {
   const handleEditProduct = async (productData) => {
     try {
       setSubmitting(true);
-      
-      console.log('Editing product data:', productData);
-      console.log('Edit product ID:', productData.id);
-      console.log('Edit product name:', productData.name);
-      console.log('Edit product category:', productData.category);
-      
+
+      console.log("Editing product data:", productData);
+      console.log("Edit product ID:", productData.id);
+      console.log("Edit product name:", productData.name);
+      console.log("Edit product category:", productData.category);
+
       // Create FormData for file upload
       const formData = new FormData();
-      
+
       // Add product ID
-      formData.append('product_id', productData.id);
-      
+      formData.append("product_id", productData.id);
+
       // Add all form data
-      Object.keys(productData).forEach(key => {
-        if (key === 'image' && productData[key]) {
-          formData.append('image', productData[key]);
-        } else if (key !== 'image' && key !== 'id') {
+      Object.keys(productData).forEach((key) => {
+        if (key === "image" && productData[key]) {
+          formData.append("image", productData[key]);
+        } else if (key !== "image" && key !== "id") {
           formData.append(key, productData[key]);
         }
       });
-      
+
       // Add product type based on category
       const categoryToType = {
-        'CPU': 'cpu',
-        'CPU Cooler': 'cpu_cooler',
-        'Motherboard': 'motherboard',
-        'Memory': 'memory',
-        'Storage': 'storage',
-        'Video Card': 'video_card',
-        'Power Supply': 'power_supply',
-        'Operating System': 'operating_system',
-        'Monitor': 'monitor',
-        'PC Case': 'pc_case'
+        CPU: "cpu",
+        "CPU Cooler": "cpu_cooler",
+        Motherboard: "motherboard",
+        Memory: "memory",
+        Storage: "storage",
+        "Video Card": "video_card",
+        "Power Supply": "power_supply",
+        "Operating System": "operating_system",
+        Monitor: "monitor",
+        "PC Case": "pc_case",
       };
-      
-      const productType = categoryToType[productData.category] || 'general';
-      formData.append('type', productType);
-      
+
+      const productType = categoryToType[productData.category] || "general";
+      formData.append("type", productType);
+
       // Debug: Log what's being sent
-      console.log('FormData contents:');
+      console.log("FormData contents:");
       for (let [key, value] of formData.entries()) {
         console.log(`${key}: ${value}`);
       }
-      
-      console.log('Sending edit request to:', `${API_BASE_URL}/updateProduct.php`);
-      
+
+      console.log(
+        "Sending edit request to:",
+        `${API_BASE_URL}/updateProduct.php`
+      );
+
       const response = await fetch(`${API_BASE_URL}/updateProduct.php`, {
-        method: 'POST',
-        body: formData
+        method: "POST",
+        body: formData,
       });
-      
-      console.log('Edit response status:', response.status);
-      
+
+      console.log("Edit response status:", response.status);
+
       const result = await response.json();
-      console.log('Edit result:', result);
-      
+      console.log("Edit result:", result);
+
       // Debug: Check if result has success property
-      console.log('Result success property:', result.success);
-      console.log('Result message:', result.message);
-      
+      console.log("Result success property:", result.success);
+      console.log("Result message:", result.message);
+
       if (result.success) {
-        console.log('✅ Edit successful - showing success toast');
+        console.log("✅ Edit successful - showing success toast");
         // Refresh products list
         await fetchProducts();
         setShowEditModal(false);
         setEditProduct(null);
-        
+
         // Show success toast
         toast.success(`Product "${productData.name}" updated successfully!`, {
           autoClose: 2000,
-          hideProgressBar: false
+          hideProgressBar: false,
         });
       } else {
-        console.log('❌ Edit failed - showing error toast');
-        toast.error(result.message || 'Failed to update product', {
+        console.log("❌ Edit failed - showing error toast");
+        toast.error(result.message || "Failed to update product", {
           autoClose: 2000,
-          hideProgressBar: false
+          hideProgressBar: false,
         });
       }
     } catch (err) {
-      console.error('Error updating product:', err);
-      toast.error('Error updating product: ' + err.message, {
+      console.error("Error updating product:", err);
+      toast.error("Error updating product: " + err.message, {
         autoClose: 2000,
-        hideProgressBar: false
+        hideProgressBar: false,
       });
     } finally {
       setSubmitting(false);
@@ -374,14 +397,10 @@ const ProductManagement = () => {
 
   if (loading) {
     return (
-      <Container className="py-5">
-        <div className="text-center">
-          <Spinner animation="border" role="status">
-            <span className="visually-hidden">Loading...</span>
-          </Spinner>
-          <p className="mt-3">Loading products...</p>
-        </div>
-      </Container>
+      <LoadingScreen
+        message="Loading Products"
+        submessage="Fetching product management data"
+      />
     );
   }
 

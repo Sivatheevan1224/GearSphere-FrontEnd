@@ -12,6 +12,7 @@ import {
 } from "react-bootstrap";
 import { Hdd } from "react-bootstrap-icons";
 import CustomerNavbar from "../../pageNavbars/CustomerNavbar";
+import LoadingScreen from "../../../components/loading/LoadingScreen";
 import { toast } from "react-toastify";
 import axios from "axios";
 
@@ -179,6 +180,12 @@ export default function StoragePage() {
 
   return (
     <>
+      {loading && (
+        <LoadingScreen
+          message="Loading Storage"
+          subMessage="Fetching available storage devices"
+        />
+      )}
       <CustomerNavbar />
       <Container className="py-5">
         <style>{selectStorageHeadingStyle}</style>
@@ -221,13 +228,7 @@ export default function StoragePage() {
             </tr>
           </thead>
           <tbody>
-            {loading ? (
-              <tr>
-                <td colSpan="9" className="text-center text-muted">
-                  Loading...
-                </td>
-              </tr>
-            ) : error ? (
+            {error ? (
               <tr>
                 <td colSpan="9" className="text-center text-danger">
                   {error}

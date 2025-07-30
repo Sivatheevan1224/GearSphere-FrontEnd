@@ -12,6 +12,7 @@ import { Star, StarFill, GeoAlt } from "react-bootstrap-icons";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { useLocation, useNavigate } from "react-router-dom";
+import LoadingScreen from "../../components/loading/LoadingScreen";
 
 function FindTechnician() {
   const location = useLocation();
@@ -182,7 +183,15 @@ function FindTechnician() {
       );
   };
 
-  if (loading) return <div>Loading technicians...</div>;
+  // Show loading screen while data is being fetched
+  if (loading) {
+    return (
+      <LoadingScreen
+        message="Finding Technicians"
+        subMessage="Searching for available PC specialists"
+      />
+    );
+  }
   if (error) return <div>{error}</div>;
 
   const cardStyle = {

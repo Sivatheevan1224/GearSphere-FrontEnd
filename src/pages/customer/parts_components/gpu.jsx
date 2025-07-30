@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Container, Button, Form, Alert, Table } from "react-bootstrap";
 import { Display } from "react-bootstrap-icons";
 import CustomerNavbar from "../../pageNavbars/CustomerNavbar";
+import LoadingScreen from "../../../components/loading/LoadingScreen";
 import { toast } from "react-toastify";
 import axios from "axios";
 
@@ -158,6 +159,12 @@ export default function GPUPage() {
 
   return (
     <>
+      {loading && (
+        <LoadingScreen
+          message="Loading GPUs"
+          subMessage="Fetching available graphics cards"
+        />
+      )}
       <CustomerNavbar />
       <Container className="py-5">
         <style>{selectGpuHeadingStyle}</style>
@@ -186,90 +193,82 @@ export default function GPUPage() {
         </div>
         <style>{gpuTableResponsiveStyle}</style>
         {error && <Alert variant="danger">{error}</Alert>}
-        {loading ? (
-          <div className="text-center my-5">
-            <div className="spinner-border" role="status">
-              <span className="visually-hidden">Loading...</span>
-            </div>
-          </div>
-        ) : (
-          <Table striped bordered hover responsive className="gpu-table-sm">
-            <thead>
+        <Table striped bordered hover responsive className="gpu-table-sm">
+          <thead>
+            <tr>
+              <th></th>
+              <th>Image</th>
+              <th>Name</th>
+              <th>Chipset</th>
+              <th>Memory</th>
+              <th>Memory Type</th>
+              <th>Core Clock</th>
+              <th>Boost Clock</th>
+              <th>Interface</th>
+              <th>Length</th>
+              <th>TDP</th>
+              <th>Cooling</th>
+              <th>Price</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            {sortedGpus.length === 0 ? (
               <tr>
-                <th></th>
-                <th>Image</th>
-                <th>Name</th>
-                <th>Chipset</th>
-                <th>Memory</th>
-                <th>Memory Type</th>
-                <th>Core Clock</th>
-                <th>Boost Clock</th>
-                <th>Interface</th>
-                <th>Length</th>
-                <th>TDP</th>
-                <th>Cooling</th>
-                <th>Price</th>
-                <th></th>
+                <td colSpan="14" className="text-center text-muted">
+                  No GPUs available.
+                </td>
               </tr>
-            </thead>
-            <tbody>
-              {sortedGpus.length === 0 ? (
-                <tr>
-                  <td colSpan="14" className="text-center text-muted">
-                    No GPUs available.
+            ) : (
+              sortedGpus.map((gpu) => (
+                <tr key={gpu.product_id}>
+                  <td>
+                    <Form.Check
+                      type="checkbox"
+                      checked={compareSelection.some(
+                        (item) => item.product_id === gpu.product_id
+                      )}
+                      onChange={() => handleToggleCompare(gpu)}
+                    />
+                  </td>
+                  <td className="text-center align-middle">
+                    <img
+                      src={
+                        gpu.image_url
+                          ? `http://localhost/gearsphere_api/GearSphere-BackEnd/${gpu.image_url}`
+                          : "/profile_images/user_image.jpg"
+                      }
+                      alt={gpu.name}
+                      className="gpu-img"
+                    />
+                  </td>
+                  <td className="align-middle">
+                    <strong className="gpu-name">{gpu.name}</strong>
+                  </td>
+                  <td>{gpu.chipset}</td>
+                  <td>{gpu.memory}</td>
+                  <td>{gpu.memory_type}</td>
+                  <td>{gpu.core_clock}</td>
+                  <td>{gpu.boost_clock}</td>
+                  <td>{gpu.interface}</td>
+                  <td>{gpu.length}</td>
+                  <td>{gpu.tdp}</td>
+                  <td>{gpu.cooling}</td>
+                  <td>LKR {gpu.price?.toLocaleString() || "N/A"}</td>
+                  <td>
+                    <Button
+                      className="btn-darkblue"
+                      size="sm"
+                      onClick={() => handleSelectGPU(gpu)}
+                    >
+                      Add
+                    </Button>
                   </td>
                 </tr>
-              ) : (
-                sortedGpus.map((gpu) => (
-                  <tr key={gpu.product_id}>
-                    <td>
-                      <Form.Check
-                        type="checkbox"
-                        checked={compareSelection.some(
-                          (item) => item.product_id === gpu.product_id
-                        )}
-                        onChange={() => handleToggleCompare(gpu)}
-                      />
-                    </td>
-                    <td className="text-center align-middle">
-                      <img
-                        src={
-                          gpu.image_url
-                            ? `http://localhost/gearsphere_api/GearSphere-BackEnd/${gpu.image_url}`
-                            : "/profile_images/user_image.jpg"
-                        }
-                        alt={gpu.name}
-                        className="gpu-img"
-                      />
-                    </td>
-                    <td className="align-middle">
-                      <strong className="gpu-name">{gpu.name}</strong>
-                    </td>
-                    <td>{gpu.chipset}</td>
-                    <td>{gpu.memory}</td>
-                    <td>{gpu.memory_type}</td>
-                    <td>{gpu.core_clock}</td>
-                    <td>{gpu.boost_clock}</td>
-                    <td>{gpu.interface}</td>
-                    <td>{gpu.length}</td>
-                    <td>{gpu.tdp}</td>
-                    <td>{gpu.cooling}</td>
-                    <td>LKR {gpu.price?.toLocaleString() || "N/A"}</td>
-                    <td>
-                      <Button
-                        className="btn-darkblue"
-                        size="sm"
-                        onClick={() => handleSelectGPU(gpu)}
-                      >
-                        Add
-                      </Button>
-                    </td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </Table>
-        )}
+              ))
+            )}
+          </tbody>
+        </Table>
       </Container>
     </>
   );

@@ -76,8 +76,10 @@ import pcpic2 from "../images/pcpic2.jpeg";
 import pcpic3 from "../images/pcpic3.jpg";
 import aboutus from "../images/aboutus2.png";
 import serviceimg from "../images/services1.png";
+import gearSphereLogo from "../images/logo.PNG";
 import { toast } from "react-toastify";
 import axios from "axios";
+import LoadingScreen from "../components/loading/LoadingScreen";
 
 const ourValuesCardHoverStyle = `
 .our-values-card {
@@ -168,6 +170,73 @@ const productSliderStyle = `
 .product-slider-arrow.right { right: -18px; }
 `;
 
+// Loading animation styles
+const loadingAnimationStyle = `
+.loading-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: #ffffff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  z-index: 9999;
+}
+
+.loading-text {
+  color: #333333;
+  font-size: 18px;
+  font-weight: 500;
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+.loading-subtext {
+  color: #666666;
+  font-size: 14px;
+  text-align: center;
+}
+
+.loading-dots {
+  display: inline-block;
+  animation: loadingDots 1.5s infinite;
+}
+
+@keyframes loadingDots {
+  0%, 20% { content: ''; }
+  40% { content: '.'; }
+  60% { content: '..'; }
+  80%, 100% { content: '...'; }
+}
+
+.gear-icon-animation {
+  width: 120px;
+  height: 120px;
+  margin-bottom: 30px;
+  animation: logoFloat 3s ease-in-out infinite;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+.logo-glow {
+  filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.5));
+}
+
+@keyframes logoFloat {
+  0%, 100% { 
+    transform: translateY(0px) scale(1);
+    filter: drop-shadow(0 5px 15px rgba(0, 0, 0, 0.1));
+  }
+  50% { 
+    transform: translateY(-10px) scale(1.05);
+    filter: drop-shadow(0 10px 25px rgba(0, 0, 0, 0.2));
+  }
+}
+`;
+
 function HomePage() {
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [showSignupModal, setShowSignupModal] = useState(false);
@@ -196,6 +265,10 @@ function HomePage() {
   const [systemReviews, setSystemReviews] = useState([]);
   const [reviewsLoading, setReviewsLoading] = useState(true);
 
+  // Main page loading state
+  const [isLoading, setIsLoading] = useState(true);
+  const [productsLoading, setProductsLoading] = useState(true);
+
   useEffect(() => {
     const userType = sessionStorage.getItem("user_type");
     if (userType) {
@@ -211,13 +284,15 @@ function HomePage() {
 
   // Fetch products from backend API
   useEffect(() => {
+    setProductsLoading(true);
     fetch("http://localhost/gearsphere_api/GearSphere-BackEnd/getProducts.php")
       .then((res) => res.json())
       .then((data) => {
         if (data.success) setProducts(data.products);
         else setProducts([]);
       })
-      .catch(() => setProducts([]));
+      .catch(() => setProducts([]))
+      .finally(() => setProductsLoading(false));
   }, []);
 
   // Fetch system reviews from backend API
@@ -246,6 +321,14 @@ function HomePage() {
 
     fetchSystemReviews();
   }, []);
+
+  // Check if all loading is complete
+  useEffect(() => {
+    if (!productsLoading && !reviewsLoading) {
+      // Add a small delay to prevent flash
+      setTimeout(() => setIsLoading(false), 500);
+    }
+  }, [productsLoading, reviewsLoading]);
 
   const scrollToSection = (sectionId) => {
     const element = document.getElementById(sectionId);
@@ -285,6 +368,14 @@ function HomePage() {
       );
   };
 
+  // Loading component
+  const CustomLoadingScreen = () => <LoadingScreen />;
+
+  // Show loading screen while data is being fetched
+  if (isLoading) {
+    return <CustomLoadingScreen />;
+  }
+
   return (
     <>
       <div className="homepage-root">
@@ -293,6 +384,7 @@ function HomePage() {
             <style>{ourValuesCardHoverStyle}</style>
             <style>{serviceCardBorderStyle}</style>
             <style>{productSliderStyle}</style>
+            <style>{loadingAnimationStyle}</style>
             <style>{`
               .customer-review-card {
                 transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;

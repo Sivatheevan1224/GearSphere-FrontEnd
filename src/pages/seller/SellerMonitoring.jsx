@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Card, Button } from "react-bootstrap";
 import SellerNavbar from "../pageNavbars/SellerNavbar";
 import Footer from "../../components/footer/Footer";
+import LoadingScreen from "../../components/loading/LoadingScreen";
 import logo from "../../images/logo.PNG";
 import customerimg from "../../images/customer_monitorimg.jpg";
 import "../../styles.css";
@@ -65,13 +66,10 @@ const SellerMonitoring = () => {
 
   if (loading) {
     return (
-      <div
-        className="loading"
-        style={{ textAlign: "center", marginTop: "10%" }}
-      >
-        <img src={logo} alt="logo" style={{ width: 100, height: 100 }} />
-        <h4>Loading......</h4>
-      </div>
+      <LoadingScreen
+        message="Seller Monitoring"
+        submessage="Preparing seller monitoring interface"
+      />
     );
   }
 

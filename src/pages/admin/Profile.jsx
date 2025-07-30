@@ -3,6 +3,7 @@ import { Container, Row, Col, Card, Form, Button } from "react-bootstrap";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import axios from "axios";
+import LoadingScreen from "../../components/loading/LoadingScreen";
 
 const AdminProfile = () => {
   const [formData, setFormData] = useState({
@@ -13,11 +14,13 @@ const AdminProfile = () => {
   });
   const [profilePicFile, setProfilePicFile] = useState(null);
   const [profilePicPreview, setProfilePicPreview] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
   const fileInputRef = useRef();
 
   useEffect(() => {
     const fetchAdminData = async () => {
       try {
+        setIsLoading(true);
         const response = await axios.get(
           `http://localhost/gearsphere_api/GearSphere-BackEnd/getAdmin.php`,
           {
@@ -44,6 +47,8 @@ const AdminProfile = () => {
       } catch (err) {
         console.error("Fetch failed:", err);
         toast.error("Failed to fetch profile");
+      } finally {
+        setIsLoading(false);
       }
     };
 
@@ -111,6 +116,16 @@ const AdminProfile = () => {
       toast.error("An error occurred during update");
     }
   };
+
+  // Show loading screen while data is being fetched
+  if (isLoading) {
+    return (
+      <LoadingScreen
+        message="Loading Admin Profile"
+        subMessage="Fetching your administrator information"
+      />
+    );
+  }
 
   return (
     <Container>

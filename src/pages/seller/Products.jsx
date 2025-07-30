@@ -10,11 +10,22 @@ import {
   Modal,
 } from "react-bootstrap";
 import { Search, Plus, Pencil, Trash, Star } from "react-bootstrap-icons";
+import LoadingScreen from "../../components/loading/LoadingScreen";
+import { useEffect } from "react";
 
 function SellerProducts() {
   const [products, setProducts] = useState([]);
   const [editModalShow, setEditModalShow] = useState(false);
   const [editProduct, setEditProduct] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Simulate loading for consistency
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 800);
+    return () => clearTimeout(timer);
+  }, []);
 
   const handleDelete = (id) => {
     setProducts(products.filter((p) => p.id !== id));
@@ -40,6 +51,16 @@ function SellerProducts() {
     setEditModalShow(false);
     setEditProduct(null);
   };
+
+  // Show loading screen while initializing
+  if (isLoading) {
+    return (
+      <LoadingScreen
+        message="Loading Products"
+        subMessage="Fetching your product inventory"
+      />
+    );
+  }
 
   return (
     <Container className="py-5">
