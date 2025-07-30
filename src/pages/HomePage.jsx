@@ -200,10 +200,12 @@ function HomePage() {
     const userType = sessionStorage.getItem("user_type");
     if (userType) {
       const type = userType.toLowerCase();
-      if (type === "admin") navigate("/admin");
-      else if (type === "customer") navigate("/customer/dashboard");
-      else if (type === "seller") navigate("/seller");
-      else if (type === "technician") navigate("/technician/dashboard");
+      if (type === "admin") navigate("/admin", { replace: true });
+      else if (type === "customer")
+        navigate("/customer/dashboard", { replace: true });
+      else if (type === "seller") navigate("/seller", { replace: true });
+      else if (type === "technician")
+        navigate("/technician/dashboard", { replace: true });
     }
   }, [navigate]);
 
