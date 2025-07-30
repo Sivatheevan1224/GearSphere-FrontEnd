@@ -43,21 +43,17 @@ function CustomerNavbar({ fixed = "top" }) {
   useEffect(() => {
     const fetchCustomerData = async () => {
       try {
-        const userId = sessionStorage.getItem("user_id");
-        if (!userId) return;
-
-        const token = localStorage.getItem("token");
         const response = await axios.get(
-          `http://localhost/gearsphere_api/GearSphere-Backend/getCustomer.php?user_id=${userId}`,
+          `http://localhost/gearsphere_api/GearSphere-BackEnd/getCustomer.php`,
           {
-            headers: { Authorization: `Bearer ${token}` },
+            withCredentials: true, // Use backend session
           }
         );
         const data = response.data;
 
         if (data) {
           const profilePicUrl = data.profile_image
-            ? `http://localhost/gearsphere_api/GearSphere-Backend/profile_images/${data.profile_image}`
+            ? `http://localhost/gearsphere_api/GearSphere-BackEnd/profile_images/${data.profile_image}`
             : "/profile_images/user_image.jpg";
 
           setCustomerData({
@@ -84,11 +80,18 @@ function CustomerNavbar({ fixed = "top" }) {
 
   useEffect(() => {
     const fetchNotifCount = async () => {
-      const userId = sessionStorage.getItem("user_id");
-      if (!userId) return;
       try {
+        // Get session first to get user_id
+        const sessionRes = await axios.get(
+          "http://localhost/gearsphere_api/GearSphere-BackEnd/getSession.php",
+          { withCredentials: true }
+        );
+
+        if (!sessionRes.data.success) return;
+
         const res = await axios.get(
-          `http://localhost/gearsphere_api/GearSphere-BackEnd/getCustomerNotification.php?user_id=${userId}&count=1`
+          `http://localhost/gearsphere_api/GearSphere-BackEnd/getCustomerNotification.php?user_id=${sessionRes.data.user_id}&count=1`,
+          { withCredentials: true }
         );
         setNotifCount(res.data.count || 0);
       } catch (err) {
@@ -100,10 +103,20 @@ function CustomerNavbar({ fixed = "top" }) {
     return () => clearInterval(interval);
   }, []);
 
-  const handleLogout = () => {
-    sessionStorage.clear();
-    navigate("/", { replace: true });
-    window.location.reload();
+  const handleLogout = async () => {
+    try {
+      await axios.post(
+        "http://localhost/gearsphere_api/GearSphere-BackEnd/logout.php",
+        {},
+        { withCredentials: true }
+      );
+    } catch (error) {
+      console.error("Logout error:", error);
+    } finally {
+      // Navigate to home regardless of backend response
+      navigate("/", { replace: true });
+      window.location.reload();
+    }
   };
 
   const handleQuantityChange = (productId, newQuantity) => {
@@ -145,6 +158,38 @@ function CustomerNavbar({ fixed = "top" }) {
           </Navbar.Brand>
           <Navbar.Toggle aria-controls="customer-navbar-nav" />
           <Navbar.Collapse id="customer-navbar-nav">
+            {/* Monitoring Mode Indicator */}
+            {sessionStorage.getItem("monitoring_mode") === "true" && (
+              <div
+                className="alert alert-warning py-1 px-2 mb-0 me-3"
+                style={{ fontSize: "0.8rem" }}
+              >
+                <strong>Monitoring Mode:</strong> Viewing as Customer
+                <Button
+                  size="sm"
+                  variant="outline-primary"
+                  className="ms-2"
+                  onClick={() => {
+                    const originalUserType =
+                      sessionStorage.getItem("original_user_type");
+                    sessionStorage.removeItem("monitoring_mode");
+                    sessionStorage.removeItem("original_user_type");
+                    sessionStorage.removeItem("original_user_id");
+
+                    if (originalUserType === "admin") {
+                      navigate("/admin");
+                    } else {
+                      navigate("/seller/dashboard");
+                    }
+                  }}
+                >
+                  Back to{" "}
+                  {sessionStorage.getItem("original_user_type") === "admin"
+                    ? "Admin"
+                    : "Seller"}
+                </Button>
+              </div>
+            )}
             <Nav className="me-auto">
               <Nav.Link
                 as={Link}
@@ -197,7 +242,9 @@ function CustomerNavbar({ fixed = "top" }) {
                 to="/customer/reviews"
                 onClick={() => setExpanded(false)}
                 className={
-                  location.pathname === "/customer/reviews" ? "text-primary fw-bold" : ""
+                  location.pathname === "/customer/reviews"
+                    ? "text-primary fw-bold"
+                    : ""
                 }
               >
                 My Reviews

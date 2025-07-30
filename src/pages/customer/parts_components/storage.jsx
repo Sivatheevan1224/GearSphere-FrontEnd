@@ -155,16 +155,20 @@ export default function StoragePage() {
   };
 
   const handleSelectStorage = (storageItem) => {
-    sessionStorage.setItem("selected_storage", JSON.stringify(storageItem));
     toast.success(`Selected ${storageItem.name}. Redirecting to PC Builder...`);
     setTimeout(() => {
-      navigate("/pc-builder?storageSelected=1");
+      // Navigate back to PC Builder with selected storage in state (no sessionStorage)
+      navigate("/pc-builder", {
+        state: { selectedComponent: storageItem },
+      });
     }, 1000);
   };
 
   const handleCompareClick = () => {
-    sessionStorage.setItem("compare_storage", JSON.stringify(compareSelection));
-    navigate("/compare-storage");
+    // Navigate to compare page with selected items in state (no sessionStorage)
+    navigate("/compare-storage", {
+      state: { compareSelection },
+    });
   };
 
   const handleTogglePriceSort = () => {

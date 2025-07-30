@@ -94,19 +94,21 @@ export default function OperatingSystemPage() {
   };
 
   const handleSelect = (os) => {
-    sessionStorage.setItem("selected_operatingsystem", JSON.stringify(os));
     toast.success(`Selected ${os.name}. Redirecting to PC Builder...`);
     setTimeout(() => {
-      navigate("/pc-builder?operatingsystemSelected=1");
+      // Navigate back to PC Builder with selected OS in state (no sessionStorage)
+      navigate("/pc-builder", {
+        state: { selectedComponent: os },
+      });
     }, 1000);
   };
 
   const handleCompareClick = () => {
-    sessionStorage.setItem(
-      "compare_operatingsystems",
-      JSON.stringify(compareSelection)
-    );
-    navigate("/compare-operatingsystem");
+    // Navigate to compare page with selected items in state (no sessionStorage)
+    navigate("/compare-operatingsystem", {
+      state: { compareSelection },
+      replace: true,
+    });
   };
 
   const handleTogglePriceSort = () => {

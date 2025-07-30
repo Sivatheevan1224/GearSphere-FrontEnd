@@ -133,16 +133,21 @@ export default function GPUPage() {
   };
 
   const handleSelectGPU = (gpu) => {
-    sessionStorage.setItem("selected_gpu", JSON.stringify(gpu));
     toast.success(`Selected ${gpu.name}. Redirecting to PC Builder...`);
     setTimeout(() => {
-      navigate("/pc-builder?gpuSelected=1");
+      // Navigate back to PC Builder with selected component in state
+      navigate("/pc-builder", {
+        state: { selectedComponent: gpu },
+      });
     }, 1000);
   };
 
   const handleCompareClick = () => {
-    sessionStorage.setItem("compare_gpus", JSON.stringify(compareSelection));
-    navigate("/compare-gpu");
+    // Navigate to compare page with selected items in state (no sessionStorage)
+    navigate("/compare-gpu", {
+      state: { compareSelection },
+      replace: true,
+    });
   };
 
   const handleTogglePriceSort = () => {

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import {
   Container,
   Button,
@@ -108,13 +108,33 @@ export default function CompareCasePage() {
   const [cases, setCases] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
-    const compareCases = sessionStorage.getItem("compare_cases");
-    if (compareCases) {
+    // Get compare selection from navigation state with sessionStorage fallback
+    let compareSelection = location.state?.compareSelection || [];
+
+    // Fallback to sessionStorage if navigation state is empty (for page refresh scenarios)
+    if (compareSelection.length === 0) {
+      const storedSelection = sessionStorage.getItem("case_compareSelection");
+      if (storedSelection) {
+        try {
+          compareSelection = JSON.parse(storedSelection);
+        } catch (e) {
+          console.warn("Failed to parse stored comparison selection:", e);
+        }
+      }
+    } else {
+      // Store in sessionStorage for page refresh scenarios only
+      sessionStorage.setItem(
+        "case_compareSelection",
+        JSON.stringify(compareSelection)
+      );
+    }
+
+    if (compareSelection.length > 0) {
       try {
-        const parsedCases = JSON.parse(compareCases);
-        const ids = parsedCases.map((pcCase) => pcCase.product_id);
+        const ids = compareSelection.map((pcCase) => pcCase.product_id);
         axios
           .get(
             "http://localhost/gearsphere_api/GearSphere-BackEnd/getPCCases.php"
@@ -144,13 +164,17 @@ export default function CompareCasePage() {
     } else {
       setLoading(false);
     }
-  }, []);
+
+    // Cleanup sessionStorage when component unmounts
+    return () => {
+      sessionStorage.removeItem("case_compareSelection");
+    };
+  }, [location.state]);
 
   const handleSelectCase = (pcCase) => {
-    sessionStorage.setItem("selected_case", JSON.stringify(pcCase));
     toast.success(`Selected ${pcCase.name}. Redirecting to PC Builder...`);
     setTimeout(() => {
-      navigate("/pc-builder?caseSelected=1");
+      navigate("/pc-builder", { state: { selectedComponent: pcCase } });
     }, 1000);
   };
 
@@ -319,12 +343,14 @@ export default function CompareCasePage() {
               </td>
               {cases.map((pcCase) => (
                 <td key={pcCase.product_id}>
-                  <div style={{ 
-                    maxWidth: "200px", 
-                    textAlign: "left", 
-                    fontSize: "0.9rem",
-                    lineHeight: "1.4"
-                  }}>
+                  <div
+                    style={{
+                      maxWidth: "200px",
+                      textAlign: "left",
+                      fontSize: "0.9rem",
+                      lineHeight: "1.4",
+                    }}
+                  >
                     {pcCase.description || "No description available"}
                   </div>
                 </td>

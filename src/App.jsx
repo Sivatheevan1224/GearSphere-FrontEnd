@@ -8,6 +8,7 @@ import {
 import { AuthProvider } from "./context/AuthContext";
 import { CartProvider } from "./pages/customer/CartContext";
 import { OrdersProvider } from "./pages/customer/OrdersContext";
+import SessionProvider from "./components/SessionProvider";
 import MainNavbar from "./components/navbar/MainNavbar";
 import HomePage from "./pages/HomePage";
 import Signup from "./components/signup/Signup";
@@ -120,6 +121,14 @@ function AppContent() {
             path="/compare-operatingsystem"
             element={<CompareOperatingSystem />}
           />
+          <Route path="/memory" element={<MemoryPage />} />
+          <Route path="/compare-memory" element={<CompareMemory />} />
+          <Route path="/storage" element={<StoragePage />} />
+          <Route path="/compare-storage" element={<CompareStorage />} />
+          <Route path="/powersupply" element={<PowerSupplyPage />} />
+          <Route path="/compare-powersupply" element={<ComparePowerSupply />} />
+          <Route path="/case" element={<CasePage />} />
+          <Route path="/compare-case" element={<CompareCase />} />
           <Route
             path="/customer/find-technician"
             element={<FindTechnician />}
@@ -200,11 +209,9 @@ function App() {
         style={{ zIndex: 99999 }}
       />
       <AuthProvider>
-        <CartProvider>
-          <OrdersProvider>
-            <AppContent />
-          </OrdersProvider>
-        </CartProvider>
+        <SessionProvider>
+          <AppContent />
+        </SessionProvider>
       </AuthProvider>
     </Router>
   );

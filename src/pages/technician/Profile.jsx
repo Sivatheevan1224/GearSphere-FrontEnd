@@ -21,22 +21,25 @@ const TechnicianProfile = () => {
   useEffect(() => {
     const fetchTechnicianData = async () => {
       try {
-        const userId = sessionStorage.getItem("user_id");
-        if (!userId) return toast.error("Session expired. Please log in.");
-
-        const token = localStorage.getItem("token");
-        // Step 1: Get technician_id from user_id
-        const techIdRes = await axios.get(
-          `http://localhost/gearsphere_api/GearSphere-BackEnd/getTechnicianIdByUser.php?user_id=${userId}`,
-          { headers: { Authorization: `Bearer ${token}` } }
+        // Get session data from backend
+        const sessionResponse = await axios.get(
+          "http://localhost/gearsphere_api/GearSphere-BackEnd/getSession.php",
+          { withCredentials: true }
         );
-        const technicianId = techIdRes.data.technician_id;
-        if (!technicianId) return toast.error("Technician ID not found.");
+
+        if (
+          !sessionResponse.data.success ||
+          !sessionResponse.data.technician_id
+        ) {
+          return toast.error("Session expired. Please log in.");
+        }
+
+        const technicianId = sessionResponse.data.technician_id;
 
         // Step 2: Get technician details by technician_id
         const response = await axios.get(
           `http://localhost/gearsphere_api/GearSphere-BackEnd/getTechnicianDetail.php?technician_id=${technicianId}`,
-          { headers: { Authorization: `Bearer ${token}` } }
+          { withCredentials: true }
         );
         const data = response.data;
 
@@ -58,7 +61,7 @@ const TechnicianProfile = () => {
             status: data.technician.status || "available",
           });
 
-          sessionStorage.setItem("technician_profile_pic", profilePicUrl);
+          // Trigger profile pic update event for navbar
           window.dispatchEvent(new Event("profilePicUpdated"));
         }
       } catch (err) {
@@ -101,74 +104,73 @@ const TechnicianProfile = () => {
     }
 
     // Ensure technician_id is present
-    const technician_id =
-      formData.technician_id || sessionStorage.getItem("technician_id");
+    const technician_id = formData.technician_id;
     if (!technician_id) {
       toast.error("Technician ID missing. Please re-login.");
       return;
     }
 
-    const userId = sessionStorage.getItem("user_id");
-    if (!userId) return toast.error("Session expired. Please log in.");
-
-    // Debug: Print payload values
-    // console.log(
-    //   "Submitting technician_id:",
-    //   technician_id,
-    //   "charge_per_day:",
-    //   formData.charge_per_day
-    // );
-
-    const payload = new FormData();
-    payload.append("user_id", userId);
-    payload.append("technician_id", technician_id);
-    payload.append("name", formData.name);
-    payload.append("contact_number", formData.contact_number);
-    payload.append("address", formData.address);
-    payload.append("charge_per_day", formData.charge_per_day);
-    payload.append("status", formData.status); // <-- send status
-
-    if (profilePicFile) {
-      payload.append("profile_image", profilePicFile);
-    }
-
     try {
-      const token = localStorage.getItem("token");
+      // Get session data for user_id
+      const sessionResponse = await axios.get(
+        "http://localhost/gearsphere_api/GearSphere-BackEnd/getSession.php",
+        { withCredentials: true }
+      );
+
+      if (!sessionResponse.data.success || !sessionResponse.data.user_id) {
+        return toast.error("Session expired. Please log in.");
+      }
+
+      const userId = sessionResponse.data.user_id;
+
+      // Debug: Print payload values
+      // console.log(
+      //   "Submitting technician_id:",
+      //   technician_id,
+      //   "charge_per_day:",
+      //   formData.charge_per_day
+      // );
+
+      const payload = new FormData();
+      payload.append("user_id", userId);
+      payload.append("technician_id", technician_id);
+      payload.append("name", formData.name);
+      payload.append("contact_number", formData.contact_number);
+      payload.append("address", formData.address);
+      payload.append("charge_per_day", formData.charge_per_day);
+      payload.append("status", formData.status); // <-- send status
+
+      if (profilePicFile) {
+        payload.append("profile_image", profilePicFile);
+      }
+
       const response = await axios.post(
         "http://localhost/gearsphere_api/GearSphere-BackEnd/updateTechnicianProfile.php",
         payload,
-        { headers: { Authorization: `Bearer ${token}` } }
+        { withCredentials: true }
       );
 
       if (response.data.success) {
         toast.success("Profile updated successfully");
 
-        // Fetch updated profile using the new two-step backend
-        const techIdRes = await axios.get(
-          `http://localhost/gearsphere_api/GearSphere-BackEnd/getTechnicianIdByUser.php?user_id=${userId}`,
-          { headers: { Authorization: `Bearer ${token}` } }
+        // Fetch updated profile using session
+        const profileRes = await axios.get(
+          `http://localhost/gearsphere_api/GearSphere-BackEnd/getTechnicianDetail.php?technician_id=${technician_id}`,
+          { withCredentials: true }
         );
-        const technicianId = techIdRes.data.technician_id;
-        if (technicianId) {
-          const profileRes = await axios.get(
-            `http://localhost/gearsphere_api/GearSphere-BackEnd/getTechnicianDetail.php?technician_id=${technicianId}`,
-            { headers: { Authorization: `Bearer ${token}` } }
-          );
-          const data = profileRes.data;
-          if (data && data.success && data.technician) {
-            const profilePicUrl = data.technician.profile_image
-              ? `http://localhost/gearsphere_api/GearSphere-BackEnd/profile_images/${data.technician.profile_image}`
-              : "/profile_images/user_image.jpg";
+        const data = profileRes.data;
+        if (data && data.success && data.technician) {
+          const profilePicUrl = data.technician.profile_image
+            ? `http://localhost/gearsphere_api/GearSphere-BackEnd/profile_images/${data.technician.profile_image}`
+            : "/profile_images/user_image.jpg";
 
-            setFormData((prev) => ({
-              ...prev,
-              profilePic: profilePicUrl,
-            }));
-            sessionStorage.setItem("technician_profile_pic", profilePicUrl);
-            window.dispatchEvent(new Event("profilePicUpdated"));
-            setProfilePicFile(null);
-            setProfilePicPreview(null);
-          }
+          setFormData((prev) => ({
+            ...prev,
+            profilePic: profilePicUrl,
+          }));
+          window.dispatchEvent(new Event("profilePicUpdated"));
+          setProfilePicFile(null);
+          setProfilePicPreview(null);
         }
       } else {
         toast.error(

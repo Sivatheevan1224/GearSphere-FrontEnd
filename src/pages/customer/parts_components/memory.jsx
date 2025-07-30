@@ -155,16 +155,21 @@ export default function MemoryPage() {
   };
 
   const handleSelectMemory = (memoryItem) => {
-    sessionStorage.setItem("selected_memory", JSON.stringify(memoryItem));
     toast.success(`Selected ${memoryItem.name}. Redirecting to PC Builder...`);
     setTimeout(() => {
-      navigate("/pc-builder?memorySelected=1");
+      // Navigate back to PC Builder with selected memory in state (no sessionStorage)
+      navigate("/pc-builder", {
+        state: { selectedComponent: memoryItem },
+      });
     }, 1000);
   };
 
   const handleCompareClick = () => {
-    sessionStorage.setItem("compare_memory", JSON.stringify(compareSelection));
-    navigate("/compare-memory");
+    // Navigate to compare page with selected items in state (no sessionStorage)
+    navigate("/compare-memory", {
+      state: { compareSelection },
+      replace: true,
+    });
   };
 
   const handleTogglePriceSort = () => {

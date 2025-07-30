@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import {
   Container,
   Row,
@@ -45,9 +45,11 @@ const Analytics = () => {
   useEffect(() => {
     setLoading(true);
     setError(null);
-    // Get user_id from localStorage or context
     const url = `http://localhost/gearsphere_api/GearSphere-BackEnd/getSellerAnalytics.php`;
-    fetch(url)
+    fetch(url, {
+      method: "GET",
+      credentials: "include",
+    })
       .then((res) => res.json())
       .then((data) => {
         if (!data.success) throw new Error(data.message || "Unknown error");
@@ -56,6 +58,87 @@ const Analytics = () => {
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false));
   }, []);
+
+  // Memoize chart data to ensure it updates when metricType changes
+  // Must be called before early returns to maintain hook order
+  const chartData = useMemo(() => {
+    if (!analyticsData) {
+      return { salesTrendData: null, categoryData: null };
+    }
+
+    // Generate specific months from February 2025 to July 2025 (6 months total)
+    function getSpecificMonths() {
+      return ["2025-02", "2025-03", "2025-04", "2025-05", "2025-06", "2025-07"];
+    }
+
+    // Always use current month as the latest month to ensure it's included
+    const currentMonth = new Date().toISOString().slice(0, 7); // Should be "2025-07"
+    console.log("Current month:", currentMonth); // Debug log
+    const lastNMonths = getSpecificMonths(); // Use specific months instead
+    console.log("Generated months:", lastNMonths); // Debug log
+    const salesTrendMap = {};
+    (analyticsData.salesTrend || []).forEach((item) => {
+      salesTrendMap[item.period] = item;
+    });
+    const normalizedSalesTrend = lastNMonths.map((period) => ({
+      period,
+      revenue: salesTrendMap[period]?.revenue || 0,
+      orders: salesTrendMap[period]?.orders || 0,
+    }));
+    console.log("Normalized sales trend:", normalizedSalesTrend); // Debug log
+
+    const salesTrendData = {
+      labels: normalizedSalesTrend.map((item) => item.period),
+      datasets: [
+        {
+          label: metricType === "revenue" ? "Revenue" : "Orders",
+          data: normalizedSalesTrend.map((item) =>
+            metricType === "revenue" ? item.revenue : item.orders
+          ),
+          borderColor: "rgb(75, 192, 192)",
+          tension: 0.1,
+        },
+      ],
+    };
+
+    const categoryData = {
+      labels: (analyticsData.categoryPerformance || []).map(
+        (item) => item.category
+      ),
+      datasets: [
+        {
+          data: (analyticsData.categoryPerformance || []).map(
+            (item) => item.percentage
+          ),
+          backgroundColor: [
+            "rgba(255, 99, 132, 0.5)",
+            "rgba(54, 162, 235, 0.5)",
+            "rgba(255, 206, 86, 0.5)",
+            "rgba(255, 205, 86, 0.5)",
+            "rgba(75, 192, 192, 0.5)",
+            "rgba(153, 102, 255, 0.5)",
+            "rgba(255, 159, 64, 0.5)",
+            "rgba(199, 199, 199, 0.5)",
+            "rgba(83, 102, 255, 0.5)",
+          ],
+          borderColor: [
+            "rgba(255, 99, 132, 1)",
+            "rgba(54, 162, 235, 1)",
+            "rgba(255, 206, 86, 1)",
+            "rgba(255, 205, 86, 1)",
+            "rgba(75, 192, 192, 1)",
+            "rgba(153, 102, 255, 1)",
+            "rgba(255, 159, 64, 1)",
+            "rgba(199, 199, 199, 1)",
+            "rgba(83, 102, 255, 1)",
+          ],
+          borderWidth: 1,
+        },
+      ],
+    };
+
+    return { salesTrendData, categoryData };
+  }, [analyticsData, metricType]);
 
   if (loading)
     return (
@@ -71,48 +154,6 @@ const Analytics = () => {
     );
   if (!analyticsData) return null;
 
-  // Show a sliding window of up to 5 months, always including current month, and up to 1 future month if present in data
-  function getLastNMonths(latestMonth, n = 5) {
-    const months = [];
-    const [year, month] = latestMonth.split('-').map(Number);
-    for (let i = n - 1; i >= 0; i--) {
-      const d = new Date(year, month - 1 - i, 1);
-      months.push(d.toISOString().slice(0, 7));
-    }
-    return months;
-  }
-  // Find the latest month in analytics data or use current month
-  const salesTrendPeriods = (analyticsData.salesTrend || []).map(item => item.period);
-  const currentMonth = new Date().toISOString().slice(0, 7);
-  let latestMonth = currentMonth;
-  if (salesTrendPeriods.length > 0) {
-    latestMonth = salesTrendPeriods.reduce((a, b) => (a > b ? a : b), currentMonth);
-  }
-  const lastNMonths = getLastNMonths(latestMonth, 5);
-  const salesTrendMap = {};
-  (analyticsData.salesTrend || []).forEach(item => {
-    salesTrendMap[item.period] = item;
-  });
-  const normalizedSalesTrend = lastNMonths.map(period => ({
-    period,
-    revenue: salesTrendMap[period]?.revenue || 0,
-    orders: salesTrendMap[period]?.orders || 0,
-  }));
-  const salesTrendData = {
-    labels: normalizedSalesTrend.map(item => item.period),
-    datasets: [
-      {
-        label: metricType === "revenue" ? "Revenue" : "Orders",
-        data: normalizedSalesTrend.map(item =>
-          metricType === "revenue" ? item.revenue : item.orders
-        ),
-        borderColor: "rgb(75, 192, 192)",
-        tension: 0.1,
-      },
-    ],
-  };
-
-
   const salesTrendOptions = {
     responsive: true,
     plugins: {
@@ -124,30 +165,6 @@ const Analytics = () => {
         text: "Sales Trend",
       },
     },
-  };
-
-  const categoryData = {
-    labels: (analyticsData.categoryPerformance || []).map(
-      (item) => item.category
-    ),
-    datasets: [
-      {
-        data: (analyticsData.categoryPerformance || []).map(
-          (item) => item.percentage
-        ),
-        backgroundColor: [
-          "rgba(255, 99, 132, 0.5)",
-          "rgba(54, 162, 235, 0.5)",
-          "rgba(255, 206, 86, 0.5)",
-        ],
-        borderColor: [
-          "rgba(255, 99, 132, 1)",
-          "rgba(54, 162, 235, 1)",
-          "rgba(255, 206, 86, 1)",
-        ],
-        borderWidth: 1,
-      },
-    ],
   };
 
   const categoryOptions = {
@@ -181,7 +198,6 @@ const Analytics = () => {
             <Card.Body>
               <h6 className="text-muted mb-2">Total Revenue</h6>
               <h3>{formatCurrency(analyticsData.summary.totalRevenue)}</h3>
-              
             </Card.Body>
           </Card>
         </Col>
@@ -190,7 +206,6 @@ const Analytics = () => {
             <Card.Body>
               <h6 className="text-muted mb-2">Total Orders</h6>
               <h3>{analyticsData.summary.totalOrders}</h3>
-             
             </Card.Body>
           </Card>
         </Col>
@@ -199,11 +214,9 @@ const Analytics = () => {
             <Card.Body>
               <h6 className="text-muted mb-2">Average Order Value</h6>
               <h3>{formatCurrency(analyticsData.summary.averageOrderValue)}</h3>
-            
             </Card.Body>
           </Card>
         </Col>
-        
       </Row>
 
       <Row className="mb-4">
@@ -213,7 +226,6 @@ const Analytics = () => {
               <div className="d-flex justify-content-between align-items-center mb-4">
                 <h5 className="mb-0">Sales Trend</h5>
                 <div className="d-flex gap-2">
-                  
                   <Form.Select
                     style={{ width: "150px" }}
                     value={metricType}
@@ -225,7 +237,17 @@ const Analytics = () => {
                 </div>
               </div>
               <div style={{ height: "300px" }}>
-                <Line data={salesTrendData} options={salesTrendOptions} />
+                {chartData.salesTrendData ? (
+                  <Line
+                    key={metricType}
+                    data={chartData.salesTrendData}
+                    options={salesTrendOptions}
+                  />
+                ) : (
+                  <div className="d-flex align-items-center justify-content-center h-100">
+                    <span className="text-muted">No data available</span>
+                  </div>
+                )}
               </div>
             </Card.Body>
           </Card>
@@ -235,7 +257,16 @@ const Analytics = () => {
             <Card.Body>
               <h5 className="mb-4">Category Distribution</h5>
               <div style={{ height: "300px" }}>
-                <Pie data={categoryData} options={categoryOptions} />
+                {chartData.categoryData ? (
+                  <Pie
+                    data={chartData.categoryData}
+                    options={categoryOptions}
+                  />
+                ) : (
+                  <div className="d-flex align-items-center justify-content-center h-100">
+                    <span className="text-muted">No data available</span>
+                  </div>
+                )}
               </div>
             </Card.Body>
           </Card>
@@ -253,7 +284,6 @@ const Analytics = () => {
                     <th>Product</th>
                     <th>Sales</th>
                     <th>Revenue</th>
-                    
                   </tr>
                 </thead>
                 <tbody>
@@ -262,7 +292,6 @@ const Analytics = () => {
                       <td>{product.name}</td>
                       <td>{product.sales}</td>
                       <td>{formatCurrency(product.revenue)}</td>
-                     
                     </tr>
                   ))}
                 </tbody>

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import {
   Container,
   Button,
@@ -114,12 +114,34 @@ export default function ComparePowerSupplyPage() {
   const [psus, setPsus] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
-    const comparePsus = sessionStorage.getItem("compare_powersupplies");
-    if (comparePsus) {
-      const parsedPsus = JSON.parse(comparePsus);
-      const ids = parsedPsus.map((psu) => psu.product_id);
+    // Get compare selection from navigation state with sessionStorage fallback
+    let compareSelection = location.state?.compareSelection || [];
+
+    // Fallback to sessionStorage if navigation state is empty (for page refresh scenarios)
+    if (compareSelection.length === 0) {
+      const storedSelection = sessionStorage.getItem(
+        "powersupply_compareSelection"
+      );
+      if (storedSelection) {
+        try {
+          compareSelection = JSON.parse(storedSelection);
+        } catch (e) {
+          console.warn("Failed to parse stored comparison selection:", e);
+        }
+      }
+    } else {
+      // Store in sessionStorage for page refresh scenarios only
+      sessionStorage.setItem(
+        "powersupply_compareSelection",
+        JSON.stringify(compareSelection)
+      );
+    }
+
+    if (compareSelection.length > 0) {
+      const ids = compareSelection.map((psu) => psu.product_id);
       axios
         .get(
           "http://localhost/gearsphere_api/GearSphere-BackEnd/getPowerSupply.php"
@@ -144,13 +166,17 @@ export default function ComparePowerSupplyPage() {
     } else {
       setLoading(false);
     }
-  }, []);
+
+    // Cleanup sessionStorage when component unmounts
+    return () => {
+      sessionStorage.removeItem("powersupply_compareSelection");
+    };
+  }, [location.state]);
 
   const handleSelect = (psu) => {
-    sessionStorage.setItem("selected_powersupply", JSON.stringify(psu));
     toast.success(`Selected ${psu.name}. Redirecting to PC Builder...`);
     setTimeout(() => {
-      navigate("/pc-builder?powersupplySelected=1");
+      navigate("/pc-builder", { state: { selectedComponent: psu } });
     }, 1000);
   };
 

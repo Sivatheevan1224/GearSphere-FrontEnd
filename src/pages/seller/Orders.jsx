@@ -35,12 +35,14 @@ const SellerOrders = () => {
 
   // Fetch orders from backend
   useEffect(() => {
-    const sellerId = sessionStorage.getItem("user_id");
-    if (!sellerId) return;
     const fetchOrders = async () => {
       try {
         const res = await fetch(
-          `http://localhost/gearsphere_api/GearSphere-BackEnd/getSellerOrders.php?seller_id=${sellerId}`
+          `http://localhost/gearsphere_api/GearSphere-BackEnd/getSellerOrders.php`,
+          {
+            method: "GET",
+            credentials: "include",
+          }
         );
         const data = await res.json();
         if (data.success) {

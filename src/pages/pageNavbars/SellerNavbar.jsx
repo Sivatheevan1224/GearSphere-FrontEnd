@@ -18,14 +18,15 @@ function SellerNavbar({ fixed = "top" }) {
   const [showNotification, setShowNotification] = useState(false);
   const [notificationCount, setNotificationCount] = useState(0);
   const bellRef = useRef(null);
-  const userId = sessionStorage.getItem("user_id");
 
   // Fetch notification count
   const fetchNotificationCount = async () => {
-    if (!userId) return;
     try {
       const response = await axios.get(
-        `http://localhost/gearsphere_api/GearSphere-BackEnd/getSellerNotification.php?user_id=${userId}&count=1`
+        `http://localhost/gearsphere_api/GearSphere-BackEnd/getSellerNotification.php?count=1`,
+        {
+          withCredentials: true,
+        }
       );
       setNotificationCount(response.data.count || 0);
     } catch (err) {
@@ -36,14 +37,10 @@ function SellerNavbar({ fixed = "top" }) {
   useEffect(() => {
     const fetchSellerData = async () => {
       try {
-        const userId = sessionStorage.getItem("user_id");
-        if (!userId) return;
-
-        const token = localStorage.getItem("token");
         const response = await axios.get(
-          `http://localhost/gearsphere_api/GearSphere-BackEnd/getSeller.php?user_id=${userId}`,
+          `http://localhost/gearsphere_api/GearSphere-BackEnd/getSeller.php`,
           {
-            headers: { Authorization: `Bearer ${token}` },
+            withCredentials: true,
           }
         );
         const data = response.data;
@@ -93,8 +90,18 @@ function SellerNavbar({ fixed = "top" }) {
     fetchNotificationCount();
   };
 
-  const handleLogout = () => {
-    sessionStorage.clear();
+  const handleLogout = async () => {
+    try {
+      await axios.post(
+        "http://localhost/gearsphere_api/GearSphere-BackEnd/logout.php",
+        {},
+        {
+          withCredentials: true,
+        }
+      );
+    } catch (error) {
+      console.error("Logout error:", error);
+    }
     navigate("/", { replace: true });
     window.location.reload();
   };

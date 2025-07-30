@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import {
   Container,
   Button,
@@ -110,26 +110,50 @@ export default function CompareGPUPage() {
   const [gpus, setGpus] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
-    const compareGpus = sessionStorage.getItem("compare_gpus");
-    if (compareGpus) {
+    // Get compare selection from navigation state with sessionStorage fallback
+    let compareSelection = location.state?.compareSelection || [];
+
+    // Fallback to sessionStorage if navigation state is empty (for page refresh scenarios)
+    if (compareSelection.length === 0) {
+      const storedSelection = sessionStorage.getItem("gpu_compareSelection");
+      if (storedSelection) {
+        try {
+          compareSelection = JSON.parse(storedSelection);
+        } catch (e) {
+          console.warn("Failed to parse stored comparison selection:", e);
+        }
+      }
+    } else {
+      // Store in sessionStorage for page refresh scenarios only
+      sessionStorage.setItem(
+        "gpu_compareSelection",
+        JSON.stringify(compareSelection)
+      );
+    }
+
+    if (compareSelection.length > 0) {
       try {
-        const parsedGpus = JSON.parse(compareGpus);
-        setGpus(parsedGpus);
+        setGpus(compareSelection);
       } catch (error) {
         console.error("Error parsing GPU data:", error);
         toast.error("Error loading GPU comparison data");
       }
     }
     setLoading(false);
-  }, []);
+
+    // Cleanup sessionStorage when component unmounts
+    return () => {
+      sessionStorage.removeItem("gpu_compareSelection");
+    };
+  }, [location.state]);
 
   const handleSelectGPU = (gpu) => {
-    sessionStorage.setItem("selected_gpu", JSON.stringify(gpu));
     toast.success(`Selected ${gpu.name}. Redirecting to PC Builder...`);
     setTimeout(() => {
-      navigate("/pc-builder?gpuSelected=1");
+      navigate("/pc-builder", { state: { selectedComponent: gpu } });
     }, 1000);
   };
 

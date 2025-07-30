@@ -22,22 +22,25 @@ function TechnicianNavbar({ fixed = "top" }) {
   useEffect(() => {
     const fetchTechnicianData = async () => {
       try {
-        const userId = sessionStorage.getItem("user_id");
-        if (!userId) return;
-
-        const token = localStorage.getItem("token");
-        // Step 1: Get technician_id from user_id
-        const techIdRes = await axios.get(
-          `http://localhost/gearsphere_api/GearSphere-BackEnd/getTechnicianIdByUser.php?user_id=${userId}`,
-          { headers: { Authorization: `Bearer ${token}` } }
+        // Get session data from backend
+        const sessionResponse = await axios.get(
+          "http://localhost/gearsphere_api/GearSphere-BackEnd/getSession.php",
+          { withCredentials: true }
         );
-        const technicianId = techIdRes.data.technician_id;
-        if (!technicianId) return;
+
+        if (
+          !sessionResponse.data.success ||
+          !sessionResponse.data.technician_id
+        ) {
+          return;
+        }
+
+        const technicianId = sessionResponse.data.technician_id;
 
         // Step 2: Get technician details by technician_id
         const response = await axios.get(
           `http://localhost/gearsphere_api/GearSphere-BackEnd/getTechnicianDetail.php?technician_id=${technicianId}`,
-          { headers: { Authorization: `Bearer ${token}` } }
+          { withCredentials: true }
         );
         const data = response.data;
 
@@ -70,11 +73,22 @@ function TechnicianNavbar({ fixed = "top" }) {
 
   useEffect(() => {
     const fetchNotifCount = async () => {
-      const userId = sessionStorage.getItem("user_id");
-      if (!userId) return;
       try {
+        // Get session data from backend
+        const sessionResponse = await axios.get(
+          "http://localhost/gearsphere_api/GearSphere-BackEnd/getSession.php",
+          { withCredentials: true }
+        );
+
+        if (!sessionResponse.data.success || !sessionResponse.data.user_id) {
+          return;
+        }
+
+        const userId = sessionResponse.data.user_id;
+
         const res = await axios.get(
-          `http://localhost/gearsphere_api/GearSphere-BackEnd/getSellerNotification.php?user_id=${userId}&count=1`
+          `http://localhost/gearsphere_api/GearSphere-BackEnd/getSellerNotification.php?user_id=${userId}&count=1`,
+          { withCredentials: true }
         );
         setNotifCount(res.data.count || 0);
       } catch (err) {
@@ -86,8 +100,19 @@ function TechnicianNavbar({ fixed = "top" }) {
     return () => clearInterval(interval);
   }, []);
 
-  const handleLogout = () => {
-    sessionStorage.clear();
+  const handleLogout = async () => {
+    try {
+      // Call backend logout endpoint
+      await axios.post(
+        "http://localhost/gearsphere_api/GearSphere-BackEnd/logout.php",
+        {},
+        { withCredentials: true }
+      );
+    } catch (error) {
+      console.error("Logout error:", error);
+    }
+
+    // Navigate to home and reload
     navigate("/", { replace: true });
     window.location.reload();
   };
@@ -118,6 +143,38 @@ function TechnicianNavbar({ fixed = "top" }) {
           </Navbar.Brand>
           <Navbar.Toggle aria-controls="technician-navbar-nav" />
           <Navbar.Collapse id="technician-navbar-nav">
+            {/* Monitoring Mode Indicator */}
+            {sessionStorage.getItem("monitoring_mode") === "true" && (
+              <div
+                className="alert alert-warning py-1 px-2 mb-0 me-3"
+                style={{ fontSize: "0.8rem" }}
+              >
+                <strong>Monitoring Mode:</strong> Viewing as Technician
+                <Button
+                  size="sm"
+                  variant="outline-primary"
+                  className="ms-2"
+                  onClick={() => {
+                    const originalUserType =
+                      sessionStorage.getItem("original_user_type");
+                    sessionStorage.removeItem("monitoring_mode");
+                    sessionStorage.removeItem("original_user_type");
+                    sessionStorage.removeItem("original_user_id");
+
+                    if (originalUserType === "admin") {
+                      navigate("/admin");
+                    } else {
+                      navigate("/seller/dashboard");
+                    }
+                  }}
+                >
+                  Back to{" "}
+                  {sessionStorage.getItem("original_user_type") === "admin"
+                    ? "Admin"
+                    : "Seller"}
+                </Button>
+              </div>
+            )}
             <Nav className="me-auto">
               <Nav.Link
                 as={Link}
@@ -131,7 +188,7 @@ function TechnicianNavbar({ fixed = "top" }) {
               >
                 Dashboard
               </Nav.Link>
-              
+
               <Nav.Link
                 as={Link}
                 to="/technician/build-requests"

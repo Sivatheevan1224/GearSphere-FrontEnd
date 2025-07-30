@@ -90,19 +90,21 @@ export default function MonitorPage() {
   };
 
   const handleSelect = (monitor) => {
-    sessionStorage.setItem("selected_monitor", JSON.stringify(monitor));
     toast.success(`Selected ${monitor.name}. Redirecting to PC Builder...`);
     setTimeout(() => {
-      navigate("/pc-builder?monitorSelected=1");
+      // Navigate back to PC Builder with selected monitor in state (no sessionStorage)
+      navigate("/pc-builder", {
+        state: { selectedComponent: monitor },
+      });
     }, 1000);
   };
 
   const handleCompareClick = () => {
-    sessionStorage.setItem(
-      "compare_monitors",
-      JSON.stringify(compareSelection)
-    );
-    navigate("/compare-monitor");
+    // Navigate to compare page with selected items in state (no sessionStorage)
+    navigate("/compare-monitor", {
+      state: { compareSelection },
+      replace: true,
+    });
   };
 
   const handleTogglePriceSort = () => {

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import axios from "axios";
 
 const tableStyle = {
   width: "100%",
@@ -124,30 +125,45 @@ const BuildRequests = () => {
     // eslint-disable-next-line
   }, []);
 
-  const fetchBuildRequests = () => {
-    const technician_id = sessionStorage.getItem("technician_id");
-    if (!technician_id) {
-      setError("Technician not logged in.");
+  const fetchBuildRequests = async () => {
+    try {
+      setLoading(true);
+
+      // Get session data first
+      const sessionResponse = await axios.get(
+        "http://localhost/gearsphere_api/GearSphere-BackEnd/getSession.php",
+        { withCredentials: true }
+      );
+
+      if (
+        !sessionResponse.data.success ||
+        !sessionResponse.data.technician_id
+      ) {
+        setError("Technician not logged in.");
+        setLoading(false);
+        return;
+      }
+
+      const technician_id = sessionResponse.data.technician_id;
+
+      // Fetch build requests using session-based technician_id
+      const response = await fetch(
+        `http://localhost/gearsphere_api/GearSphere-BackEnd/getBuildRequests.php?technician_id=${technician_id}`
+      );
+
+      const data = await response.json();
+
+      if (data.success) {
+        setBuildRequests(data.data);
+      } else {
+        setError(data.message || "Failed to fetch build requests.");
+      }
       setLoading(false);
-      return;
+    } catch (error) {
+      console.error("Error fetching build requests:", error);
+      setError("Failed to fetch build requests.");
+      setLoading(false);
     }
-    setLoading(true);
-    fetch(
-      `http://localhost/gearsphere_api/GearSphere-BackEnd/getBuildRequests.php?technician_id=${technician_id}`
-    )
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.success) {
-          setBuildRequests(data.data);
-        } else {
-          setError(data.message || "Failed to fetch build requests.");
-        }
-        setLoading(false);
-      })
-      .catch(() => {
-        setError("Failed to fetch build requests.");
-        setLoading(false);
-      });
   };
 
   // Helper to get customer profile image
@@ -233,8 +249,8 @@ const BuildRequests = () => {
           setModalLoading(false);
           setConfirmModal({ show: false, action: null });
           setModalError("Failed to update status.");
-    });
-  };
+        });
+    };
 
     return (
       <div style={modalOverlay}>
@@ -320,19 +336,31 @@ const BuildRequests = () => {
   };
 
   return (
-    <div style={{ padding: 24, maxWidth: 1100, margin: '0 auto' }}>
-      <h2 className="mb-4" style={{ fontWeight: 700, color: '#1976d2' }}>Build Requests</h2>
+    <div style={{ padding: 24, maxWidth: 1100, margin: "0 auto" }}>
+      <h2 className="mb-4" style={{ fontWeight: 700, color: "#1976d2" }}>
+        Build Requests
+      </h2>
       {loading ? (
-        <div style={{ textAlign: 'center', marginTop: 60 }}>
+        <div style={{ textAlign: "center", marginTop: 60 }}>
           <span className="spinner-border text-primary" role="status" />
         </div>
       ) : error ? (
-        <div style={{ color: 'red', textAlign: 'center', marginTop: 40 }}>{error}</div>
+        <div style={{ color: "red", textAlign: "center", marginTop: 40 }}>
+          {error}
+        </div>
       ) : buildRequests.length === 0 ? (
-        <div style={{ textAlign: 'center', marginTop: 80, color: '#888' }}>
-          <img src="/no-data.svg" alt="No Requests" style={{ width: 120, marginBottom: 18, opacity: 0.7 }} />
-          <div style={{ fontSize: 22, fontWeight: 500 }}>No build requests found</div>
-          <div style={{ fontSize: 15, marginTop: 6 }}>You have not been assigned any build requests yet.</div>
+        <div style={{ textAlign: "center", marginTop: 80, color: "#888" }}>
+          <img
+            src="/no-data.svg"
+            alt="No Requests"
+            style={{ width: 120, marginBottom: 18, opacity: 0.7 }}
+          />
+          <div style={{ fontSize: 22, fontWeight: 500 }}>
+            No build requests found
+          </div>
+          <div style={{ fontSize: 15, marginTop: 6 }}>
+            You have not been assigned any build requests yet.
+          </div>
         </div>
       ) : (
         <div style={{ overflowX: "auto", borderRadius: 8 }}>
@@ -409,8 +437,8 @@ const BuildRequests = () => {
           onClose={() => setShowModal(false)}
         />
       )}
-            </div>
+    </div>
   );
 };
 
-export default BuildRequests; 
+export default BuildRequests;

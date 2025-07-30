@@ -208,9 +208,11 @@ function PCBuilder() {
   // Helper to get initial state from sessionStorage
   const getInitialSelectedComponents = () => {
     const saved = sessionStorage.getItem("pcbuilder_selected_components");
-    return saved
-      ? JSON.parse(saved)
-      : {
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        // Validate that components are in correct slots based on their category
+        const cleaned = {
           cpu: null,
           gpu: null,
           motherboard: null,
@@ -222,6 +224,83 @@ function PCBuilder() {
           monitor: null,
           operating_system: null,
         };
+
+        // Only keep components that are in the correct slots
+        Object.entries(parsed).forEach(([slot, component]) => {
+          if (component && component.category) {
+            const correctSlot = getCategorySlot(component.category);
+            if (correctSlot === slot) {
+              cleaned[slot] = component;
+            } else {
+              console.warn(
+                `Removing misplaced component: ${component.name} (${component.category}) was in ${slot} slot, should be in ${correctSlot} slot`
+              );
+            }
+          }
+        });
+
+        return cleaned;
+      } catch (e) {
+        console.error("Error parsing saved components, resetting:", e);
+        return {
+          cpu: null,
+          gpu: null,
+          motherboard: null,
+          ram: null,
+          storage: null,
+          psu: null,
+          case: null,
+          cooling: null,
+          monitor: null,
+          operating_system: null,
+        };
+      }
+    }
+    return {
+      cpu: null,
+      gpu: null,
+      motherboard: null,
+      ram: null,
+      storage: null,
+      psu: null,
+      case: null,
+      cooling: null,
+      monitor: null,
+      operating_system: null,
+    };
+  };
+
+  // Helper function to get correct slot for a category
+  const getCategorySlot = (category) => {
+    switch (category) {
+      case "CPU":
+        return "cpu";
+      case "Video Card":
+      case "GPU":
+        return "gpu";
+      case "Motherboard":
+        return "motherboard";
+      case "Memory":
+      case "RAM":
+        return "ram";
+      case "Storage":
+        return "storage";
+      case "Power Supply":
+      case "PSU":
+        return "psu";
+      case "PC Case":
+      case "Case":
+        return "case";
+      case "CPU Cooler":
+      case "Cooler":
+        return "cooling";
+      case "Monitor":
+        return "monitor";
+      case "Operating System":
+        return "operating_system";
+      default:
+        return null;
+    }
   };
 
   const [selectedRange, setSelectedRange] = useState("");
@@ -238,6 +317,7 @@ function PCBuilder() {
   const [showCheckoutModal, setShowCheckoutModal] = useState(false);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [showTechnicianChoice, setShowTechnicianChoice] = useState(false);
+  const [showClearConfirmModal, setShowClearConfirmModal] = useState(false);
   // Restore suggested build state
   const [suggestedBuild, setSuggestedBuild] = useState(null);
   const [suggestDebug, setSuggestDebug] = useState(null);
@@ -269,6 +349,26 @@ function PCBuilder() {
     setRecommendations(null);
     // Clear the saved state from sessionStorage to ensure a fresh start next time
     sessionStorage.removeItem("pcbuilder_selected_components");
+  };
+
+  // Handle clear all with confirmation
+  const handleClearAll = () => {
+    if (
+      Object.values(selectedComponents).some((component) => component !== null)
+    ) {
+      setShowClearConfirmModal(true);
+    }
+  };
+
+  // Handle confirm clear all
+  const handleConfirmClear = () => {
+    resetBuildState();
+    setShowClearConfirmModal(false);
+  };
+
+  // Handle cancel clear
+  const handleCancelClear = () => {
+    setShowClearConfirmModal(false);
   };
 
   // Budget ranges in LKR
@@ -889,6 +989,78 @@ function PCBuilder() {
     console.log("Selected components:", selectedComponents);
   }, [selectedComponents]);
 
+  // Handle incoming selected components from navigation state
+  useEffect(() => {
+    const selectedComponent = location.state?.selectedComponent;
+    if (selectedComponent) {
+      // Determine component type based on the component's category ONLY - most reliable
+      let componentType = null;
+
+      console.log("Detecting component type for:", selectedComponent);
+
+      // Use category as the primary and most reliable detection method
+      switch (selectedComponent.category) {
+        case "CPU":
+          componentType = "cpu";
+          break;
+        case "Video Card":
+        case "GPU":
+          componentType = "gpu";
+          break;
+        case "Motherboard":
+          componentType = "motherboard";
+          break;
+        case "Memory":
+        case "RAM":
+          componentType = "ram";
+          break;
+        case "Storage":
+          componentType = "storage";
+          break;
+        case "Power Supply":
+        case "PSU":
+          componentType = "psu";
+          break;
+        case "PC Case":
+        case "Case":
+          componentType = "case";
+          break;
+        case "CPU Cooler":
+        case "Cooler":
+          componentType = "cooling";
+          break;
+        case "Monitor":
+          componentType = "monitor";
+          break;
+        case "Operating System":
+          componentType = "operating_system";
+          break;
+        default:
+          console.error("Unknown category:", selectedComponent.category);
+          componentType = null;
+      }
+
+      if (componentType) {
+        console.log(
+          `Setting component of type ${componentType} based on category ${selectedComponent.category}:`,
+          selectedComponent
+        );
+        setSelectedComponents((prev) => ({
+          ...prev,
+          [componentType]: selectedComponent,
+        }));
+
+        // Clear the navigation state to prevent re-processing
+        navigate(location.pathname, { replace: true, state: {} });
+      } else {
+        console.error(
+          "Could not determine component type for category:",
+          selectedComponent.category
+        );
+      }
+    }
+  }, [location.state, navigate, location.pathname]);
+
   // Persist selectedComponents to sessionStorage on change
   useEffect(() => {
     sessionStorage.setItem(
@@ -966,7 +1138,18 @@ function PCBuilder() {
         <Col md={8}>
           <Card className="mb-4">
             <Card.Body>
-              <h3>Build Your Custom PC</h3>
+              <div className="d-flex justify-content-between align-items-center mb-3">
+                <h3 className="mb-0">Build Your Custom PC</h3>
+                <Button
+                  variant="outline-danger"
+                  size="sm"
+                  onClick={handleClearAll}
+                  className="d-flex align-items-center gap-2"
+                >
+                  <i className="bi bi-trash"></i>
+                  Clear All
+                </Button>
+              </div>
               <Form>
                 {Object.entries(selectedComponents)
                   .filter(([key]) => key !== "cooler" && key !== "os")
@@ -1741,6 +1924,43 @@ function PCBuilder() {
             onClick={() => setShowTechnicianChoice(false)}
           >
             Close
+          </Button>
+        </Modal.Footer>
+      </Modal>
+
+      {/* Clear Confirmation Modal */}
+      <Modal
+        show={showClearConfirmModal}
+        onHide={handleCancelClear}
+        centered
+        backdrop="static"
+      >
+        <Modal.Header closeButton>
+          <Modal.Title>
+            <i className="bi bi-exclamation-triangle text-warning me-2"></i>
+            Clear All Components
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <p className="mb-3">
+            Are you sure you want to clear all selected components? This action
+            cannot be undone.
+          </p>
+          <div className="alert alert-warning mb-0">
+            <small>
+              <i className="bi bi-info-circle me-1"></i>
+              This will remove all selected parts, reset your budget and usage
+              preferences, and clear any saved progress.
+            </small>
+          </div>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleCancelClear}>
+            Cancel
+          </Button>
+          <Button variant="danger" onClick={handleConfirmClear}>
+            <i className="bi bi-trash me-1"></i>
+            Clear All
           </Button>
         </Modal.Footer>
       </Modal>

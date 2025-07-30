@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import axios from "axios";
 import {
   Container,
   Row,
@@ -11,7 +12,6 @@ import {
   Spinner,
 } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
 // import { OrdersContext } from './OrdersContext';
 
 const Orders = () => {
@@ -68,15 +68,23 @@ const Orders = () => {
   useEffect(() => {
     const fetchOrders = async () => {
       setLoading(true);
-      const user_id = sessionStorage.getItem("user_id");
-      if (!user_id) {
-        setOrders([]);
-        setLoading(false);
-        return;
-      }
       try {
+        // Get user session from backend
+        const sessionResponse = await axios.get(
+          "http://localhost/gearsphere_api/GearSphere-BackEnd/getSession.php",
+          { withCredentials: true }
+        );
+
+        if (!sessionResponse.data.success) {
+          setOrders([]);
+          setLoading(false);
+          return;
+        }
+
+        const user_id = sessionResponse.data.user_id;
         const response = await fetch(
-          `http://localhost/gearsphere_api/GearSphere-BackEnd/getOrders.php?user_id=${user_id}`
+          `http://localhost/gearsphere_api/GearSphere-BackEnd/getOrders.php?user_id=${user_id}`,
+          { credentials: "include" }
         );
         const data = await response.json();
         if (data.success && Array.isArray(data.orders)) {

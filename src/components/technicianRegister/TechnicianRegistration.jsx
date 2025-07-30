@@ -58,7 +58,8 @@ const TechnicianRegistration = ({
     try {
       const response = await axios.post(
         "http://localhost/gearsphere_api/GearSphere-BackEnd/techniciansignup.php",
-        formData
+        formData,
+        { withCredentials: true }
       );
 
       if (response.data.status === "success") {

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import {
   Container,
   Button,
@@ -135,13 +135,33 @@ export default function CompareCPUPage() {
   const [cpus, setCpus] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
-    const compareCpus = sessionStorage.getItem("compare_cpus");
-    if (compareCpus) {
+    // Get compare selection from navigation state with sessionStorage fallback
+    let compareSelection = location.state?.compareSelection || [];
+
+    // Fallback to sessionStorage if navigation state is empty (for page refresh scenarios)
+    if (compareSelection.length === 0) {
+      const storedSelection = sessionStorage.getItem("cpu_compareSelection");
+      if (storedSelection) {
+        try {
+          compareSelection = JSON.parse(storedSelection);
+        } catch (e) {
+          console.warn("Failed to parse stored comparison selection:", e);
+        }
+      }
+    } else {
+      // Store in sessionStorage for page refresh scenarios only
+      sessionStorage.setItem(
+        "cpu_compareSelection",
+        JSON.stringify(compareSelection)
+      );
+    }
+
+    if (compareSelection.length > 0) {
       try {
-        const parsedCpus = JSON.parse(compareCpus);
-        const cpusWithIcons = parsedCpus.map((cpu) => ({
+        const cpusWithIcons = compareSelection.map((cpu) => ({
           ...cpu,
           icon: cpuIconMap[cpu.name] || null,
         }));
@@ -152,14 +172,18 @@ export default function CompareCPUPage() {
       }
     }
     setLoading(false);
-  }, []);
+
+    // Cleanup sessionStorage when component unmounts
+    return () => {
+      sessionStorage.removeItem("cpu_compareSelection");
+    };
+  }, [location.state]);
 
   const handleSelectCPU = (cpu) => {
     const { icon, ...cpuWithoutIcon } = cpu;
-    sessionStorage.setItem("selected_cpu", JSON.stringify(cpuWithoutIcon));
     toast.success(`Selected ${cpu.name}. Redirecting to PC Builder...`);
     setTimeout(() => {
-      navigate("/pc-builder?cpuSelected=1");
+      navigate("/pc-builder", { state: { selectedComponent: cpuWithoutIcon } });
     }, 1000);
   };
 

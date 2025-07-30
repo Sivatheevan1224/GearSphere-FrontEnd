@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import {
   Container,
   Button,
@@ -123,13 +123,14 @@ export default function CompareOperatingSystemPage() {
   const [oses, setOses] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
-    const compareOses = sessionStorage.getItem("compare_operatingsystems");
-    if (compareOses) {
+    // Get compare selection from navigation state instead of sessionStorage
+    const compareSelection = location.state?.compareSelection || [];
+    if (compareSelection.length > 0) {
       try {
-        const parsedOses = JSON.parse(compareOses);
-        const osesWithIcons = parsedOses.map((os) => ({
+        const osesWithIcons = compareSelection.map((os) => ({
           ...os,
           icon: osIconMap[os.name] || null,
         }));
@@ -140,17 +141,13 @@ export default function CompareOperatingSystemPage() {
       }
     }
     setLoading(false);
-  }, []);
+  }, [location.state]);
 
   const handleSelectOS = (os) => {
     const { icon, ...osWithoutIcon } = os;
-    sessionStorage.setItem(
-      "selected_operatingsystem",
-      JSON.stringify(osWithoutIcon)
-    );
     toast.success(`Selected ${os.name}. Redirecting to PC Builder...`);
     setTimeout(() => {
-      navigate("/pc-builder?operatingsystemSelected=1");
+      navigate("/pc-builder", { state: { selectedComponent: osWithoutIcon } });
     }, 1000);
   };
 

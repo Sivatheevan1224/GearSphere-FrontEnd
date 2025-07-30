@@ -18,14 +18,10 @@ const SellerProfile = () => {
   useEffect(() => {
     const fetchSellerData = async () => {
       try {
-        const userId = sessionStorage.getItem("user_id");
-        if (!userId) return toast.error("Session expired. Please log in.");
-
-        const token = localStorage.getItem("token");
         const response = await axios.get(
-          `http://localhost/gearsphere_api/GearSphere-BackEnd/getSeller.php?user_id=${userId}`,
+          `http://localhost/gearsphere_api/GearSphere-BackEnd/getSeller.php`,
           {
-            headers: { Authorization: `Bearer ${token}` },
+            withCredentials: true,
           }
         );
         const data = response.data;
@@ -43,7 +39,6 @@ const SellerProfile = () => {
             profilePic: profilePicUrl,
           });
 
-          sessionStorage.setItem("seller_profile_pic", profilePicUrl);
           window.dispatchEvent(new Event("profilePicUpdated"));
         }
       } catch (err) {
@@ -71,11 +66,7 @@ const SellerProfile = () => {
   const handleProfileUpdate = async (e) => {
     e.preventDefault();
 
-    const userId = sessionStorage.getItem("user_id");
-    if (!userId) return toast.error("Session expired. Please log in.");
-
     const payload = new FormData();
-    payload.append("user_id", userId);
     payload.append("name", formData.name);
     payload.append("contact_number", formData.contact_number);
     payload.append("address", formData.address);
@@ -85,19 +76,18 @@ const SellerProfile = () => {
     }
 
     try {
-      const token = localStorage.getItem("token");
       const response = await axios.post(
         "http://localhost/gearsphere_api/GearSphere-BackEnd/updateSellerProfile.php",
         payload,
-        { headers: { Authorization: `Bearer ${token}` } }
+        { withCredentials: true }
       );
 
       if (response.data.success) {
         toast.success("Profile updated successfully");
 
         const profileRes = await axios.get(
-          `http://localhost/gearsphere_api/GearSphere-BackEnd/getSeller.php?user_id=${userId}`,
-          { headers: { Authorization: `Bearer ${token}` } }
+          `http://localhost/gearsphere_api/GearSphere-BackEnd/getSeller.php`,
+          { withCredentials: true }
         );
         const data = profileRes.data;
         const profilePicUrl = data.profile_image
@@ -108,7 +98,6 @@ const SellerProfile = () => {
           ...prev,
           profilePic: profilePicUrl,
         }));
-        sessionStorage.setItem("seller_profile_pic", profilePicUrl);
         window.dispatchEvent(new Event("profilePicUpdated"));
         setProfilePicFile(null);
         setProfilePicPreview(null);

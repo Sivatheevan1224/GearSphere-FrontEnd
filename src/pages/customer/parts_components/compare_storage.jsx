@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import {
   Container,
   Button,
@@ -114,12 +114,34 @@ export default function CompareStoragePage() {
   const [storage, setStorage] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
-    const compareStorage = sessionStorage.getItem("compare_storage");
-    if (compareStorage) {
-      const parsedStorage = JSON.parse(compareStorage);
-      const ids = parsedStorage.map((stor) => stor.product_id);
+    // Get compare selection from navigation state with sessionStorage fallback
+    let compareSelection = location.state?.compareSelection || [];
+
+    // Fallback to sessionStorage if navigation state is empty (for page refresh scenarios)
+    if (compareSelection.length === 0) {
+      const storedSelection = sessionStorage.getItem(
+        "storage_compareSelection"
+      );
+      if (storedSelection) {
+        try {
+          compareSelection = JSON.parse(storedSelection);
+        } catch (e) {
+          console.warn("Failed to parse stored comparison selection:", e);
+        }
+      }
+    } else {
+      // Store in sessionStorage for page refresh scenarios only
+      sessionStorage.setItem(
+        "storage_compareSelection",
+        JSON.stringify(compareSelection)
+      );
+    }
+
+    if (compareSelection.length > 0) {
+      const ids = compareSelection.map((stor) => stor.product_id);
       axios
         .get(
           "http://localhost/gearsphere_api/GearSphere-BackEnd/getStorage.php"
@@ -144,13 +166,17 @@ export default function CompareStoragePage() {
     } else {
       setLoading(false);
     }
-  }, []);
+
+    // Cleanup sessionStorage when component unmounts
+    return () => {
+      sessionStorage.removeItem("storage_compareSelection");
+    };
+  }, [location.state]);
 
   const handleSelectStorage = (stor) => {
-    sessionStorage.setItem("selected_storage", JSON.stringify(stor));
     toast.success(`Selected ${stor.name}. Redirecting to PC Builder...`);
     setTimeout(() => {
-      navigate("/pc-builder?storageSelected=1");
+      navigate("/pc-builder", { state: { selectedComponent: stor } });
     }, 1000);
   };
 

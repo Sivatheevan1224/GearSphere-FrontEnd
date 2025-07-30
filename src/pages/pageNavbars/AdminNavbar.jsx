@@ -17,14 +17,10 @@ function AdminNavbar({ fixed = "top" }) {
   useEffect(() => {
     const fetchAdminData = async () => {
       try {
-        const userId = sessionStorage.getItem("user_id");
-        if (!userId) return;
-
-        const token = localStorage.getItem("token");
         const response = await axios.get(
-          `http://localhost/gearsphere_api/GearSphere-BackEnd/getAdmin.php?user_id=${userId}`,
+          `http://localhost/gearsphere_api/GearSphere-BackEnd/getAdmin.php`,
           {
-            headers: { Authorization: `Bearer ${token}` },
+            withCredentials: true,
           }
         );
         const data = response.data;
@@ -56,10 +52,17 @@ function AdminNavbar({ fixed = "top" }) {
       window.removeEventListener("profilePicUpdated", handleProfileUpdate);
   }, []);
 
-  const handleLogout = () => {
-    sessionStorage.clear();
+  const handleLogout = async () => {
+    try {
+      await axios.post(
+        "http://localhost/gearsphere_api/GearSphere-BackEnd/logout.php",
+        {},
+        { withCredentials: true }
+      );
+    } catch (error) {
+      console.error("Logout error:", error);
+    }
     navigate("/", { replace: true });
-    window.location.reload();
   };
 
   return (
@@ -170,18 +173,18 @@ function AdminNavbar({ fixed = "top" }) {
               >
                 Reviews
               </Nav.Link>
-                  <Nav.Link
-                    as={Link}
-                    to="/admin/monitoring"
-                    onClick={() => setExpanded(false)}
-                    className={
-                      location.pathname === "/admin/monitoring"
-                        ? "text-primary fw-bold"
-                        : ""
-                    }
-                  >
-                    Monitoring
-                  </Nav.Link>
+              <Nav.Link
+                as={Link}
+                to="/admin/monitoring"
+                onClick={() => setExpanded(false)}
+                className={
+                  location.pathname === "/admin/monitoring"
+                    ? "text-primary fw-bold"
+                    : ""
+                }
+              >
+                Monitoring
+              </Nav.Link>
             </Nav>
             <div className="d-flex align-items-center">
               <Bell

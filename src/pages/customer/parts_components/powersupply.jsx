@@ -130,19 +130,21 @@ export default function PowerSupplyPage() {
   };
 
   const handleSelect = (psu) => {
-    sessionStorage.setItem("selected_powersupply", JSON.stringify(psu));
     toast.success(`Selected ${psu.name}. Redirecting to PC Builder...`);
     setTimeout(() => {
-      navigate("/pc-builder?powersupplySelected=1");
+      // Navigate back to PC Builder with selected PSU in state (no sessionStorage)
+      navigate("/pc-builder", {
+        state: { selectedComponent: psu },
+      });
     }, 1000);
   };
 
   const handleCompareClick = () => {
-    sessionStorage.setItem(
-      "compare_powersupplies",
-      JSON.stringify(compareSelection)
-    );
-    navigate("/compare-powersupply");
+    // Navigate to compare page with selected items in state (no sessionStorage)
+    navigate("/compare-powersupply", {
+      state: { compareSelection },
+      replace: true,
+    });
   };
 
   const handleTogglePriceSort = () => {
