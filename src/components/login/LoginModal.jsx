@@ -67,16 +67,16 @@ function LoginModal({ show, onHide, switchToRegister }) {
         console.log("Navigating for user_type:", user_type.toLowerCase());
         if (user_type.toLowerCase() === "admin") {
           console.log("Navigating to admin dashboard");
-          navigate("/admin");
+          navigate("/admin", { replace: true });
         } else if (user_type.toLowerCase() === "customer") {
           console.log("Navigating to customer dashboard");
-          navigate("/customer/dashboard");
+          navigate("/customer/dashboard", { replace: true });
         } else if (user_type.toLowerCase() === "technician") {
           console.log("Navigating to technician dashboard");
-          navigate("/technician/dashboard");
+          navigate("/technician/dashboard", { replace: true });
         } else if (user_type.toLowerCase() === "seller") {
           console.log("Navigating to seller dashboard");
-          navigate("/seller");
+          navigate("/seller", { replace: true });
         } else {
           console.log("Unknown user type:", user_type);
         }
