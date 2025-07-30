@@ -13,6 +13,7 @@ import {
 import { Fan } from "react-bootstrap-icons";
 import { toast } from "react-toastify";
 import CustomerNavbar from "../../pageNavbars/CustomerNavbar";
+import LoadingScreen from "../../../components/loading/LoadingScreen";
 import axios from "axios";
 
 function useBreakpoint() {
@@ -115,17 +116,10 @@ export default function CPUCoolerPage() {
 
   if (loading) {
     return (
-      <>
-        <CustomerNavbar />
-        <Container className="py-5">
-          <div className="text-center">
-            <div className="spinner-border" role="status">
-              <span className="visually-hidden">Loading...</span>
-            </div>
-            <p className="mt-3">Loading CPU Coolers...</p>
-          </div>
-        </Container>
-      </>
+      <LoadingScreen
+        message="Loading CPU Coolers"
+        subMessage="Fetching available cooling solutions"
+      />
     );
   }
 

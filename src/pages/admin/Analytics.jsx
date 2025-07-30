@@ -21,6 +21,7 @@ import {
   Tooltip,
   Legend,
 } from "chart.js";
+import LoadingScreen from "../../components/loading/LoadingScreen";
 
 // Register ChartJS components
 ChartJS.register(
@@ -142,9 +143,10 @@ const Analytics = () => {
 
   if (loading)
     return (
-      <div className="text-center py-5">
-        <h4>Loading analytics...</h4>
-      </div>
+      <LoadingScreen
+        message="Loading Analytics"
+        subMessage="Generating system reports and charts"
+      />
     );
   if (error)
     return (

@@ -12,6 +12,7 @@ import {
 } from "react-bootstrap";
 import { Memory } from "react-bootstrap-icons";
 import CustomerNavbar from "../../pageNavbars/CustomerNavbar";
+import LoadingScreen from "../../../components/loading/LoadingScreen";
 import { toast } from "react-toastify";
 import axios from "axios";
 
@@ -180,6 +181,12 @@ export default function MemoryPage() {
 
   return (
     <>
+      {loading && (
+        <LoadingScreen
+          message="Loading Memory"
+          subMessage="Fetching available RAM modules"
+        />
+      )}
       <CustomerNavbar />
       <Container className="py-5">
         <style>{selectMemoryHeadingStyle}</style>
@@ -223,13 +230,7 @@ export default function MemoryPage() {
             </tr>
           </thead>
           <tbody>
-            {loading ? (
-              <tr>
-                <td colSpan="10" className="text-center text-muted">
-                  Loading...
-                </td>
-              </tr>
-            ) : error ? (
+            {error ? (
               <tr>
                 <td colSpan="10" className="text-center text-danger">
                   {error}

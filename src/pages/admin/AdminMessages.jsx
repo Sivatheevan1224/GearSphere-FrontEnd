@@ -12,6 +12,7 @@ import {
 } from "react-bootstrap";
 import axios from "axios";
 import { toast } from "react-toastify";
+import LoadingScreen from "../../components/loading/LoadingScreen";
 
 const AdminMessages = () => {
   const [messages, setMessages] = useState([]);
@@ -72,7 +73,10 @@ const AdminMessages = () => {
       <Card>
         <Card.Body>
           {loading ? (
-            <Spinner animation="border" />
+            <LoadingScreen
+              message="Loading Messages"
+              submessage="Fetching contact messages from users"
+            />
           ) : error ? (
             <Alert variant="danger">{error}</Alert>
           ) : messages.length === 0 ? (

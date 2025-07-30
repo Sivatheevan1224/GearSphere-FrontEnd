@@ -3,6 +3,7 @@ import { Container, Row, Col, Card, Form, Button } from "react-bootstrap";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import axios from "axios";
+import LoadingScreen from "../../components/loading/LoadingScreen";
 
 const TechnicianProfile = () => {
   const [formData, setFormData] = useState({
@@ -16,11 +17,13 @@ const TechnicianProfile = () => {
   });
   const [profilePicFile, setProfilePicFile] = useState(null);
   const [profilePicPreview, setProfilePicPreview] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
   const fileInputRef = useRef();
 
   useEffect(() => {
     const fetchTechnicianData = async () => {
       try {
+        setIsLoading(true);
         // Get session data from backend
         const sessionResponse = await axios.get(
           "http://localhost/gearsphere_api/GearSphere-BackEnd/getSession.php",
@@ -67,6 +70,8 @@ const TechnicianProfile = () => {
       } catch (err) {
         console.error("Fetch failed:", err);
         toast.error("Failed to fetch profile");
+      } finally {
+        setIsLoading(false);
       }
     };
 
@@ -182,6 +187,16 @@ const TechnicianProfile = () => {
       toast.error("An error occurred during update");
     }
   };
+
+  // Show loading screen while data is being fetched
+  if (isLoading) {
+    return (
+      <LoadingScreen
+        message="Loading Technician Profile"
+        subMessage="Fetching your professional information"
+      />
+    );
+  }
 
   return (
     <Container>

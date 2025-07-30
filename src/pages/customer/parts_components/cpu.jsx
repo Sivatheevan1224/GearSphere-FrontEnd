@@ -12,6 +12,7 @@ import {
 } from "react-bootstrap";
 import { Cpu } from "react-bootstrap-icons";
 import CustomerNavbar from "../../pageNavbars/CustomerNavbar";
+import LoadingScreen from "../../../components/loading/LoadingScreen";
 import { toast } from "react-toastify";
 import axios from "axios";
 
@@ -188,6 +189,12 @@ export default function CPUPage() {
 
   return (
     <>
+      {loading && (
+        <LoadingScreen
+          message="Loading CPUs"
+          subMessage="Fetching available processors"
+        />
+      )}
       <CustomerNavbar />
       <Container className="py-5">
         <style>{selectCpuHeadingStyle}</style>
@@ -234,13 +241,7 @@ export default function CPUPage() {
             </tr>
           </thead>
           <tbody>
-            {loading ? (
-              <tr>
-                <td colSpan="13" className="text-center text-muted">
-                  Loading...
-                </td>
-              </tr>
-            ) : error ? (
+            {error ? (
               <tr>
                 <td colSpan="13" className="text-center text-danger">
                   {error}

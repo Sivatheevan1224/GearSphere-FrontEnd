@@ -28,6 +28,7 @@ import Checkout from "./Checkout";
 import { useNavigate, useLocation } from "react-router-dom";
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Tooltip from "react-bootstrap/Tooltip";
+import LoadingScreen from "../../components/loading/LoadingScreen";
 
 const partOptionsMap = {
   cpu: null,
@@ -322,6 +323,7 @@ function PCBuilder() {
   const [suggestedBuild, setSuggestedBuild] = useState(null);
   const [suggestDebug, setSuggestDebug] = useState(null);
   const [lastOrderId, setLastOrderId] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   const { addOrder } = useOrders();
   const navigate = useNavigate();
@@ -560,6 +562,19 @@ function PCBuilder() {
     "monitor",
     "operating_system",
   ];
+
+  // Initial loading effect
+  useEffect(() => {
+    // Simulate component initialization
+    const initializeComponent = async () => {
+      setIsLoading(true);
+      // Add a small delay to show the loading screen
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      setIsLoading(false);
+    };
+
+    initializeComponent();
+  }, []);
 
   useEffect(() => {
     const total = Object.entries(selectedComponents)
@@ -1075,6 +1090,16 @@ function PCBuilder() {
       fetchSuggestedBuild(range.max, usage);
     }
   }, [selectedRange, usage]);
+
+  // Show loading screen while initializing
+  if (isLoading) {
+    return (
+      <LoadingScreen
+        message="Loading PC Builder"
+        subMessage="Preparing your custom build experience"
+      />
+    );
+  }
 
   return (
     <Container className="py-5">

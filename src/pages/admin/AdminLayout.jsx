@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import AdminNavbar from "../pageNavbars/AdminNavbar";
 import { Outlet, useNavigate } from "react-router-dom";
 import DashboardFooter from "../pagefooter/DashboardFooter";
+import LoadingScreen from "../../components/loading/LoadingScreen";
 import axios from "axios";
 
 function AdminLayout() {
@@ -34,7 +35,12 @@ function AdminLayout() {
   }, [navigate]);
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return (
+      <LoadingScreen
+        message="Admin Authentication"
+        submessage="Verifying administrative access"
+      />
+    );
   }
 
   return (

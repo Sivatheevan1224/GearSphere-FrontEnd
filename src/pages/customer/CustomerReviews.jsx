@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Form, Button, Card, Row, Col, Alert, Spinner } from "react-bootstrap";
 import axios from "axios";
+import LoadingScreen from "../../components/loading/LoadingScreen";
 
 export default function CustomerReviews() {
   const [reviews, setReviews] = useState([]);
@@ -120,6 +121,16 @@ export default function CustomerReviews() {
     }
   };
 
+  // Show loading screen while data is being fetched
+  if (loading) {
+    return (
+      <LoadingScreen
+        message="Loading Reviews"
+        subMessage="Fetching your review history"
+      />
+    );
+  }
+
   return (
     <div className="container py-4">
       <Card className="mb-4">
@@ -215,38 +226,34 @@ export default function CustomerReviews() {
       <Card>
         <Card.Body>
           <Card.Title>Your Reviews</Card.Title>
-          {loading ? (
-            <Spinner animation="border" />
-          ) : (
-            <Row>
-              {reviews.length === 0 && (
-                <Col>
-                  <Alert variant="info">No reviews yet.</Alert>
-                </Col>
-              )}
-              {reviews.map((r) => (
-                <Col md={6} key={r.id} className="mb-3">
-                  <Card>
-                    <Card.Body>
-                      <div className="d-flex justify-content-between align-items-center mb-2">
-                        <span className="fw-bold">
-                          {r.target_type === "technician"
-                            ? `Technician #${r.target_id}`
-                            : "General Feedback"}
-                        </span>
+          <Row>
+            {reviews.length === 0 && (
+              <Col>
+                <Alert variant="info">No reviews yet.</Alert>
+              </Col>
+            )}
+            {reviews.map((r) => (
+              <Col md={6} key={r.id} className="mb-3">
+                <Card>
+                  <Card.Body>
+                    <div className="d-flex justify-content-between align-items-center mb-2">
+                      <span className="fw-bold">
+                        {r.target_type === "technician"
+                          ? `Technician #${r.target_id}`
+                          : "General Feedback"}
+                      </span>
 
-                        <span className="text-warning">{r.rating} ★</span>
-                      </div>
-                      <div>{r.comment}</div>
-                      <div className="text-muted small mt-2">
-                        Status: {r.status}
-                      </div>
-                    </Card.Body>
-                  </Card>
-                </Col>
-              ))}
-            </Row>
-          )}
+                      <span className="text-warning">{r.rating} ★</span>
+                    </div>
+                    <div>{r.comment}</div>
+                    <div className="text-muted small mt-2">
+                      Status: {r.status}
+                    </div>
+                  </Card.Body>
+                </Card>
+              </Col>
+            ))}
+          </Row>
         </Card.Body>
       </Card>
     </div>

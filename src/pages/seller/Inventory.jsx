@@ -1,136 +1,171 @@
-import React, { useState, useEffect } from 'react';
-import { Container, Row, Col, Card, Table, Button, Form, Modal, Badge, Pagination, Alert, Spinner } from 'react-bootstrap';
-import { toast, ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-import ImagePreview from '../../components/ImagePreview';
+import React, { useState, useEffect } from "react";
+import {
+  Container,
+  Row,
+  Col,
+  Card,
+  Table,
+  Button,
+  Form,
+  Modal,
+  Badge,
+  Pagination,
+  Alert,
+  Spinner,
+} from "react-bootstrap";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import LoadingScreen from "../../components/loading/LoadingScreen";
+import ImagePreview from "../../components/ImagePreview";
 
 const Inventory = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [showStockModal, setShowStockModal] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [categoryFilter, setCategoryFilter] = useState('all');
-  const [stockFilter, setStockFilter] = useState('all');
+  const [searchQuery, setSearchQuery] = useState("");
+  const [categoryFilter, setCategoryFilter] = useState("all");
+  const [stockFilter, setStockFilter] = useState("all");
   const productsPerPage = 10;
-  
+
   // API state
   const [inventory, setInventory] = useState([]);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [stockFormData, setStockFormData] = useState({
-    stock: '',
-    status: '',
-    lastRestockDate: ''
+    stock: "",
+    status: "",
+    lastRestockDate: "",
   });
 
   // Backend API URL
-  const API_BASE_URL = 'http://localhost/gearsphere_api/GearSphere-Backend';
+  const API_BASE_URL = "http://localhost/gearsphere_api/GearSphere-Backend";
 
   const categories = [
-    'CPU',
-    'CPU Cooler',
-    'Motherboard',
-    'Memory',
-    'Storage',
-    'Video Card',
-    'Power Supply',
-    'Operating System',
-    'Monitor',
-    'PC Case',
-    'Keyboard',
-    'Mouse',
-    'Headset',
-    'Microphone',
-    'Webcam',
-    'Speakers',
-    'Network Card',
-    'Sound Card',
-    'Cables',
-    'Thermal Paste',
-    'Fans'
+    "CPU",
+    "CPU Cooler",
+    "Motherboard",
+    "Memory",
+    "Storage",
+    "Video Card",
+    "Power Supply",
+    "Operating System",
+    "Monitor",
+    "PC Case",
+    "Keyboard",
+    "Mouse",
+    "Headset",
+    "Microphone",
+    "Webcam",
+    "Speakers",
+    "Network Card",
+    "Sound Card",
+    "Cables",
+    "Thermal Paste",
+    "Fans",
   ];
 
   // Fetch inventory from backend API
   const fetchInventory = async () => {
     try {
       setLoading(true);
-      
-      console.log('Fetching inventory from:', `${API_BASE_URL}/getProducts.php`);
-      
+
+      console.log(
+        "Fetching inventory from:",
+        `${API_BASE_URL}/getProducts.php`
+      );
+
       const response = await fetch(`${API_BASE_URL}/getProducts.php`);
-      console.log('Response status:', response.status);
-      
+      console.log("Response status:", response.status);
+
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-      
+
       const data = await response.json();
-      console.log('API response:', data);
-      
+      console.log("API response:", data);
+
       // Extra debug: log all product statuses from backend
       if (data.products) {
-        data.products.forEach(p => console.log(`Product: ${p.name}, Stock: ${p.stock}, Status: ${p.status}`));
+        data.products.forEach((p) =>
+          console.log(
+            `Product: ${p.name}, Stock: ${p.stock}, Status: ${p.status}`
+          )
+        );
       }
-      
+
       if (data.success) {
         // Debug: Log raw data from backend
-        console.log('Raw products data from backend:', data.products.map(p => ({
-          id: p.product_id,
-          name: p.name,
-          stock: p.stock,
-          price: p.price,
-          raw_stock: typeof p.stock,
-          raw_price: typeof p.price
-        })));
-        
+        console.log(
+          "Raw products data from backend:",
+          data.products.map((p) => ({
+            id: p.product_id,
+            name: p.name,
+            stock: p.stock,
+            price: p.price,
+            raw_stock: typeof p.stock,
+            raw_price: typeof p.price,
+          }))
+        );
+
         // Transform the data to match inventory expectations
-        const transformedInventory = data.products.map(product => ({
+        const transformedInventory = data.products.map((product) => ({
           id: product.product_id,
           name: product.name,
           category: product.category,
-          sku: `SKU-${product.product_id.toString().padStart(6, '0')}`,
+          sku: `SKU-${product.product_id.toString().padStart(6, "0")}`,
           currentStock: product.stock || 0,
           minStock: 5, // Fixed minimum stock
-          status: product.status || 'In Stock', // Use status from database
-          lastRestock: product.last_restock_date ? new Date(product.last_restock_date).toLocaleDateString() : 'N/A',
+          status: product.status || "In Stock", // Use status from database
+          lastRestock: product.last_restock_date
+            ? new Date(product.last_restock_date).toLocaleDateString()
+            : "N/A",
           value: (product.stock || 0) * parseFloat(product.price),
           price: parseFloat(product.price),
-          image: product.image_url ? `${API_BASE_URL}/${product.image_url}` : '/placeholder.svg?height=200&width=200',
+          image: product.image_url
+            ? `${API_BASE_URL}/${product.image_url}`
+            : "/placeholder.svg?height=200&width=200",
           description: product.description,
-          manufacturer: product.manufacturer
+          manufacturer: product.manufacturer,
         }));
-        
-        console.log('Transformed inventory:', transformedInventory);
-        
+
+        console.log("Transformed inventory:", transformedInventory);
+
         // Debug: Log total value calculation
-        const totalValue = transformedInventory.reduce((sum, item) => sum + item.value, 0);
-        console.log('Total inventory value calculation:', {
+        const totalValue = transformedInventory.reduce(
+          (sum, item) => sum + item.value,
+          0
+        );
+        console.log("Total inventory value calculation:", {
           totalProducts: transformedInventory.length,
           totalValue: totalValue,
-          valueBreakdown: transformedInventory.map(item => ({
+          valueBreakdown: transformedInventory.map((item) => ({
             name: item.name,
             stock: item.currentStock,
             price: item.price,
             value: item.value,
-            calculation: `${item.currentStock} × LKR ${item.price} = LKR ${item.value}`
-          }))
+            calculation: `${item.currentStock} × LKR ${item.price} = LKR ${item.value}`,
+          })),
         });
-        
+
         // Extra debug: log transformed inventory statuses
-        transformedInventory.forEach(item => console.log(`Transformed: ${item.name}, Stock: ${item.currentStock}, Status: ${item.status}`));
-        
+        transformedInventory.forEach((item) =>
+          console.log(
+            `Transformed: ${item.name}, Stock: ${item.currentStock}, Status: ${item.status}`
+          )
+        );
+
         setInventory(transformedInventory);
       } else {
-        toast.error(data.message || 'Failed to fetch inventory', {
+        toast.error(data.message || "Failed to fetch inventory", {
           autoClose: 2000,
-          hideProgressBar: false
+          hideProgressBar: false,
         });
       }
     } catch (err) {
-      console.error('Error fetching inventory:', err);
-      toast.error('Error connecting to server: ' + err.message, {
+      console.error("Error fetching inventory:", err);
+      toast.error("Error connecting to server: " + err.message, {
         autoClose: 2000,
-        hideProgressBar: false
+        hideProgressBar: false,
       });
     } finally {
       setLoading(false);
@@ -144,112 +179,122 @@ const Inventory = () => {
 
   const getStatusBadge = (status) => {
     const variants = {
-      'In Stock': 'success',
-      'Low Stock': 'warning',
-      'Out of Stock': 'danger',
-      'Discontinued': 'secondary'
+      "In Stock": "success",
+      "Low Stock": "warning",
+      "Out of Stock": "danger",
+      Discontinued: "secondary",
     };
-    return <Badge bg={variants[status] || 'secondary'}>{status}</Badge>;
+    return <Badge bg={variants[status] || "secondary"}>{status}</Badge>;
   };
 
   const handleUpdateStock = async (productId, newStockData) => {
     try {
       setSubmitting(true);
-      
+
       // Validate input
       if (!productId) {
-        toast.error('Product ID is required', {
+        toast.error("Product ID is required", {
           autoClose: 2000,
-          hideProgressBar: false
+          hideProgressBar: false,
         });
         return;
       }
-      
-      if (!newStockData.stock || newStockData.stock === '') {
-        toast.error('Stock quantity is required', {
+
+      if (!newStockData.stock || newStockData.stock === "") {
+        toast.error("Stock quantity is required", {
           autoClose: 2000,
-          hideProgressBar: false
+          hideProgressBar: false,
         });
         return;
       }
-      
+
       const stockValue = parseInt(newStockData.stock);
       if (isNaN(stockValue) || stockValue < 0) {
-        toast.error('Stock must be a valid non-negative number', {
+        toast.error("Stock must be a valid non-negative number", {
           autoClose: 2000,
-          hideProgressBar: false
+          hideProgressBar: false,
         });
         return;
       }
-      
-      console.log('Updating stock for product:', productId, stockValue);
-      
+
+      console.log("Updating stock for product:", productId, stockValue);
+
       // Create FormData for the stock update
       const formData = new FormData();
-      formData.append('product_id', productId.toString());
-      formData.append('stock', stockValue.toString());
+      formData.append("product_id", productId.toString());
+      formData.append("stock", stockValue.toString());
       // Only send status if Discontinued is selected
-      if (newStockData.status === 'Discontinued') {
-        formData.append('status', 'Discontinued');
+      if (newStockData.status === "Discontinued") {
+        formData.append("status", "Discontinued");
       }
-      formData.append('last_restock_date', newStockData.lastRestockDate);
-      
+      formData.append("last_restock_date", newStockData.lastRestockDate);
+
       const response = await fetch(`${API_BASE_URL}/updateStock.php`, {
-        method: 'POST',
-        body: formData
+        method: "POST",
+        body: formData,
       });
-      
-      console.log('Update stock response status:', response.status);
-      
+
+      console.log("Update stock response status:", response.status);
+
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-      
+
       const result = await response.json();
-      console.log('Update stock result:', result);
-      
+      console.log("Update stock result:", result);
+
       // Extra debug: log new status from backend
       if (result.data) {
         console.log(`Backend new_status: ${result.data.new_status}`);
       }
-      
+
       if (result.success) {
         // Refresh inventory list
         await fetchInventory();
         setShowStockModal(false);
         setStockFormData({
-          stock: '',
-          status: '',
-          lastRestockDate: ''
+          stock: "",
+          status: "",
+          lastRestockDate: "",
         });
-        
+
         // Show success message
-        const autoStatus = stockValue === 0 ? 'Out of Stock' : 
-                          stockValue <= 5 ? 'Low Stock' : 'In Stock';
+        const autoStatus =
+          stockValue === 0
+            ? "Out of Stock"
+            : stockValue <= 5
+            ? "Low Stock"
+            : "In Stock";
         const finalStatus = result.data.new_status;
-        const statusChange = result.data.old_status !== finalStatus 
-          ? `, Status: ${result.data.old_status} → ${finalStatus}`
-          : `, Status: ${finalStatus}`;
-        
-        const dateInfo = result.data.last_restock_date 
-          ? `, Last Restock: ${new Date(result.data.last_restock_date).toLocaleDateString()}`
-          : '';
-        
-        toast.success(`Updated successfully! ${result.data.product_name}: Stock ${result.data.old_stock} → ${result.data.new_stock}${statusChange}${dateInfo}`, {
-          autoClose: 2000,
-          hideProgressBar: false
-        });
+        const statusChange =
+          result.data.old_status !== finalStatus
+            ? `, Status: ${result.data.old_status} → ${finalStatus}`
+            : `, Status: ${finalStatus}`;
+
+        const dateInfo = result.data.last_restock_date
+          ? `, Last Restock: ${new Date(
+              result.data.last_restock_date
+            ).toLocaleDateString()}`
+          : "";
+
+        toast.success(
+          `Updated successfully! ${result.data.product_name}: Stock ${result.data.old_stock} → ${result.data.new_stock}${statusChange}${dateInfo}`,
+          {
+            autoClose: 2000,
+            hideProgressBar: false,
+          }
+        );
       } else {
-        toast.error(result.message || 'Failed to update stock and status', {
+        toast.error(result.message || "Failed to update stock and status", {
           autoClose: 2000,
-          hideProgressBar: false
+          hideProgressBar: false,
         });
       }
     } catch (err) {
-      console.error('Error updating stock:', err);
-      toast.error('Error updating stock and status: ' + err.message, {
+      console.error("Error updating stock:", err);
+      toast.error("Error updating stock and status: " + err.message, {
         autoClose: 2000,
-        hideProgressBar: false
+        hideProgressBar: false,
       });
     } finally {
       setSubmitting(false);
@@ -258,64 +303,66 @@ const Inventory = () => {
 
   const handleStockModalOpen = (product) => {
     setSelectedProduct(product);
-    
+
     // Format date for date input (YYYY-MM-DD format)
-    let formattedDate = '';
-    if (product.lastRestock && product.lastRestock !== 'N/A') {
+    let formattedDate = "";
+    if (product.lastRestock && product.lastRestock !== "N/A") {
       try {
         const date = new Date(product.lastRestock);
-        formattedDate = date.toISOString().split('T')[0]; // Get YYYY-MM-DD format
+        formattedDate = date.toISOString().split("T")[0]; // Get YYYY-MM-DD format
       } catch (e) {
-        formattedDate = '';
+        formattedDate = "";
       }
     }
-    
+
     // Set status to "Discontinued" only if it's currently discontinued, otherwise empty for auto-calculation
-    const statusValue = product.status === 'Discontinued' ? 'Discontinued' : '';
-    
+    const statusValue = product.status === "Discontinued" ? "Discontinued" : "";
+
     setStockFormData({
       stock: product.currentStock.toString(),
       status: statusValue,
-      lastRestockDate: formattedDate
+      lastRestockDate: formattedDate,
     });
     setShowStockModal(true);
   };
 
   const handleStockFormChange = (e) => {
     const { name, value } = e.target;
-    setStockFormData(prev => ({
+    setStockFormData((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
 
-  const filteredInventory = inventory.filter(item =>
-    (item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    item.sku.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    item.category.toLowerCase().includes(searchQuery.toLowerCase())) &&
-    (categoryFilter === 'all' || item.category === categoryFilter) &&
-    (stockFilter === 'all' || item.status === stockFilter)
+  const filteredInventory = inventory.filter(
+    (item) =>
+      (item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        item.sku.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        item.category.toLowerCase().includes(searchQuery.toLowerCase())) &&
+      (categoryFilter === "all" || item.category === categoryFilter) &&
+      (stockFilter === "all" || item.status === stockFilter)
   );
 
   const indexOfLastItem = currentPage * productsPerPage;
   const indexOfFirstItem = indexOfLastItem - productsPerPage;
-  const currentItems = filteredInventory.slice(indexOfFirstItem, indexOfLastItem);
+  const currentItems = filteredInventory.slice(
+    indexOfFirstItem,
+    indexOfLastItem
+  );
   const totalPages = Math.ceil(filteredInventory.length / productsPerPage);
 
-  const lowStockItems = inventory.filter(item => item.status === 'Low Stock' || item.status === 'Out of Stock');
+  const lowStockItems = inventory.filter(
+    (item) => item.status === "Low Stock" || item.status === "Out of Stock"
+  );
 
-  const formatLKR = (amount) => 'LKR ' + Number(amount).toLocaleString('en-LK');
+  const formatLKR = (amount) => "LKR " + Number(amount).toLocaleString("en-LK");
 
   if (loading) {
     return (
-      <Container className="py-5">
-        <div className="text-center">
-          <Spinner animation="border" role="status">
-            <span className="visually-hidden">Loading...</span>
-          </Spinner>
-          <p className="mt-3">Loading inventory...</p>
-        </div>
-      </Container>
+      <LoadingScreen
+        message="Loading Inventory"
+        submessage="Fetching product inventory data"
+      />
     );
   }
 
@@ -323,18 +370,15 @@ const Inventory = () => {
     <Container className="py-5">
       <h1 className="text-center mb-5">Inventory Management</h1>
 
-     
-
       {lowStockItems.length > 0 && (
         <Alert variant="warning" className="mb-4">
           <Alert.Heading>Low Stock Alert!</Alert.Heading>
-          <p>
-            You have {lowStockItems.length} items that need attention:
-          </p>
+          <p>You have {lowStockItems.length} items that need attention:</p>
           <ul>
-            {lowStockItems.map(item => (
+            {lowStockItems.map((item) => (
               <li key={item.id}>
-                {item.name} - Current Stock: {item.currentStock} (Min: {item.minStock})
+                {item.name} - Current Stock: {item.currentStock} (Min:{" "}
+                {item.minStock})
               </li>
             ))}
           </ul>
@@ -362,7 +406,12 @@ const Inventory = () => {
           <Card className="shadow-sm h-100">
             <Card.Body>
               <h6 className="text-muted mb-2">Out of Stock</h6>
-              <h3>{inventory.filter(item => item.status === 'Out of Stock').length}</h3>
+              <h3>
+                {
+                  inventory.filter((item) => item.status === "Out of Stock")
+                    .length
+                }
+              </h3>
             </Card.Body>
           </Card>
         </Col>
@@ -370,7 +419,11 @@ const Inventory = () => {
           <Card className="shadow-sm h-100">
             <Card.Body>
               <h6 className="text-muted mb-2">Total Value</h6>
-              <h3>{formatLKR(inventory.reduce((sum, item) => sum + item.value, 0))}</h3>
+              <h3>
+                {formatLKR(
+                  inventory.reduce((sum, item) => sum + item.value, 0)
+                )}
+              </h3>
             </Card.Body>
           </Card>
         </Col>
@@ -381,17 +434,19 @@ const Inventory = () => {
           <div className="d-flex justify-content-between align-items-center mb-4">
             <div className="d-flex gap-2">
               <Form.Select
-                style={{ width: '200px' }}
+                style={{ width: "200px" }}
                 value={categoryFilter}
                 onChange={(e) => setCategoryFilter(e.target.value)}
               >
                 <option value="all">All Categories</option>
-                {categories.map(category => (
-                  <option key={category} value={category}>{category}</option>
+                {categories.map((category) => (
+                  <option key={category} value={category}>
+                    {category}
+                  </option>
                 ))}
               </Form.Select>
               <Form.Select
-                style={{ width: '200px' }}
+                style={{ width: "200px" }}
                 value={stockFilter}
                 onChange={(e) => setStockFilter(e.target.value)}
               >
@@ -404,7 +459,7 @@ const Inventory = () => {
             <Form.Control
               type="search"
               placeholder="Search by name, SKU, or category..."
-              style={{ width: '300px' }}
+              style={{ width: "300px" }}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
@@ -424,7 +479,7 @@ const Inventory = () => {
               </tr>
             </thead>
             <tbody>
-              {currentItems.map(item => (
+              {currentItems.map((item) => (
                 <tr key={item.id}>
                   <td>
                     <div className="d-flex align-items-center">
@@ -438,14 +493,20 @@ const Inventory = () => {
                       />
                       <div>
                         <div>{item.name}</div>
-                        <small className="text-muted">{item.manufacturer}</small>
+                        <small className="text-muted">
+                          {item.manufacturer}
+                        </small>
                       </div>
                     </div>
                   </td>
                   <td>{item.sku}</td>
                   <td>{item.category}</td>
                   <td>
-                    <span className={`fw-bold ${item.currentStock <= item.minStock ? 'text-danger' : ''}`}>
+                    <span
+                      className={`fw-bold ${
+                        item.currentStock <= item.minStock ? "text-danger" : ""
+                      }`}
+                    >
                       {item.currentStock}
                     </span>
                   </td>
@@ -460,7 +521,11 @@ const Inventory = () => {
                       onClick={() => handleStockModalOpen(item)}
                       disabled={submitting}
                     >
-                      {submitting ? <Spinner animation="border" size="sm" /> : 'Update Stock & Status'}
+                      {submitting ? (
+                        <Spinner animation="border" size="sm" />
+                      ) : (
+                        "Update Stock & Status"
+                      )}
                     </Button>
                   </td>
                 </tr>
@@ -470,7 +535,9 @@ const Inventory = () => {
 
           {currentItems.length === 0 && (
             <div className="text-center py-4">
-              <p className="text-muted">No inventory items found matching your criteria.</p>
+              <p className="text-muted">
+                No inventory items found matching your criteria.
+              </p>
             </div>
           )}
 
@@ -478,30 +545,32 @@ const Inventory = () => {
           {totalPages > 1 && (
             <div className="d-flex justify-content-center mt-4">
               <Pagination>
-                <Pagination.First 
+                <Pagination.First
                   onClick={() => setCurrentPage(1)}
                   disabled={currentPage === 1}
                 />
-                <Pagination.Prev 
+                <Pagination.Prev
                   onClick={() => setCurrentPage(currentPage - 1)}
                   disabled={currentPage === 1}
                 />
-                
-                {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
-                  <Pagination.Item
-                    key={page}
-                    active={page === currentPage}
-                    onClick={() => setCurrentPage(page)}
-                  >
-                    {page}
-                  </Pagination.Item>
-                ))}
-                
-                <Pagination.Next 
+
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map(
+                  (page) => (
+                    <Pagination.Item
+                      key={page}
+                      active={page === currentPage}
+                      onClick={() => setCurrentPage(page)}
+                    >
+                      {page}
+                    </Pagination.Item>
+                  )
+                )}
+
+                <Pagination.Next
                   onClick={() => setCurrentPage(currentPage + 1)}
                   disabled={currentPage === totalPages}
                 />
-                <Pagination.Last 
+                <Pagination.Last
                   onClick={() => setCurrentPage(totalPages)}
                   disabled={currentPage === totalPages}
                 />
@@ -538,7 +607,8 @@ const Inventory = () => {
                   min="0"
                 />
                 <Form.Text className="text-muted">
-                  Minimum stock level is fixed at 5. Status will automatically update based on stock level.
+                  Minimum stock level is fixed at 5. Status will automatically
+                  update based on stock level.
                 </Form.Text>
               </Form.Group>
               <Form.Group className="mb-3">
@@ -547,27 +617,35 @@ const Inventory = () => {
                   type="text"
                   value={(() => {
                     const stock = parseInt(stockFormData.stock) || 0;
-                    if (stock === 0) return 'Out of Stock';
-                    if (stock <= 5) return 'Low Stock';
-                    return 'In Stock';
+                    if (stock === 0) return "Out of Stock";
+                    if (stock <= 5) return "Low Stock";
+                    return "In Stock";
                   })()}
                   disabled
                   className="mb-2"
                 />
                 <Form.Select
                   name="status"
-                  value={stockFormData.status === 'Discontinued' ? 'Discontinued' : ''}
-                  onChange={(e) => setStockFormData(prev => ({ 
-                    ...prev, 
-                    status: e.target.value === 'Discontinued' ? 'Discontinued' : '' 
-                  }))}
+                  value={
+                    stockFormData.status === "Discontinued"
+                      ? "Discontinued"
+                      : ""
+                  }
+                  onChange={(e) =>
+                    setStockFormData((prev) => ({
+                      ...prev,
+                      status:
+                        e.target.value === "Discontinued" ? "Discontinued" : "",
+                    }))
+                  }
                 >
                   <option value="">Auto-calculate based on stock</option>
                   <option value="Discontinued">Discontinued</option>
                 </Form.Select>
                 <Form.Text className="text-muted">
-                  Status automatically updates based on stock: 0 = Out of Stock, 1-5 = Low Stock, 6+ = In Stock. 
-                  You can manually set to "Discontinued" if needed.
+                  Status automatically updates based on stock: 0 = Out of Stock,
+                  1-5 = Low Stock, 6+ = In Stock. You can manually set to
+                  "Discontinued" if needed.
                 </Form.Text>
               </Form.Group>
               <Form.Group className="mb-3">
@@ -576,7 +654,12 @@ const Inventory = () => {
                   type="date"
                   name="lastRestockDate"
                   value={stockFormData.lastRestockDate}
-                  onChange={(e) => setStockFormData(prev => ({ ...prev, lastRestockDate: e.target.value }))}
+                  onChange={(e) =>
+                    setStockFormData((prev) => ({
+                      ...prev,
+                      lastRestockDate: e.target.value,
+                    }))
+                  }
                 />
                 <Form.Text className="text-muted">
                   Set the date when this product was last restocked.
@@ -591,15 +674,21 @@ const Inventory = () => {
           </Button>
           <Button
             variant="primary"
-            onClick={() => handleUpdateStock(selectedProduct?.id, stockFormData)}
+            onClick={() =>
+              handleUpdateStock(selectedProduct?.id, stockFormData)
+            }
             disabled={submitting}
           >
-            {submitting ? <Spinner animation="border" size="sm" /> : 'Update Stock & Status'}
+            {submitting ? (
+              <Spinner animation="border" size="sm" />
+            ) : (
+              "Update Stock & Status"
+            )}
           </Button>
         </Modal.Footer>
       </Modal>
 
-      <ToastContainer 
+      <ToastContainer
         position="top-right"
         autoClose={2000}
         hideProgressBar={false}
@@ -613,20 +702,20 @@ const Inventory = () => {
         limit={3}
         style={{
           zIndex: 9999,
-          position: 'fixed',
-          top: '20px',
-          right: '20px'
+          position: "fixed",
+          top: "20px",
+          right: "20px",
         }}
         toastStyle={{
-          backgroundColor: 'white',
-          color: 'black',
-          boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
-          borderRadius: '8px',
-          border: '1px solid #e0e0e0'
+          backgroundColor: "white",
+          color: "black",
+          boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
+          borderRadius: "8px",
+          border: "1px solid #e0e0e0",
         }}
       />
     </Container>
   );
 };
 
-export default Inventory; 
+export default Inventory;

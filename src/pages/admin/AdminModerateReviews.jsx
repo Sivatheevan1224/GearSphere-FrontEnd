@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Card, Button, Spinner, Table, Modal } from "react-bootstrap";
+import LoadingScreen from "../../components/loading/LoadingScreen";
 import { toast } from "react-toastify";
 
 export default function AdminModerateReviews() {
@@ -74,13 +75,17 @@ export default function AdminModerateReviews() {
   };
 
   return (
-    <div className="container py-4">
-      <Card>
-        <Card.Body>
-          <Card.Title>All Reviews</Card.Title>
-          {loading ? (
-            <Spinner animation="border" />
-          ) : (
+    <>
+      {loading && (
+        <LoadingScreen
+          message="Loading Reviews"
+          submessage="Fetching reviews for moderation"
+        />
+      )}
+      <div className="container py-4">
+        <Card>
+          <Card.Body>
+            <Card.Title>All Reviews</Card.Title>
             <Table striped bordered hover responsive>
               <thead>
                 <tr>
@@ -148,27 +153,30 @@ export default function AdminModerateReviews() {
                 ))}
               </tbody>
             </Table>
-          )}
-        </Card.Body>
-      </Card>
-      <Modal
-        show={showDeleteModal}
-        onHide={() => setShowDeleteModal(false)}
-        centered
-      >
-        <Modal.Header closeButton>
-          <Modal.Title>Confirm Delete</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>Are you sure you want to delete this review?</Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={() => setShowDeleteModal(false)}>
-            Cancel
-          </Button>
-          <Button variant="danger" onClick={confirmDelete}>
-            Delete
-          </Button>
-        </Modal.Footer>
-      </Modal>
-    </div>
+          </Card.Body>
+        </Card>
+        <Modal
+          show={showDeleteModal}
+          onHide={() => setShowDeleteModal(false)}
+          centered
+        >
+          <Modal.Header closeButton>
+            <Modal.Title>Confirm Delete</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>Are you sure you want to delete this review?</Modal.Body>
+          <Modal.Footer>
+            <Button
+              variant="secondary"
+              onClick={() => setShowDeleteModal(false)}
+            >
+              Cancel
+            </Button>
+            <Button variant="danger" onClick={confirmDelete}>
+              Delete
+            </Button>
+          </Modal.Footer>
+        </Modal>
+      </div>
+    </>
   );
 }

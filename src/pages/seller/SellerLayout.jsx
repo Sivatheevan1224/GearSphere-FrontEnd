@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import SellerNavbar from "../pageNavbars/SellerNavbar";
 import { Outlet, useNavigate } from "react-router-dom";
 import DashboardFooter from "../pagefooter/DashboardFooter";
+import LoadingScreen from "../../components/loading/LoadingScreen";
 import axios from "axios";
 
 function SellerLayout() {
@@ -34,7 +35,12 @@ function SellerLayout() {
   }, [navigate]);
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return (
+      <LoadingScreen
+        message="Seller Authentication"
+        submessage="Verifying seller access"
+      />
+    );
   }
 
   return (

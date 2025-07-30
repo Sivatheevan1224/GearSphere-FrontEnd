@@ -11,6 +11,7 @@ import {
 } from "react-bootstrap";
 import { toast } from "react-toastify";
 import CustomerNavbar from "../../pageNavbars/CustomerNavbar";
+import LoadingScreen from "../../../components/loading/LoadingScreen";
 import axios from "axios";
 
 function useBreakpoint() {
@@ -119,17 +120,10 @@ export default function OperatingSystemPage() {
 
   if (loading) {
     return (
-      <>
-        <CustomerNavbar />
-        <Container className="py-5">
-          <div className="text-center">
-            <div className="spinner-border" role="status">
-              <span className="visually-hidden">Loading...</span>
-            </div>
-            <p className="mt-3">Loading Operating Systems...</p>
-          </div>
-        </Container>
-      </>
+      <LoadingScreen
+        message="Loading Operating Systems"
+        subMessage="Fetching available OS options"
+      />
     );
   }
 

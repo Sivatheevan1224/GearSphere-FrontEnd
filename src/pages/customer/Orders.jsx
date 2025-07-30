@@ -12,6 +12,7 @@ import {
   Spinner,
 } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
+import LoadingScreen from "../../components/loading/LoadingScreen";
 // import { OrdersContext } from './OrdersContext';
 
 const Orders = () => {
@@ -101,15 +102,21 @@ const Orders = () => {
     fetchOrders();
   }, []);
 
+  // Show loading screen while data is being fetched
+  if (loading) {
+    return (
+      <LoadingScreen
+        message="Loading Your Orders"
+        subMessage="Fetching your order history"
+      />
+    );
+  }
+
   return (
     <Container className="py-5">
       <h1 className="text-center mb-5">My Orders</h1>
 
-      {loading ? (
-        <div className="text-center py-5">
-          <Spinner animation="border" variant="primary" />
-        </div>
-      ) : orders.length === 0 ? (
+      {orders.length === 0 ? (
         <Card className="shadow-sm">
           <Card.Body className="text-center py-5">
             <h4 className="text-muted mb-3">No Orders Yet</h4>

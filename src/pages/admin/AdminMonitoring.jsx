@@ -4,6 +4,7 @@ import { Card, Button } from "react-bootstrap";
 import AdminNavbar from "../pageNavbars/AdminNavbar";
 import logo from "../../images/logo.PNG";
 import customerimg from "../../images/customer_monitorimg.jpg";
+import LoadingScreen from "../../components/loading/LoadingScreen";
 import "../../styles.css";
 
 const AdminMonitoring = () => {
@@ -64,13 +65,10 @@ const AdminMonitoring = () => {
 
   if (loading) {
     return (
-      <div
-        className="loading"
-        style={{ textAlign: "center", marginTop: "10%" }}
-      >
-        <img src={logo} alt="logo" style={{ width: 100, height: 100 }} />
-        <h4>Loading......</h4>
-      </div>
+      <LoadingScreen
+        message="Monitoring System"
+        submessage="Preparing administrative monitoring interface"
+      />
     );
   }
 
