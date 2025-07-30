@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import {
   Container,
   Button,
@@ -136,6 +136,7 @@ export default function CompareCPUCoolerPage() {
   const [allCoolers, setAllCoolers] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -150,12 +151,10 @@ export default function CompareCPUCoolerPage() {
         if (response.data.success) {
           setAllCoolers(response.data.data);
 
-          // Get selected coolers from sessionStorage
-          const compareCoolers = sessionStorage.getItem("compare_cpucoolers");
-          if (compareCoolers) {
-            const selectedIds = JSON.parse(compareCoolers).map(
-              (c) => c.product_id
-            );
+          // Get selected coolers from navigation state instead of sessionStorage
+          const compareSelection = location.state?.compareSelection || [];
+          if (compareSelection.length > 0) {
+            const selectedIds = compareSelection.map((c) => c.product_id);
             const selectedCoolers = response.data.data.filter((c) =>
               selectedIds.includes(c.product_id)
             );
@@ -182,13 +181,11 @@ export default function CompareCPUCoolerPage() {
 
   const handleSelect = (cooler) => {
     const { icon, ...coolerWithoutIcon } = cooler;
-    sessionStorage.setItem(
-      "selected_cpucooler",
-      JSON.stringify(coolerWithoutIcon)
-    );
     toast.success(`Selected ${cooler.name}. Redirecting to PC Builder...`);
     setTimeout(() => {
-      navigate("/pc-builder?cpucoolerSelected=1");
+      navigate("/pc-builder", {
+        state: { selectedComponent: coolerWithoutIcon },
+      });
     }, 1000);
   };
 

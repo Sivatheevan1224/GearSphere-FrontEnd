@@ -1,4 +1,5 @@
 import React, { useState, useContext, useEffect } from "react";
+import axios from "axios";
 import {
   Modal,
   Form,
@@ -157,32 +158,39 @@ const Checkout = ({
 
     // Simulate payment processing to mimic a real-world scenario
     setTimeout(async () => {
-      const user_id = sessionStorage.getItem("user_id");
-      if (!user_id) {
-        alert("You must be logged in to place an order.");
-        setIsProcessing(false);
-        return;
-      }
-
-      // Prepare payload for the backend. `orderItems` is already defined
-      // to handle both cart and custom PC builds.
-      const payload = {
-        user_id,
-        items: orderItems.map((item) => ({
-          product_id: item.product_id || item.id, // Use product_id or fallback to id
-          quantity: item.quantity,
-          price: item.price,
-        })),
-        total_amount: orderTotal,
-        payment_method: paymentMethod.toUpperCase(),
-      };
-
       try {
+        // Get user session from backend
+        const sessionResponse = await axios.get(
+          "http://localhost/gearsphere_api/GearSphere-BackEnd/getSession.php",
+          { withCredentials: true }
+        );
+
+        if (!sessionResponse.data.success) {
+          alert("You must be logged in to place an order.");
+          setIsProcessing(false);
+          return;
+        }
+
+        const user_id = sessionResponse.data.user_id;
+        // Prepare payload for the backend. `orderItems` is already defined
+        // to handle both cart and custom PC builds.
+        const payload = {
+          user_id,
+          items: orderItems.map((item) => ({
+            product_id: item.product_id || item.id, // Use product_id or fallback to id
+            quantity: item.quantity,
+            price: item.price,
+          })),
+          total_amount: orderTotal,
+          payment_method: paymentMethod.toUpperCase(),
+        };
+
         const response = await fetch(
           "http://localhost/gearsphere_api/GearSphere-BackEnd/createOrder.php",
           {
             method: "POST",
             headers: { "Content-Type": "application/json" },
+            credentials: "include",
             body: JSON.stringify(payload),
           }
         );

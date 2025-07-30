@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import {
   Container,
   Button,
@@ -114,12 +114,32 @@ export default function CompareMemoryPage() {
   const [memory, setMemory] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
-    const compareMemory = sessionStorage.getItem("compare_memory");
-    if (compareMemory) {
-      const parsedMemory = JSON.parse(compareMemory);
-      const ids = parsedMemory.map((mem) => mem.product_id);
+    // Get compare selection from navigation state with sessionStorage fallback
+    let compareSelection = location.state?.compareSelection || [];
+
+    // Fallback to sessionStorage if navigation state is empty (for page refresh scenarios)
+    if (compareSelection.length === 0) {
+      const storedSelection = sessionStorage.getItem("memory_compareSelection");
+      if (storedSelection) {
+        try {
+          compareSelection = JSON.parse(storedSelection);
+        } catch (e) {
+          console.warn("Failed to parse stored comparison selection:", e);
+        }
+      }
+    } else {
+      // Store in sessionStorage for page refresh scenarios only
+      sessionStorage.setItem(
+        "memory_compareSelection",
+        JSON.stringify(compareSelection)
+      );
+    }
+
+    if (compareSelection.length > 0) {
+      const ids = compareSelection.map((mem) => mem.product_id);
       axios
         .get("http://localhost/gearsphere_api/GearSphere-BackEnd/getMemory.php")
         .then((response) => {
@@ -142,13 +162,17 @@ export default function CompareMemoryPage() {
     } else {
       setLoading(false);
     }
-  }, []);
+
+    // Cleanup sessionStorage when component unmounts
+    return () => {
+      sessionStorage.removeItem("memory_compareSelection");
+    };
+  }, [location.state]);
 
   const handleSelectMemory = (mem) => {
-    sessionStorage.setItem("selected_memory", JSON.stringify(mem));
     toast.success(`Selected ${mem.name}. Redirecting to PC Builder...`);
     setTimeout(() => {
-      navigate("/pc-builder?memorySelected=1");
+      navigate("/pc-builder", { state: { selectedComponent: mem } });
     }, 1000);
   };
 

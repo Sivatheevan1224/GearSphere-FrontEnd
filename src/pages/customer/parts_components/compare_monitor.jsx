@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import {
   Container,
   Button,
@@ -129,13 +129,14 @@ export default function CompareMonitorPage() {
   const [monitors, setMonitors] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
-    const compareMonitors = sessionStorage.getItem("compare_monitors");
-    if (compareMonitors) {
+    // Get compare selection from navigation state instead of sessionStorage
+    const compareSelection = location.state?.compareSelection || [];
+    if (compareSelection.length > 0) {
       try {
-        const parsedMonitors = JSON.parse(compareMonitors);
-        const monitorsWithIcons = parsedMonitors.map((monitor) => ({
+        const monitorsWithIcons = compareSelection.map((monitor) => ({
           ...monitor,
           icon: monitorIconMap[monitor.name] || null,
         }));
@@ -146,17 +147,15 @@ export default function CompareMonitorPage() {
       }
     }
     setLoading(false);
-  }, []);
+  }, [location.state]);
 
   const handleSelectMonitor = (monitor) => {
     const { icon, ...monitorWithoutIcon } = monitor;
-    sessionStorage.setItem(
-      "selected_monitor",
-      JSON.stringify(monitorWithoutIcon)
-    );
     toast.success(`Selected ${monitor.name}. Redirecting to PC Builder...`);
     setTimeout(() => {
-      navigate("/pc-builder?monitorSelected=1");
+      navigate("/pc-builder", {
+        state: { selectedComponent: monitorWithoutIcon },
+      });
     }, 1000);
   };
 

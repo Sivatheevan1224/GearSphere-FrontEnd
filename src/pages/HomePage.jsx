@@ -1,31 +1,83 @@
 import React, { useState, useEffect } from "react";
-import { Container, Row, Col, Button, Card, Badge, Carousel, Navbar, Nav, Accordion, Form, InputGroup } from "react-bootstrap";
-import { Cpu, People, Lightning, Shield, ChevronRight, Star, Grid3x3Gap, Tools, Award, Wrench, Headset, Search, Filter, SortDown, StarFill, Envelope, Telephone, GeoAlt, Clock, Person, Display, Motherboard, Memory, Hdd, Power, PcDisplay, Fan, PersonCheck, Cart, CameraVideo, Mic, Printer, BatteryFull, Wifi, Tablet, Camera, CameraReels, ChevronLeft } from "react-bootstrap-icons";
+import {
+  Container,
+  Row,
+  Col,
+  Button,
+  Card,
+  Badge,
+  Carousel,
+  Navbar,
+  Nav,
+  Accordion,
+  Form,
+  InputGroup,
+} from "react-bootstrap";
+import {
+  Cpu,
+  People,
+  Lightning,
+  Shield,
+  ChevronRight,
+  Star,
+  Grid3x3Gap,
+  Tools,
+  Award,
+  Wrench,
+  Headset,
+  Search,
+  Filter,
+  SortDown,
+  StarFill,
+  Envelope,
+  Telephone,
+  GeoAlt,
+  Clock,
+  Person,
+  Display,
+  Motherboard,
+  Memory,
+  Hdd,
+  Power,
+  PcDisplay,
+  Fan,
+  PersonCheck,
+  Cart,
+  CameraVideo,
+  Mic,
+  Printer,
+  BatteryFull,
+  Wifi,
+  Tablet,
+  Camera,
+  CameraReels,
+  ChevronLeft,
+} from "react-bootstrap-icons";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "../styles.css";
 import LoginModal from "../components/login/LoginModal";
 import Signup from "../components/signup/Signup";
 import Footer from "../components/footer/Footer";
-import pcGif from '../images/pc_video1.gif';
+import pcGif from "../images/pc_video1.gif";
 import { Link, useNavigate } from "react-router-dom";
-import sivatheevanImg from '../images/sivatheevan.png';
-import makinthanImg from '../images/makinthan.png';
-import pugazhImg from '../images/pugazh.png';
-import kowsiImg from '../images/kowsi.png';
-import gif1 from '../images/download.jpg';
-import profile1 from '../images/profile/pp1.png';
-import profile2 from '../images/profile/pp2.png';
-import profile3 from '../images/profile/pp3.jpg';
-import profile4 from '../images/profile/pp4.jpg';
-import profile5 from '../images/profile/pp5.jpg';
-import profile6 from '../images/profile/pp6.jpg';
-import pcpic1 from '../images/pcpic1.png';
-import pcpic2 from '../images/pcpic2.jpeg';
-import pcpic3 from '../images/pcpic3.jpg';
-import aboutus from '../images/aboutus2.png';
-import serviceimg from '../images/services1.png';
-import { toast } from 'react-toastify';
-import axios from 'axios';
+import sivatheevanImg from "../images/sivatheevan.png";
+import makinthanImg from "../images/makinthan.png";
+import pugazhImg from "../images/pugazh.png";
+import kowsiImg from "../images/kowsi.png";
+import gif1 from "../images/download.jpg";
+import profile1 from "../images/profile/pp1.png";
+import profile2 from "../images/profile/pp2.png";
+import profile3 from "../images/profile/pp3.jpg";
+import profile4 from "../images/profile/pp4.jpg";
+import profile5 from "../images/profile/pp5.jpg";
+import profile6 from "../images/profile/pp6.jpg";
+import pcpic1 from "../images/pcpic1.png";
+import pcpic2 from "../images/pcpic2.jpeg";
+import pcpic3 from "../images/pcpic3.jpg";
+import aboutus from "../images/aboutus2.png";
+import serviceimg from "../images/services1.png";
+import { toast } from "react-toastify";
+import axios from "axios";
 
 const ourValuesCardHoverStyle = `
 .our-values-card {
@@ -133,12 +185,16 @@ function HomePage() {
   const navigate = useNavigate();
 
   // Contact form state
-  const [contactFirstName, setContactFirstName] = useState('');
-  const [contactLastName, setContactLastName] = useState('');
-  const [contactEmail, setContactEmail] = useState('');
-  const [contactSubject, setContactSubject] = useState('');
-  const [contactMessage, setContactMessage] = useState('');
+  const [contactFirstName, setContactFirstName] = useState("");
+  const [contactLastName, setContactLastName] = useState("");
+  const [contactEmail, setContactEmail] = useState("");
+  const [contactSubject, setContactSubject] = useState("");
+  const [contactMessage, setContactMessage] = useState("");
   const [contactLoading, setContactLoading] = useState(false);
+
+  // System reviews state
+  const [systemReviews, setSystemReviews] = useState([]);
+  const [reviewsLoading, setReviewsLoading] = useState(true);
 
   useEffect(() => {
     const userType = sessionStorage.getItem("user_type");
@@ -153,109 +209,78 @@ function HomePage() {
 
   // Fetch products from backend API
   useEffect(() => {
-    fetch('http://localhost/gearsphere_api/GearSphere-BackEnd/getProducts.php')
-      .then(res => res.json())
-      .then(data => {
+    fetch("http://localhost/gearsphere_api/GearSphere-BackEnd/getProducts.php")
+      .then((res) => res.json())
+      .then((data) => {
         if (data.success) setProducts(data.products);
         else setProducts([]);
       })
       .catch(() => setProducts([]));
   }, []);
 
+  // Fetch system reviews from backend API
+  useEffect(() => {
+    const fetchSystemReviews = async () => {
+      try {
+        setReviewsLoading(true);
+        const response = await axios.get(
+          "http://localhost/gearsphere_api/GearSphere-BackEnd/getSystemReviews.php"
+        );
+
+        if (response.data.success) {
+          setSystemReviews(response.data.reviews);
+        } else {
+          console.error(
+            "Failed to fetch system reviews:",
+            response.data.message
+          );
+        }
+      } catch (err) {
+        console.error("System reviews fetch error:", err);
+      } finally {
+        setReviewsLoading(false);
+      }
+    };
+
+    fetchSystemReviews();
+  }, []);
+
   const scrollToSection = (sectionId) => {
     const element = document.getElementById(sectionId);
     if (element) {
-      const navbarHeight = document.querySelector('.navbar-custom')?.offsetHeight || 80;
-      const elementPosition = element.getBoundingClientRect().top + window.scrollY;
+      const navbarHeight =
+        document.querySelector(".navbar-custom")?.offsetHeight || 80;
+      const elementPosition =
+        element.getBoundingClientRect().top + window.scrollY;
       const offsetPosition = elementPosition - navbarHeight;
 
       window.scrollTo({
         top: offsetPosition,
-        behavior: 'smooth'
+        behavior: "smooth",
       });
     }
   };
 
   // Filtered and searched parts
-  const filteredParts = products.filter(part => {
+  const filteredParts = products.filter((part) => {
     const matchesType = partType === "All" || part.category === partType;
-    const matchesSearch = part.name?.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesSearch = part.name
+      ?.toLowerCase()
+      .includes(searchQuery.toLowerCase());
     return matchesType && matchesSearch;
   });
 
-  // Reviews data
-  const reviews = [
-    {
-      id: 1,
-      name: "Michael Chen",
-      date: "March 15, 2023",
-      rating: 5,
-      title: "Exceptional Build Quality",
-      content: "The custom PC I received exceeded all my expectations. The build quality is exceptional and performance is outstanding. I've been gaming on it for months without any issues.",
-      productName: "Titan X Gaming PC",
-      avatar: profile1
-    },
-    {
-      id: 2,
-      name: "Sarah Johnson",
-      date: "April 3, 2023",
-      rating: 5,
-      title: "Perfect for 3D Work",
-      content: "As a 3D artist, I need reliable hardware that can handle heavy workloads. My GearSphere PC delivers exactly that. Renders are faster than ever and the system stays cool even under load.",
-      productName: "Creator Pro Workstation",
-      avatar: profile2
-    },
-    {
-      id: 3,
-      name: "David Rodriguez",
-      date: "February 22, 2023",
-      rating: 4,
-      title: "Great Value for Money",
-      content: "The PC builder was incredibly knowledgeable and helped me choose the perfect components for my development needs. Only giving 4 stars because shipping took longer than expected.",
-      productName: "Stealth Mini ITX",
-      avatar: profile3
-    },
-    {
-      id: 4,
-      name: "Emily Watson",
-      date: "May 10, 2023",
-      rating: 5,
-      title: "Amazing Customer Service",
-      content: "Not only was my PC built perfectly, but the customer service was outstanding. They helped me troubleshoot a minor issue over the phone and were incredibly patient.",
-      productName: "Ultimate Streaming PC",
-      avatar: profile4
-    },
-    {
-      id: 5,
-      name: "James Wilson",
-      date: "January 8, 2023",
-      rating: 3,
-      title: "Good PC, Shipping Issues",
-      content: "The PC itself is great and performs well for gaming. However, there were some shipping delays and the packaging could have been better. The support team was helpful in resolving my concerns.",
-      productName: "Budget Gaming Rig",
-      avatar: profile5
-    },
-    {
-      id: 6,
-      name: "Lisa Thompson",
-      date: "April 28, 2023",
-      rating: 5,
-      title: "Perfect Office PC",
-      content: "This PC is perfect for my office needs. It's quiet, fast, and the price was very reasonable. The ordering process was smooth and delivery was prompt.",
-      productName: "Office Productivity PC",
-      avatar: profile6
-    },
-  ];
-
-  // Render stars for ratings
+  // Render stars for ratings (removed static reviews data - now using API)
   const renderStars = (rating) => {
     return Array(5)
       .fill(0)
-      .map((_, i) => (
-        i < rating ? 
-        <StarFill key={i} className="text-warning me-1" /> : 
-        <Star key={i} className="text-warning me-1" />
-      ));
+      .map((_, i) =>
+        i < rating ? (
+          <StarFill key={i} className="text-warning me-1" />
+        ) : (
+          <Star key={i} className="text-warning me-1" />
+        )
+      );
   };
 
   return (
@@ -290,58 +315,91 @@ function HomePage() {
               }
             `}</style>
             {/* Hero Section */}
-            <section id="hero" className="py-5 bg-black text-white position-relative overflow-hidden mb-5" style={{borderTopLeftRadius: 0, borderTopRightRadius: 0, borderBottomLeftRadius: '2rem', borderBottomRightRadius: '2rem', boxShadow: '0 4px 32px rgba(0,0,0,0.10)', marginTop: 0, marginBottom: '2rem'}}>
+            <section
+              id="hero"
+              className="py-5 bg-black text-white position-relative overflow-hidden mb-5"
+              style={{
+                borderTopLeftRadius: 0,
+                borderTopRightRadius: 0,
+                borderBottomLeftRadius: "2rem",
+                borderBottomRightRadius: "2rem",
+                boxShadow: "0 4px 32px rgba(0,0,0,0.10)",
+                marginTop: 0,
+                marginBottom: "2rem",
+              }}
+            >
               {/* Blurred background image */}
               <div
                 className="position-absolute top-0 start-0 w-100 h-100"
                 style={{
                   backgroundImage: `url(${pcpic2})`,
-                  backgroundSize: 'cover',
-                  backgroundPosition: 'center',
-                  filter: 'blur(12px)',
+                  backgroundSize: "cover",
+                  backgroundPosition: "center",
+                  filter: "blur(12px)",
                   zIndex: 0,
-                  opacity: 0.7
+                  opacity: 0.7,
                 }}
               ></div>
               {/* Overlay for darkening and contrast */}
               <div
                 className="position-absolute top-0 start-0 w-100 h-100"
                 style={{
-                  background: "radial-gradient(circle at 30% 50%, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0) 70%)",
+                  background:
+                    "radial-gradient(circle at 30% 50%, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0) 70%)",
                   zIndex: 1,
                 }}
               ></div>
-              <Container className="py-5 position-relative" style={{ zIndex: 2 }}>
+              <Container
+                className="py-5 position-relative"
+                style={{ zIndex: 2 }}
+              >
                 <Row className="align-items-center">
                   <Col lg={6} className="mb-5 mb-lg-0">
-                    <h1 className="display-3 fw-bold mb-4 rise-up" style={{ animationDelay: '0s' }}>
-                      Build Your Dream Tech <span className="text-primary">With GearSphere</span>
+                    <h1
+                      className="display-3 fw-bold mb-4 rise-up"
+                      style={{ animationDelay: "0s" }}
+                    >
+                      Build Your Dream Tech{" "}
+                      <span className="text-primary">With GearSphere</span>
                     </h1>
-                    <p className="lead mb-5 rise-up" style={{ animationDelay: '0.3s' }}>
-                      Create your perfect custom PC with our expert builders and premium components. From gaming rigs to
-                      professional workstations, we've got you covered.
+                    <p
+                      className="lead mb-5 rise-up"
+                      style={{ animationDelay: "0.3s" }}
+                    >
+                      Create your perfect custom PC with our expert builders and
+                      premium components. From gaming rigs to professional
+                      workstations, we've got you covered.
                     </p>
-                    <div className="d-flex gap-3 rise-up" style={{ animationDelay: '0.6s' }}>
-                      <Button 
-                        size="lg" 
-                        variant="primary" 
+                    <div
+                      className="d-flex gap-3 rise-up"
+                      style={{ animationDelay: "0.6s" }}
+                    >
+                      <Button
+                        size="lg"
+                        variant="primary"
                         onClick={() => {
-                          console.log('Start Building clicked, setting showLoginModal to true');
+                          console.log(
+                            "Start Building clicked, setting showLoginModal to true"
+                          );
                           setShowLoginModal(true);
                         }}
                       >
                         Start Building
                       </Button>
-                      <Button 
-                        size="lg" 
+                      <Button
+                        size="lg"
                         variant="outline-light"
-                        onClick={() => scrollToSection('products')}
+                        onClick={() => scrollToSection("products")}
                       >
                         Explore Products <ChevronRight />
                       </Button>
                     </div>
                   </Col>
-                  <Col lg={6} className="text-lg-end" style={{backgroundBlendMode: 'darken'}}>
+                  <Col
+                    lg={6}
+                    className="text-lg-end"
+                    style={{ backgroundBlendMode: "darken" }}
+                  >
                     {/* <div className="d-inline-block rounded shadow-lg" >
                       <img
                         src={pcGif}
@@ -357,50 +415,111 @@ function HomePage() {
                 className="position-absolute top-0 start-0 w-100 h-100"
                 style={{
                   backgroundImage: `url(${pcpic2})`,
-                  backgroundSize: 'cover',
-                  backgroundPosition: 'center',
-                  backgroundColor: 'rgba(0, 0, 0, 0.5)', // black overlay
-                  backgroundBlendMode: 'darken',         // or try 'multiply'
+                  backgroundSize: "cover",
+                  backgroundPosition: "center",
+                  backgroundColor: "rgba(0, 0, 0, 0.5)", // black overlay
+                  backgroundBlendMode: "darken", // or try 'multiply'
                   //filter: 'blur(0px)',
                   zIndex: 0,
-                  opacity: 1
+                  opacity: 1,
                 }}
               ></div>
               {/* Overlay for darkening and contrast */}
               <div
                 className="position-absolute top-0 start-0 w-100 h-100"
                 style={{
-                  background: "radial-gradient(circle at 30% 50%, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0) 70%)",
+                  background:
+                    "radial-gradient(circle at 30% 50%, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0) 70%)",
                   zIndex: 1,
                 }}
               ></div>
             </section>
 
             {/* About Section */}
-            <section id="about" className="py-5 about-section-custom position-relative mb-5" style={{overflow: 'hidden', borderRadius: '2rem', boxShadow: '0 4px 32px rgba(0,0,0,0.10)', background: 'transparent', marginTop: '2rem', marginBottom: '2rem'}}>
+            <section
+              id="about"
+              className="py-5 about-section-custom position-relative mb-5"
+              style={{
+                overflow: "hidden",
+                borderRadius: "2rem",
+                boxShadow: "0 4px 32px rgba(0,0,0,0.10)",
+                background: "transparent",
+                marginTop: "2rem",
+                marginBottom: "2rem",
+              }}
+            >
               <Container>
-                <h1 className="text-center mb-5 about-title-custom">About GearSphere</h1>
+                <h1 className="text-center mb-5 about-title-custom">
+                  About GearSphere
+                </h1>
                 <Row className="mb-5">
-                  <Col md={6} style={{display: 'flex', flexDirection: 'column', justifyContent: 'center'}}>
+                  <Col
+                    md={6}
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      justifyContent: "center",
+                    }}
+                  >
                     <h2 className="about-heading-custom">Our Story</h2>
-                    <p className="about-text-custom" style={{textAlign: 'justify'}}>
-                    <strong>GearSphere</strong> was founded in 2020 by a group of passionate PC enthusiasts to make custom PC building accessible to everyone. What began as a small effort has grown into a trusted platform connecting customers with expert PC builders across the country.
+                    <p
+                      className="about-text-custom"
+                      style={{ textAlign: "justify" }}
+                    >
+                      <strong>GearSphere</strong> was founded in 2020 by a group
+                      of passionate PC enthusiasts to make custom PC building
+                      accessible to everyone. What began as a small effort has
+                      grown into a trusted platform connecting customers with
+                      expert PC builders across the country.
                     </p>
-                    <p className="about-text-custom" style={{textAlign: 'justify'}}>
-                    Our mission is to make custom PC building easy, affordable, and accessible whether you're a beginner or an experienced user. GearSphere bridges the gap between customers and skilled technicians, offering guided tools to select compatible parts, compare options, and get budget-friendly suggestions. We work only with verified technicians and sellers to ensure quality, clear pricing, and honest reviews. We also provide lifetime technical support, upgrade options, and empower technicians by giving them a professional platform to grow.
+                    <p
+                      className="about-text-custom"
+                      style={{ textAlign: "justify" }}
+                    >
+                      Our mission is to make custom PC building easy,
+                      affordable, and accessible whether you're a beginner or an
+                      experienced user. GearSphere bridges the gap between
+                      customers and skilled technicians, offering guided tools
+                      to select compatible parts, compare options, and get
+                      budget-friendly suggestions. We work only with verified
+                      technicians and sellers to ensure quality, clear pricing,
+                      and honest reviews. We also provide lifetime technical
+                      support, upgrade options, and empower technicians by
+                      giving them a professional platform to grow.
                     </p>
                   </Col>
-                  <Col md={6} style={{display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%'}}>
-                    <div style={{width: '100%', height: '100%', minHeight: 340, borderRadius: '2rem', overflow: 'hidden'}}>
-                      <img 
-                        src={aboutus} 
-                        alt="GearSphere Team" 
-                        style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '2rem' }}
+                  <Col
+                    md={6}
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      height: "100%",
+                    }}
+                  >
+                    <div
+                      style={{
+                        width: "100%",
+                        height: "100%",
+                        minHeight: 340,
+                        borderRadius: "2rem",
+                        overflow: "hidden",
+                      }}
+                    >
+                      <img
+                        src={aboutus}
+                        alt="GearSphere Team"
+                        style={{
+                          width: "100%",
+                          height: "100%",
+                          objectFit: "cover",
+                          borderRadius: "2rem",
+                        }}
                       />
                     </div>
                   </Col>
                 </Row>
-                
+
                 <Row className="mb-5">
                   <Col md={12}>
                     <h2 className="text-center mb-4">Our Values</h2>
@@ -408,19 +527,27 @@ function HomePage() {
                       <Col md={4} className="mb-4">
                         <div className="our-values-card text-center p-4 h-100 border rounded shadow-sm">
                           <h4>Quality</h4>
-                          <p style={{textAlign: 'justify'}}>We never compromise on component quality and build standards.</p>
+                          <p style={{ textAlign: "justify" }}>
+                            We never compromise on component quality and build
+                            standards.
+                          </p>
                         </div>
                       </Col>
                       <Col md={4} className="mb-4">
                         <div className="our-values-card text-center p-4 h-100 border rounded shadow-sm">
                           <h4>Transparency</h4>
-                          <p style={{textAlign: 'justify'}}>Clear pricing, honest advice, and no hidden fees.</p>
+                          <p style={{ textAlign: "justify" }}>
+                            Clear pricing, honest advice, and no hidden fees.
+                          </p>
                         </div>
                       </Col>
                       <Col md={4} className="mb-4">
                         <div className="our-values-card text-center p-4 h-100 border rounded shadow-sm">
                           <h4>Support</h4>
-                          <p style={{textAlign: 'justify'}}>Lifetime technical support for all our custom builds.</p>
+                          <p style={{ textAlign: "justify" }}>
+                            Lifetime technical support for all our custom
+                            builds.
+                          </p>
                         </div>
                       </Col>
                     </Row>
@@ -430,30 +557,50 @@ function HomePage() {
             </section>
 
             {/* Services Section */}
-            <section id="services" className="py-5 bg-white mb-5" style={{borderRadius: '2rem', boxShadow: '0 4px 32px rgba(0,0,0,0.10)', marginTop: '2rem', marginBottom: '2rem'}}>
+            <section
+              id="services"
+              className="py-5 bg-white mb-5"
+              style={{
+                borderRadius: "2rem",
+                boxShadow: "0 4px 32px rgba(0,0,0,0.10)",
+                marginTop: "2rem",
+                marginBottom: "2rem",
+              }}
+            >
               <Container className="py-5">
                 <h1 className="text-center mb-5">Our Services</h1>
-                
+
                 <Row className="mb-5">
                   <Col md={6} className="mb-4 mb-md-0">
                     <h2>Expert PC Building Services</h2>
-                    <p style={{textAlign: 'justify'}}>
-                      At GearSphere, we offer comprehensive PC building services tailored to your specific needs. Whether you're a gamer, content creator, or professional, our expert builders will craft the perfect system for you.
+                    <p style={{ textAlign: "justify" }}>
+                      At GearSphere, we offer comprehensive PC building services
+                      tailored to your specific needs. Whether you're a gamer,
+                      content creator, or professional, our expert builders will
+                      craft the perfect system for you.
                     </p>
-                    <p style={{textAlign: 'justify'}}>
-                      We handle everything from component selection to assembly, testing, and delivery, ensuring you receive a high-performance, reliable system.
+                    <p style={{ textAlign: "justify" }}>
+                      We handle everything from component selection to assembly,
+                      testing, and delivery, ensuring you receive a
+                      high-performance, reliable system.
                     </p>
-                    <Button variant="primary" className="mt-3" onClick={() => setShowLoginModal(true)}>Get Started</Button>
+                    <Button
+                      variant="primary"
+                      className="mt-3"
+                      onClick={() => setShowLoginModal(true)}
+                    >
+                      Get Started
+                    </Button>
                   </Col>
                   <Col md={6}>
-                    <img 
-                      src={serviceimg} 
-                      alt="PC Building Service" 
+                    <img
+                      src={serviceimg}
+                      alt="PC Building Service"
                       className="img-fluid rounded"
                     />
                   </Col>
                 </Row>
-                
+
                 {/* Service Offerings Section */}
                 <Row className="mb-5">
                   <Col md={12}>
@@ -463,11 +610,13 @@ function HomePage() {
                         <Card className="service-card modern-border h-100">
                           <Card.Body className="text-center">
                             <div className="service-icon mb-3">
-                              <Cpu size={40} style={{color: '#4361ee'}} />
+                              <Cpu size={40} style={{ color: "#4361ee" }} />
                             </div>
-                            <Card.Title>Custom PC Building</Card.Title><br/>
-                            <Card.Text style={{textAlign: 'justify'}}>
-                              Personalized systems built to your specifications with premium components and expert assembly.
+                            <Card.Title>Custom PC Building</Card.Title>
+                            <br />
+                            <Card.Text style={{ textAlign: "justify" }}>
+                              Personalized systems built to your specifications
+                              with premium components and expert assembly.
                             </Card.Text>
                           </Card.Body>
                         </Card>
@@ -476,11 +625,15 @@ function HomePage() {
                         <Card className="service-card modern-border h-100">
                           <Card.Body className="text-center">
                             <div className="service-icon mb-3">
-                              <Tools size={40} style={{color: '#00b894'}} />
+                              <Tools size={40} style={{ color: "#00b894" }} />
                             </div>
-                            <Card.Title>Budget-Based PC Build Recommendation</Card.Title>
-                            <Card.Text style={{textAlign: 'justify'}}>
-                              Get personalized PC build recommendations based on your budget and needs, ensuring the best value for your money.
+                            <Card.Title>
+                              Budget-Based PC Build Recommendation
+                            </Card.Title>
+                            <Card.Text style={{ textAlign: "justify" }}>
+                              Get personalized PC build recommendations based on
+                              your budget and needs, ensuring the best value for
+                              your money.
                             </Card.Text>
                           </Card.Body>
                         </Card>
@@ -489,11 +642,19 @@ function HomePage() {
                         <Card className="service-card modern-border h-100">
                           <Card.Body className="text-center">
                             <div className="service-icon mb-3">
-                              <PersonCheck size={40} style={{color: '#fd7e14'}} />
+                              <PersonCheck
+                                size={40}
+                                style={{ color: "#fd7e14" }}
+                              />
                             </div>
-                            <Card.Title>Assign Technician for PC Build</Card.Title><br/>
-                            <Card.Text style={{textAlign: 'justify'}}>
-                              Easily assign a verified technician to build your custom PC, ensuring professional assembly and support.
+                            <Card.Title>
+                              Assign Technician for PC Build
+                            </Card.Title>
+                            <br />
+                            <Card.Text style={{ textAlign: "justify" }}>
+                              Easily assign a verified technician to build your
+                              custom PC, ensuring professional assembly and
+                              support.
                             </Card.Text>
                           </Card.Body>
                         </Card>
@@ -502,11 +663,14 @@ function HomePage() {
                         <Card className="service-card modern-border h-100">
                           <Card.Body className="text-center">
                             <div className="service-icon mb-3">
-                              <Cart size={40} style={{color: '#6c5ce7'}} />
+                              <Cart size={40} style={{ color: "#6c5ce7" }} />
                             </div>
-                            <Card.Title>Buy PC Parts</Card.Title><br/>
-                            <Card.Text style={{textAlign: 'justify'}}>
-                              Purchase high-quality PC parts and components directly from trusted sellers through our marketplace.
+                            <Card.Title>Buy PC Parts</Card.Title>
+                            <br />
+                            <Card.Text style={{ textAlign: "justify" }}>
+                              Purchase high-quality PC parts and components
+                              directly from trusted sellers through our
+                              marketplace.
                             </Card.Text>
                           </Card.Body>
                         </Card>
@@ -526,35 +690,45 @@ function HomePage() {
                             <div className="process-number">1</div>
                             <div className="process-content">
                               <h5>Consultation</h5>
-                              <p className="text-muted mb-0">Discuss your needs and budget</p>
+                              <p className="text-muted mb-0">
+                                Discuss your needs and budget
+                              </p>
                             </div>
                           </div>
                           <div className="process-step">
                             <div className="process-number">2</div>
                             <div className="process-content">
                               <h5>Component Selection</h5>
-                              <p className="text-muted mb-0">Choose the perfect parts</p>
+                              <p className="text-muted mb-0">
+                                Choose the perfect parts
+                              </p>
                             </div>
                           </div>
                           <div className="process-step">
                             <div className="process-number">3</div>
                             <div className="process-content">
                               <h5>Assembly</h5>
-                              <p className="text-muted mb-0">Expert building and cable management</p>
+                              <p className="text-muted mb-0">
+                                Expert building and cable management
+                              </p>
                             </div>
                           </div>
                           <div className="process-step">
                             <div className="process-number">4</div>
                             <div className="process-content">
                               <h5>Testing</h5>
-                              <p className="text-muted mb-0">Rigorous quality assurance</p>
+                              <p className="text-muted mb-0">
+                                Rigorous quality assurance
+                              </p>
                             </div>
                           </div>
                           <div className="process-step">
                             <div className="process-number">5</div>
                             <div className="process-content">
                               <h5>Delivery</h5>
-                              <p className="text-muted mb-0">Safe shipping and setup assistance</p>
+                              <p className="text-muted mb-0">
+                                Safe shipping and setup assistance
+                              </p>
                             </div>
                           </div>
                         </div>
@@ -565,30 +739,51 @@ function HomePage() {
 
                 <Row>
                   <Col md={12}>
-                    <h2 className="text-center mb-4">Frequently Asked Questions</h2>
+                    <h2 className="text-center mb-4">
+                      Frequently Asked Questions
+                    </h2>
                     <Accordion>
                       <Accordion.Item eventKey="0">
-                        <Accordion.Header>How long does it take to build a custom PC?</Accordion.Header>
+                        <Accordion.Header>
+                          How long does it take to build a custom PC?
+                        </Accordion.Header>
                         <Accordion.Body>
-                          Typically, our build process takes 5-7 business days from order confirmation to shipping. This includes component procurement, assembly, extensive testing, and quality control.
+                          Typically, our build process takes 5-7 business days
+                          from order confirmation to shipping. This includes
+                          component procurement, assembly, extensive testing,
+                          and quality control.
                         </Accordion.Body>
                       </Accordion.Item>
                       <Accordion.Item eventKey="1">
-                        <Accordion.Header>Do you offer warranties on custom builds?</Accordion.Header>
+                        <Accordion.Header>
+                          Do you offer warranties on custom builds?
+                        </Accordion.Header>
                         <Accordion.Body>
-                          Yes, all our custom builds come with a 2-year warranty covering assembly and labor. Individual components are covered by their respective manufacturer warranties, which we help you manage if needed.
+                          Yes, all our custom builds come with a 2-year warranty
+                          covering assembly and labor. Individual components are
+                          covered by their respective manufacturer warranties,
+                          which we help you manage if needed.
                         </Accordion.Body>
                       </Accordion.Item>
                       <Accordion.Item eventKey="2">
-                        <Accordion.Header>Can I upgrade my PC in the future?</Accordion.Header>
+                        <Accordion.Header>
+                          Can I upgrade my PC in the future?
+                        </Accordion.Header>
                         <Accordion.Body>
-                          We design our builds with future upgradability in mind. We can also provide upgrade services when you're ready to enhance your system.
+                          We design our builds with future upgradability in
+                          mind. We can also provide upgrade services when you're
+                          ready to enhance your system.
                         </Accordion.Body>
                       </Accordion.Item>
                       <Accordion.Item eventKey="3">
-                        <Accordion.Header>What if I have issues with my PC after delivery?</Accordion.Header>
+                        <Accordion.Header>
+                          What if I have issues with my PC after delivery?
+                        </Accordion.Header>
                         <Accordion.Body>
-                          We provide lifetime technical support for all our builds. If you encounter any issues, our support team is just a call or email away to help troubleshoot and resolve the problem.
+                          We provide lifetime technical support for all our
+                          builds. If you encounter any issues, our support team
+                          is just a call or email away to help troubleshoot and
+                          resolve the problem.
                         </Accordion.Body>
                       </Accordion.Item>
                     </Accordion>
@@ -598,7 +793,16 @@ function HomePage() {
             </section>
 
             {/* Products Section */}
-            <section id="products" className="py-5 bg-white mb-5" style={{borderRadius: '2rem', boxShadow: '0 4px 32px rgba(0,0,0,0.10)', marginTop: '2rem', marginBottom: '2rem'}}>
+            <section
+              id="products"
+              className="py-5 bg-white mb-5"
+              style={{
+                borderRadius: "2rem",
+                boxShadow: "0 4px 32px rgba(0,0,0,0.10)",
+                marginTop: "2rem",
+                marginBottom: "2rem",
+              }}
+            >
               <Container>
                 <h1 className="text-center mb-5">Our Products</h1>
                 <Row className="mb-4">
@@ -608,7 +812,7 @@ function HomePage() {
                         placeholder="Search PC parts..."
                         aria-label="Search PC parts"
                         value={searchQuery}
-                        onChange={e => setSearchQuery(e.target.value)}
+                        onChange={(e) => setSearchQuery(e.target.value)}
                       />
                       <Button variant="outline-secondary">
                         <Search />
@@ -616,53 +820,120 @@ function HomePage() {
                     </InputGroup>
                   </Col>
                   <Col md={6} className="d-flex justify-content-md-end">
-                    <Form.Select style={{maxWidth: "220px"}} value={partType} onChange={e => setPartType(e.target.value)}>
+                    <Form.Select
+                      style={{ maxWidth: "220px" }}
+                      value={partType}
+                      onChange={(e) => setPartType(e.target.value)}
+                    >
                       <option value="All">All Types</option>
-                      {[...new Set(products.map(p => p.category))].map(type => (
-                        <option key={type} value={type}>{type}</option>
-                      ))}
+                      {[...new Set(products.map((p) => p.category))].map(
+                        (type) => (
+                          <option key={type} value={type}>
+                            {type}
+                          </option>
+                        )
+                      )}
                     </Form.Select>
                   </Col>
                 </Row>
-                <div style={{position: 'relative'}}>
-                  <div className="product-slider-arrow left" onClick={() => {
-                    const row = document.getElementById('product-slider-row');
-                    if (row) row.scrollBy({left: -240, behavior: 'smooth'});
-                  }}>
+                <div style={{ position: "relative" }}>
+                  <div
+                    className="product-slider-arrow left"
+                    onClick={() => {
+                      const row = document.getElementById("product-slider-row");
+                      if (row) row.scrollBy({ left: -240, behavior: "smooth" });
+                    }}
+                  >
                     <ChevronLeft size={24} />
                   </div>
-                  <div className="product-slider-arrow right" onClick={() => {
-                    const row = document.getElementById('product-slider-row');
-                    if (row) row.scrollBy({left: 240, behavior: 'smooth'});
-                  }}>
+                  <div
+                    className="product-slider-arrow right"
+                    onClick={() => {
+                      const row = document.getElementById("product-slider-row");
+                      if (row) row.scrollBy({ left: 240, behavior: "smooth" });
+                    }}
+                  >
                     <ChevronRight size={24} />
                   </div>
-                  <div id="product-slider-row" className="product-slider-row" style={{display: 'flex', flexDirection: 'column', gap: 24, minWidth: 320, overflowX: 'auto', WebkitOverflowScrolling: 'touch', paddingBottom: 8}}>
-                    {[0, 1, 2].map(rowIdx => {
+                  <div
+                    id="product-slider-row"
+                    className="product-slider-row"
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: 24,
+                      minWidth: 320,
+                      overflowX: "auto",
+                      WebkitOverflowScrolling: "touch",
+                      paddingBottom: 8,
+                    }}
+                  >
+                    {[0, 1, 2].map((rowIdx) => {
                       const itemsPerRow = 6;
-                      const rowParts = filteredParts.slice(rowIdx * itemsPerRow, (rowIdx + 1) * itemsPerRow);
+                      const rowParts = filteredParts.slice(
+                        rowIdx * itemsPerRow,
+                        (rowIdx + 1) * itemsPerRow
+                      );
                       return (
-                        <div key={rowIdx} style={{display: 'flex', gap: 24, minWidth: 320}}>
+                        <div
+                          key={rowIdx}
+                          style={{ display: "flex", gap: 24, minWidth: 320 }}
+                        >
                           {rowParts.length === 0 && rowIdx === 0 ? (
-                            <div className="text-center text-muted py-5 w-100">No parts found.</div>
+                            <div className="text-center text-muted py-5 w-100">
+                              No parts found.
+                            </div>
                           ) : (
                             rowParts.map((part, idx) => (
-                              <div key={idx} style={{flex: '0 0 220px', maxWidth: 220}}>
+                              <div
+                                key={idx}
+                                style={{ flex: "0 0 220px", maxWidth: 220 }}
+                              >
                                 <Card className="h-100 shadow-sm text-center">
-                                  <Card.Body className="d-flex flex-column justify-content-between" style={{paddingBottom: 0}}>
-                                    <div style={{minHeight: 120, display: 'flex', flexDirection: 'column', justifyContent: 'flex-start'}}>
+                                  <Card.Body
+                                    className="d-flex flex-column justify-content-between"
+                                    style={{ paddingBottom: 0 }}
+                                  >
+                                    <div
+                                      style={{
+                                        minHeight: 120,
+                                        display: "flex",
+                                        flexDirection: "column",
+                                        justifyContent: "flex-start",
+                                      }}
+                                    >
                                       <div className="mb-3">
-                                        {part.image_url
-                                          ? <img src={`http://localhost/gearsphere_api/GearSphere-BackEnd/${part.image_url}`} alt={part.name} style={{width: 60, height: 60, objectFit: 'contain'}} />
-                                          : part.icon || <Display size={32} className="text-info" />}
+                                        {part.image_url ? (
+                                          <img
+                                            src={`http://localhost/gearsphere_api/GearSphere-BackEnd/${part.image_url}`}
+                                            alt={part.name}
+                                            style={{
+                                              width: 60,
+                                              height: 60,
+                                              objectFit: "contain",
+                                            }}
+                                          />
+                                        ) : (
+                                          part.icon || (
+                                            <Display
+                                              size={32}
+                                              className="text-info"
+                                            />
+                                          )
+                                        )}
                                       </div>
                                       <Card.Title>{part.name}</Card.Title>
-                                      <Card.Text className="text-muted">{part.category}</Card.Text>
+                                      <Card.Text className="text-muted">
+                                        {part.category}
+                                      </Card.Text>
                                     </div>
                                     <div>
-                                      <h5 className="text-primary mb-2">LKR {Number(part.price).toLocaleString()}</h5>
-                                      <Button 
-                                        variant="success" 
+                                      <h5 className="text-primary mb-2">
+                                        LKR{" "}
+                                        {Number(part.price).toLocaleString()}
+                                      </h5>
+                                      <Button
+                                        variant="success"
                                         className="w-100 mb-2"
                                         onClick={() => setShowLoginModal(true)}
                                       >
@@ -683,115 +954,199 @@ function HomePage() {
             </section>
 
             {/* Reviews Section */}
-            <section id="reviews" className="py-5 bg-white mb-5" style={{borderRadius: '2rem', boxShadow: '0 4px 32px rgba(0,0,0,0.10)', marginTop: '2rem', marginBottom: '2rem'}}>
+            <section
+              id="reviews"
+              className="py-5 bg-white mb-5"
+              style={{
+                borderRadius: "2rem",
+                boxShadow: "0 4px 32px rgba(0,0,0,0.10)",
+                marginTop: "2rem",
+                marginBottom: "2rem",
+              }}
+            >
               <Container>
                 <h1 className="text-center mb-5">Customer Reviews</h1>
-                
-                <Row className="mb-4">
-                  <Col md={6} className="mb-3 mb-md-0">
-                    <div className="d-flex align-items-center">
-                      <h4 className="mb-0 me-3">Overall Rating:</h4>
-                      <div className="d-flex align-items-center">
-                        <div className="me-2">
-                          {renderStars(4.5)}
-                        </div>
-                        <span className="fw-bold">4.5/5</span>
-                      </div>
+
+                {reviewsLoading ? (
+                  <div className="text-center">
+                    <div className="spinner-border text-primary" role="status">
+                      <span className="visually-hidden">
+                        Loading reviews...
+                      </span>
                     </div>
-                  </Col>
-                </Row>
-                
-                <Row>
-                  {reviews.map(review => (
-                    <Col key={review.id} md={6} className="mb-4">
-                      <Card className="h-100 shadow-sm customer-review-card">
-                        <Card.Body>
-                          <div className="d-flex justify-content-between align-items-start mb-3">
-                            <div className="d-flex">
-                              <img 
-                                src={review.avatar} 
-                                alt={review.name} 
+                    <p className="mt-2">Loading customer reviews...</p>
+                  </div>
+                ) : systemReviews.length > 0 ? (
+                  <Row className="g-4">
+                    {systemReviews.map((review) => (
+                      <Col key={review.review_id} lg={3} md={6} sm={6} xs={12}>
+                        <Card className="h-100 shadow-sm">
+                          <Card.Body className="d-flex flex-column">
+                            <div className="d-flex align-items-center mb-3">
+                              <img
+                                src={
+                                  review.profile_image
+                                    ? `http://localhost/gearsphere_api/GearSphere-BackEnd/profile_images/${review.profile_image}`
+                                    : "/profile_images/user_image.jpg"
+                                }
+                                alt={review.username}
                                 className="rounded-circle me-3"
                                 width="50"
                                 height="50"
+                                style={{ objectFit: "cover" }}
                               />
                               <div>
-                                <h5 className="mb-0">{review.name}</h5>
-                                <p className="text-muted mb-0 small">{review.date}</p>
+                                <h6 className="mb-1">{review.username}</h6>
+                                <div className="d-flex align-items-center">
+                                  {[...Array(5)].map((_, i) => (
+                                    <Star
+                                      key={i}
+                                      className={`me-1 ${
+                                        i < review.rating
+                                          ? "text-warning"
+                                          : "text-muted"
+                                      }`}
+                                      fill={
+                                        i < review.rating
+                                          ? "currentColor"
+                                          : "none"
+                                      }
+                                      size={16}
+                                    />
+                                  ))}
+                                  <span className="ms-2 text-muted small">
+                                    ({review.rating}/5)
+                                  </span>
+                                </div>
                               </div>
                             </div>
-                            <div className="d-flex">
-                              {renderStars(review.rating)}
+                            <div className="flex-grow-1">
+                              <p className="text-muted mb-2 small">
+                                {new Date(
+                                  review.created_at
+                                ).toLocaleDateString()}
+                              </p>
+                              <p className="mb-0">{review.comment}</p>
                             </div>
-                          </div>
-                          <h5>{review.title}</h5>
-                          <p className="text-muted small mb-3">Product: {review.productName}</p>
-                          <p className="mb-0">{review.content}</p>
-                        </Card.Body>
-                      </Card>
-                    </Col>
-                  ))}
-                </Row>
+                          </Card.Body>
+                        </Card>
+                      </Col>
+                    ))}
+                  </Row>
+                ) : (
+                  <div className="text-center text-muted">
+                    <p>No approved system reviews yet.</p>
+                  </div>
+                )}
               </Container>
             </section>
 
             {/* Contact Section */}
-            <section id="contact" className="py-5 bg-white" style={{borderRadius: '2rem', boxShadow: '0 4px 32px rgba(0,0,0,0.10)', marginTop: '2rem', marginBottom: 0}}>
+            <section
+              id="contact"
+              className="py-5 bg-white"
+              style={{
+                borderRadius: "2rem",
+                boxShadow: "0 4px 32px rgba(0,0,0,0.10)",
+                marginTop: "2rem",
+                marginBottom: 0,
+              }}
+            >
               <Container>
                 <h1 className="text-center mb-5">Contact Us</h1>
                 <Row className="mb-5">
                   <Col lg={6} className="mb-4 mb-lg-0">
                     <h2 className="mb-4">Get In Touch</h2>
                     <p className="mb-4">
-                      Have questions about our products or services? Need technical support? 
-                      Fill out the form and our team will get back to you as soon as possible.
+                      Have questions about our products or services? Need
+                      technical support? Fill out the form and our team will get
+                      back to you as soon as possible.
                     </p>
-                    <Form onSubmit={async (e) => {
-                      e.preventDefault();
-                      if (!contactFirstName || !contactLastName || !contactEmail || !contactSubject || !contactMessage) {
-                        toast.error('Please fill in all fields.');
-                        return;
-                      }
-                      setContactLoading(true);
-                      try {
-                        const res = await axios.post('http://localhost/gearsphere_api/GearSphere-BackEnd/addMessage.php', {
-                          name: contactFirstName + ' ' + contactLastName,
-                          email: contactEmail,
-                          subject: contactSubject,
-                          message: contactMessage
-                        });
-                        if (res.data.success) {
-                          toast.success('Thanks for contacting admin!');
-                          setContactFirstName(''); setContactLastName(''); setContactEmail(''); setContactSubject(''); setContactMessage('');
-                        } else {
-                          toast.error(res.data.message || 'Failed to send message.');
+                    <Form
+                      onSubmit={async (e) => {
+                        e.preventDefault();
+                        if (
+                          !contactFirstName ||
+                          !contactLastName ||
+                          !contactEmail ||
+                          !contactSubject ||
+                          !contactMessage
+                        ) {
+                          toast.error("Please fill in all fields.");
+                          return;
                         }
-                      } catch (err) {
-                        toast.error('Failed to send message.');
-                      }
-                      setContactLoading(false);
-                    }}>
+                        setContactLoading(true);
+                        try {
+                          const res = await axios.post(
+                            "http://localhost/gearsphere_api/GearSphere-BackEnd/addMessage.php",
+                            {
+                              name: contactFirstName + " " + contactLastName,
+                              email: contactEmail,
+                              subject: contactSubject,
+                              message: contactMessage,
+                            }
+                          );
+                          if (res.data.success) {
+                            toast.success("Thanks for contacting admin!");
+                            setContactFirstName("");
+                            setContactLastName("");
+                            setContactEmail("");
+                            setContactSubject("");
+                            setContactMessage("");
+                          } else {
+                            toast.error(
+                              res.data.message || "Failed to send message."
+                            );
+                          }
+                        } catch (err) {
+                          toast.error("Failed to send message.");
+                        }
+                        setContactLoading(false);
+                      }}
+                    >
                       <Row>
                         <Col md={6}>
                           <Form.Group className="mb-3">
                             <Form.Label>First Name</Form.Label>
-                            <Form.Control type="text" placeholder="Enter first name" value={contactFirstName} onChange={e => setContactFirstName(e.target.value)} />
+                            <Form.Control
+                              type="text"
+                              placeholder="Enter first name"
+                              value={contactFirstName}
+                              onChange={(e) =>
+                                setContactFirstName(e.target.value)
+                              }
+                            />
                           </Form.Group>
                         </Col>
                         <Col md={6}>
                           <Form.Group className="mb-3">
                             <Form.Label>Last Name</Form.Label>
-                            <Form.Control type="text" placeholder="Enter last name" value={contactLastName} onChange={e => setContactLastName(e.target.value)} />
+                            <Form.Control
+                              type="text"
+                              placeholder="Enter last name"
+                              value={contactLastName}
+                              onChange={(e) =>
+                                setContactLastName(e.target.value)
+                              }
+                            />
                           </Form.Group>
                         </Col>
                       </Row>
                       <Form.Group className="mb-3">
                         <Form.Label>Email Address</Form.Label>
-                        <Form.Control type="email" placeholder="Enter email" value={contactEmail} onChange={e => setContactEmail(e.target.value)} />
+                        <Form.Control
+                          type="email"
+                          placeholder="Enter email"
+                          value={contactEmail}
+                          onChange={(e) => setContactEmail(e.target.value)}
+                        />
                       </Form.Group>
                       <Form.Group className="mb-3">
                         <Form.Label>Subject</Form.Label>
-                        <Form.Select value={contactSubject} onChange={e => setContactSubject(e.target.value)}>
+                        <Form.Select
+                          value={contactSubject}
+                          onChange={(e) => setContactSubject(e.target.value)}
+                        >
                           <option value="">Select a subject</option>
                           <option>Product Inquiry</option>
                           <option>Technical Support</option>
@@ -802,10 +1157,21 @@ function HomePage() {
                       </Form.Group>
                       <Form.Group className="mb-3">
                         <Form.Label>Message</Form.Label>
-                        <Form.Control as="textarea" rows={5} placeholder="Enter your message" value={contactMessage} onChange={e => setContactMessage(e.target.value)} />
+                        <Form.Control
+                          as="textarea"
+                          rows={5}
+                          placeholder="Enter your message"
+                          value={contactMessage}
+                          onChange={(e) => setContactMessage(e.target.value)}
+                        />
                       </Form.Group>
-                      <Button variant="primary" type="submit" className="w-100" disabled={contactLoading}>
-                        {contactLoading ? 'Sending...' : 'Send Message'}
+                      <Button
+                        variant="primary"
+                        type="submit"
+                        className="w-100"
+                        disabled={contactLoading}
+                      >
+                        {contactLoading ? "Sending..." : "Send Message"}
                       </Button>
                     </Form>
                   </Col>
@@ -841,17 +1207,19 @@ function HomePage() {
                               </div>
                               <div>
                                 <h5 className="mb-1">Address</h5>
-                                <p className="mb-0">Pasara Road, Badulla City, 90 000</p>
+                                <p className="mb-0">
+                                  Pasara Road, Badulla City, 90 000
+                                </p>
                               </div>
                             </div>
-                              <div className="d-flex justify-content-center">
-                                <img 
-                                  src="/src/images/logo.PNG" 
-                                  alt="GearSphere Logo" 
-                                  className="me-2" 
-                                  style={{ height: '300px', width: '300px' }}
-                                />
-                              </div>
+                            <div className="d-flex justify-content-center">
+                              <img
+                                src="/src/images/logo.PNG"
+                                alt="GearSphere Logo"
+                                className="me-2"
+                                style={{ height: "300px", width: "300px" }}
+                              />
+                            </div>
                           </Card.Body>
                         </Card>
                       </Col>
@@ -864,24 +1232,29 @@ function HomePage() {
           <Footer />
         </div>
       </div>
-      
+
       {/* Login Modal */}
-      <LoginModal 
-        show={showLoginModal} 
-        onHide={() => setShowLoginModal(false)} 
+      <LoginModal
+        show={showLoginModal}
+        onHide={() => setShowLoginModal(false)}
         switchToRegister={() => {
-          console.log('switchToRegister called, closing login modal and opening signup modal');
+          console.log(
+            "switchToRegister called, closing login modal and opening signup modal"
+          );
           setShowLoginModal(false);
           setShowSignupModal(true);
         }}
       />
-      
+
       {/* Signup Modal */}
       {showSignupModal && (
         <>
-          {console.log('Rendering Signup modal, showSignupModal:', showSignupModal)}
-          <Signup 
-            signupClose={setShowSignupModal} 
+          {console.log(
+            "Rendering Signup modal, showSignupModal:",
+            showSignupModal
+          )}
+          <Signup
+            signupClose={setShowSignupModal}
             loginClose={setShowLoginModal}
           />
         </>

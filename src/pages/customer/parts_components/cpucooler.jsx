@@ -90,19 +90,21 @@ export default function CPUCoolerPage() {
   };
 
   const handleSelect = (cooler) => {
-    sessionStorage.setItem("selected_cpucooler", JSON.stringify(cooler));
     toast.success(`Selected ${cooler.name}. Redirecting to PC Builder...`);
     setTimeout(() => {
-      navigate("/pc-builder?cpucoolerSelected=1");
+      // Navigate back to PC Builder with selected cooler in state (no sessionStorage)
+      navigate("/pc-builder", {
+        state: { selectedComponent: cooler },
+      });
     }, 1000);
   };
 
   const handleCompareClick = () => {
-    sessionStorage.setItem(
-      "compare_cpucoolers",
-      JSON.stringify(compareSelection)
-    );
-    navigate("/compare-cpucooler");
+    // Navigate to compare page with selected items in state (no sessionStorage)
+    navigate("/compare-cpucooler", {
+      state: { compareSelection },
+      replace: true,
+    });
   };
 
   const handleTogglePriceSort = () => {
@@ -232,8 +234,8 @@ export default function CPUCoolerPage() {
                   </td>
                   <td>LKR {cooler.price?.toLocaleString() || "N/A"}</td>
                   <td>
-                    <Button 
-                      size="sm" 
+                    <Button
+                      size="sm"
                       className="btn-darkblue"
                       onClick={() => handleSelect(cooler)}
                     >

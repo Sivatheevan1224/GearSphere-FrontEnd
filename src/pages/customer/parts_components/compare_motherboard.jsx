@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import {
   Container,
   Button,
@@ -114,12 +114,34 @@ export default function CompareMotherboardPage() {
   const [motherboards, setMotherboards] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
-    const compareMotherboards = sessionStorage.getItem("compare_motherboards");
-    if (compareMotherboards) {
-      const parsedMotherboards = JSON.parse(compareMotherboards);
-      const ids = parsedMotherboards.map((mb) => mb.product_id);
+    // Get compare selection from navigation state with sessionStorage fallback
+    let compareSelection = location.state?.compareSelection || [];
+
+    // Fallback to sessionStorage if navigation state is empty (for page refresh scenarios)
+    if (compareSelection.length === 0) {
+      const storedSelection = sessionStorage.getItem(
+        "motherboard_compareSelection"
+      );
+      if (storedSelection) {
+        try {
+          compareSelection = JSON.parse(storedSelection);
+        } catch (e) {
+          console.warn("Failed to parse stored comparison selection:", e);
+        }
+      }
+    } else {
+      // Store in sessionStorage for page refresh scenarios only
+      sessionStorage.setItem(
+        "motherboard_compareSelection",
+        JSON.stringify(compareSelection)
+      );
+    }
+
+    if (compareSelection.length > 0) {
+      const ids = compareSelection.map((mb) => mb.product_id);
       axios
         .get(
           "http://localhost/gearsphere_api/GearSphere-BackEnd/getMotherBoard.php"
@@ -144,13 +166,17 @@ export default function CompareMotherboardPage() {
     } else {
       setLoading(false);
     }
-  }, []);
+
+    // Cleanup sessionStorage when component unmounts
+    return () => {
+      sessionStorage.removeItem("motherboard_compareSelection");
+    };
+  }, [location.state]);
 
   const handleSelectMotherboard = (mb) => {
-    sessionStorage.setItem("selected_motherboard", JSON.stringify(mb));
     toast.success(`Selected ${mb.name}. Redirecting to PC Builder...`);
     setTimeout(() => {
-      navigate("/pc-builder?mbSelected=1");
+      navigate("/pc-builder", { state: { selectedComponent: mb } });
     }, 1000);
   };
 

@@ -19,16 +19,24 @@ export const CartProvider = ({ children }) => {
   const location = useLocation();
 
   const fetchCart = async () => {
-    const user_id = sessionStorage.getItem("user_id");
-    if (!user_id) {
-      setCartItems([]); // Clear cart if no user is logged in
-      setLoading(false);
-      return;
-    }
     setLoading(true);
     try {
+      // Get user session from backend
+      const sessionResponse = await axios.get(
+        "http://localhost/gearsphere_api/GearSphere-BackEnd/getSession.php",
+        { withCredentials: true }
+      );
+
+      if (!sessionResponse.data.success) {
+        setCartItems([]); // Clear cart if no user is logged in
+        setLoading(false);
+        return;
+      }
+
+      const user_id = sessionResponse.data.user_id;
       const response = await axios.get(
-        `${BACKEND_URL}getCart.php?user_id=${user_id}`
+        `${BACKEND_URL}getCart.php?user_id=${user_id}`,
+        { withCredentials: true }
       );
       if (response.data.success && Array.isArray(response.data.cart)) {
         // Add full image URL to each cart item
@@ -41,7 +49,17 @@ export const CartProvider = ({ children }) => {
         setCartItems([]);
       }
     } catch (error) {
-      console.error("Failed to fetch cart:", error);
+      // Handle authentication errors gracefully for guest users
+      if (error.response?.status === 401 || error.status === 401) {
+        // User not logged in - this is normal for guest users
+        setCartItems([]);
+        setLoading(false);
+        return;
+      }
+      // Only log non-auth errors to avoid console spam for guest users
+      if (error.response?.status !== 401) {
+        console.error("Failed to fetch cart:", error);
+      }
       setCartItems([]);
     } finally {
       setLoading(false);
@@ -54,17 +72,28 @@ export const CartProvider = ({ children }) => {
   }, [location.pathname]);
 
   const addToCart = async (product) => {
-    const user_id = sessionStorage.getItem("user_id");
-    if (!user_id) {
-      alert("Please log in to add items to your cart.");
-      return;
-    }
     try {
-      await axios.post(`${BACKEND_URL}addToCart.php`, {
-        user_id,
-        product_id: product.id,
-        quantity: 1,
-      });
+      // Get user session from backend
+      const sessionResponse = await axios.get(
+        "http://localhost/gearsphere_api/GearSphere-BackEnd/getSession.php",
+        { withCredentials: true }
+      );
+
+      if (!sessionResponse.data.success) {
+        alert("Please log in to add items to your cart.");
+        return;
+      }
+
+      const user_id = sessionResponse.data.user_id;
+      await axios.post(
+        `${BACKEND_URL}addToCart.php`,
+        {
+          user_id,
+          product_id: product.id,
+          quantity: 1,
+        },
+        { withCredentials: true }
+      );
       await fetchCart(); // Refetch cart to update state with the latest data
     } catch (error) {
       console.error("Failed to add to cart:", error);
@@ -73,13 +102,24 @@ export const CartProvider = ({ children }) => {
   };
 
   const removeFromCart = async (productId) => {
-    const user_id = sessionStorage.getItem("user_id");
-    if (!user_id) return;
     try {
-      await axios.post(`${BACKEND_URL}removeFromCart.php`, {
-        user_id,
-        product_id: productId,
-      });
+      // Get user session from backend
+      const sessionResponse = await axios.get(
+        "http://localhost/gearsphere_api/GearSphere-BackEnd/getSession.php",
+        { withCredentials: true }
+      );
+
+      if (!sessionResponse.data.success) return;
+
+      const user_id = sessionResponse.data.user_id;
+      await axios.post(
+        `${BACKEND_URL}removeFromCart.php`,
+        {
+          user_id,
+          product_id: productId,
+        },
+        { withCredentials: true }
+      );
       await fetchCart();
     } catch (error) {
       console.error("Failed to remove from cart:", error);
@@ -87,14 +127,25 @@ export const CartProvider = ({ children }) => {
   };
 
   const updateQuantity = async (productId, newQuantity) => {
-    const user_id = sessionStorage.getItem("user_id");
-    if (!user_id) return;
     try {
-      await axios.post(`${BACKEND_URL}updateCartQuantity.php`, {
-        user_id,
-        product_id: productId,
-        quantity: newQuantity,
-      });
+      // Get user session from backend
+      const sessionResponse = await axios.get(
+        "http://localhost/gearsphere_api/GearSphere-BackEnd/getSession.php",
+        { withCredentials: true }
+      );
+
+      if (!sessionResponse.data.success) return;
+
+      const user_id = sessionResponse.data.user_id;
+      await axios.post(
+        `${BACKEND_URL}updateCartQuantity.php`,
+        {
+          user_id,
+          product_id: productId,
+          quantity: newQuantity,
+        },
+        { withCredentials: true }
+      );
       await fetchCart();
     } catch (error) {
       console.error("Failed to update quantity:", error);
@@ -102,10 +153,21 @@ export const CartProvider = ({ children }) => {
   };
 
   const clearCart = async () => {
-    const user_id = sessionStorage.getItem("user_id");
-    if (!user_id) return;
     try {
-      await axios.post(`${BACKEND_URL}clearCart.php`, { user_id });
+      // Get user session from backend
+      const sessionResponse = await axios.get(
+        "http://localhost/gearsphere_api/GearSphere-BackEnd/getSession.php",
+        { withCredentials: true }
+      );
+
+      if (!sessionResponse.data.success) return;
+
+      const user_id = sessionResponse.data.user_id;
+      await axios.post(
+        `${BACKEND_URL}clearCart.php`,
+        { user_id },
+        { withCredentials: true }
+      );
       setCartItems([]); // Optimistic update for immediate UI feedback
     } catch (error) {
       console.error("Failed to clear cart:", error);

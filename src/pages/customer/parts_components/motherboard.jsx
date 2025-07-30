@@ -157,19 +157,21 @@ export default function MotherboardPage() {
   };
 
   const handleSelectMotherboard = (mb) => {
-    sessionStorage.setItem("selected_motherboard", JSON.stringify(mb));
     toast.success(`Selected ${mb.name}. Redirecting to PC Builder...`);
     setTimeout(() => {
-      navigate("/pc-builder?mbSelected=1");
+      // Navigate back to PC Builder with selected motherboard in state (no sessionStorage)
+      navigate("/pc-builder", {
+        state: { selectedComponent: mb },
+      });
     }, 1000);
   };
 
   const handleCompareClick = () => {
-    sessionStorage.setItem(
-      "compare_motherboards",
-      JSON.stringify(compareSelection)
-    );
-    navigate("/compare-motherboard");
+    // Navigate to compare page with selected items in state (no sessionStorage)
+    navigate("/compare-motherboard", {
+      state: { compareSelection },
+      replace: true,
+    });
   };
 
   const handleTogglePriceSort = () => {
@@ -247,20 +249,20 @@ export default function MotherboardPage() {
             ) : (
               sortedMotherboards.map((mb) => (
                 <tr key={mb.product_id}>
-                <td>
-                  <Form.Check
-                    type="checkbox"
-                    checked={compareSelection.some(
+                  <td>
+                    <Form.Check
+                      type="checkbox"
+                      checked={compareSelection.some(
                         (item) => item.product_id === mb.product_id
-                    )}
-                    onChange={() => handleToggleCompare(mb)}
-                  />
-                </td>
+                      )}
+                      onChange={() => handleToggleCompare(mb)}
+                    />
+                  </td>
                   <td>
                     {mb.image_url ? (
-                  <img
+                      <img
                         src={`http://localhost/gearsphere_api/GearSphere-BackEnd/${mb.image_url}`}
-                    alt={mb.name}
+                        alt={mb.name}
                         className="mb-img me-2"
                         style={{
                           width: 40,
@@ -274,8 +276,8 @@ export default function MotherboardPage() {
                     )}
                   </td>
                   <td>
-                  <strong className="mb-name">{mb.name}</strong>
-                </td>
+                    <strong className="mb-name">{mb.name}</strong>
+                  </td>
                   <td>{mb.socket || "—"}</td>
                   <td>{mb.form_factor || "—"}</td>
                   <td>{mb.chipset || "—"}</td>
@@ -291,10 +293,10 @@ export default function MotherboardPage() {
                       size="sm"
                       onClick={() => handleSelectMotherboard(mb)}
                     >
-                    Add
-                  </Button>
-                </td>
-              </tr>
+                      Add
+                    </Button>
+                  </td>
+                </tr>
               ))
             )}
           </tbody>

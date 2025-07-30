@@ -159,18 +159,25 @@ export default function CPUPage() {
   };
 
   const handleSelectCPU = (cpu) => {
-    const { icon, ...cpuWithoutIcon } = cpu;
-    sessionStorage.setItem("selected_cpu", JSON.stringify(cpuWithoutIcon));
+    // Remove icon from the CPU object before navigation for cleaner state
+    const cpuWithoutIcon = { ...cpu };
+    delete cpuWithoutIcon.icon;
+
     toast.success(`Selected ${cpu.name}. Redirecting to PC Builder...`);
     setTimeout(() => {
-      navigate("/pc-builder?cpuSelected=1");
+      // Navigate back to PC Builder with selected component in state
+      navigate("/pc-builder", {
+        state: { selectedComponent: cpuWithoutIcon },
+      });
     }, 1000);
   };
 
   const handleCompareClick = () => {
-    // You can use sessionStorage or navigate state to pass data
-    sessionStorage.setItem("compare_cpus", JSON.stringify(compareSelection));
-    navigate("/compare-cpu");
+    // Navigate to compare page with selected items in state (no sessionStorage)
+    navigate("/compare-cpu", {
+      state: { compareSelection },
+      replace: true,
+    });
   };
 
   const handleTogglePriceSort = () => {

@@ -120,13 +120,21 @@ function FindTechnician() {
       return;
     }
     if (!selectedTechnician) return;
-    const customer_id = sessionStorage.getItem("user_id");
-    if (!customer_id) {
-      setError("Session expired. Please log in again.");
-      return;
-    }
-    setAssigning(true);
+
     try {
+      // Get user session from backend
+      const sessionResponse = await axios.get(
+        "http://localhost/gearsphere_api/GearSphere-BackEnd/getSession.php",
+        { withCredentials: true }
+      );
+
+      if (!sessionResponse.data.success) {
+        setError("Session expired. Please log in again.");
+        return;
+      }
+
+      const customer_id = sessionResponse.data.user_id;
+      setAssigning(true);
       const res = await axios.post(
         "http://localhost/gearsphere_api/GearSphere-BackEnd/assignTechnician.php",
         {
@@ -136,7 +144,8 @@ function FindTechnician() {
             selectedTechnician.id ||
             selectedTechnician.user_id,
           instructions: instructions,
-        }
+        },
+        { withCredentials: true }
       );
       if (res.data && res.data.success) {
         toast.success("Technician Assigned Successfully");
@@ -366,20 +375,42 @@ function FindTechnician() {
                     </span>
                   </div> */}
                   <button
-                    style={assignBtnStyle}
+                    style={
+                      tech.status === "available"
+                        ? assignBtnStyle
+                        : {
+                            ...assignBtnStyle,
+                            background:
+                              "linear-gradient(90deg, #9ca3af 0%, #6b7280 100%)",
+                            cursor: "not-allowed",
+                            opacity: 0.6,
+                          }
+                    }
                     className="btn btn-sm mt-2"
-                    onMouseEnter={(e) =>
-                      Object.assign(e.currentTarget.style, assignBtnHoverStyle)
-                    }
-                    onMouseLeave={(e) =>
-                      Object.assign(e.currentTarget.style, assignBtnStyle)
-                    }
+                    disabled={tech.status !== "available"}
+                    onMouseEnter={(e) => {
+                      if (tech.status === "available") {
+                        Object.assign(
+                          e.currentTarget.style,
+                          assignBtnHoverStyle
+                        );
+                      }
+                    }}
+                    onMouseLeave={(e) => {
+                      if (tech.status === "available") {
+                        Object.assign(e.currentTarget.style, assignBtnStyle);
+                      }
+                    }}
                     onClick={() => {
+                      if (tech.status !== "available") {
+                        toast.error("Technician is unavailable");
+                        return;
+                      }
                       setSelectedTechnician(tech);
                       setShowTechnicianModal(true);
                     }}
                   >
-                    Assign
+                    {tech.status === "available" ? "Assign" : "Unavailable"}
                   </button>
                 </div>
               </Card.Body>

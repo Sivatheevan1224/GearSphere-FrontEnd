@@ -49,41 +49,37 @@ function LoginModal({ show, onHide, switchToRegister }) {
         {
           email,
           password,
+        },
+        {
+          withCredentials: true, // Important for session cookies
         }
       );
       console.log(response.data);
       if (response.data.success) {
-        const { user_type, user_id, technician_id } = response.data;
+        const { user_type } = response.data;
 
-        toast.success(response.data.message, { autoClose: 2000 });
+        toast.success(response.data.message, { autoClose: 1000 });
 
-        setTimeout(() => {
-          sessionStorage.setItem("user_type", user_type.toLowerCase());
-          sessionStorage.setItem("user_id", user_id);
-          sessionStorage.setItem("email", email);
-          // Save technician_id if user is technician
-          if (user_type.toLowerCase() === "technician" && technician_id) {
-            const id =
-              typeof technician_id === "object"
-                ? technician_id.technician_id
-                : technician_id;
-            sessionStorage.setItem("technician_id", id);
-          } else {
-            sessionStorage.removeItem("technician_id"); // Clean up if not technician
-          }
-          toast.dismiss();
-          onHide();
+        // Close modal immediately
+        onHide();
 
-          if (user_type.toLowerCase() === "admin") {
-            navigate("/admin");
-          } else if (user_type.toLowerCase() === "customer") {
-            navigate("/customer/dashboard");
-          } else if (user_type.toLowerCase() === "technician") {
-            navigate("/technician/dashboard");
-          } else if (user_type.toLowerCase() === "seller") {
-            navigate("/seller");
-          }
-        }, 2000);
+        // Navigate based on user type - backend session handles authentication
+        console.log("Navigating for user_type:", user_type.toLowerCase());
+        if (user_type.toLowerCase() === "admin") {
+          console.log("Navigating to admin dashboard");
+          navigate("/admin");
+        } else if (user_type.toLowerCase() === "customer") {
+          console.log("Navigating to customer dashboard");
+          navigate("/customer/dashboard");
+        } else if (user_type.toLowerCase() === "technician") {
+          console.log("Navigating to technician dashboard");
+          navigate("/technician/dashboard");
+        } else if (user_type.toLowerCase() === "seller") {
+          console.log("Navigating to seller dashboard");
+          navigate("/seller");
+        } else {
+          console.log("Unknown user type:", user_type);
+        }
       } else if (response.data.message) {
         toast.error(response.data.message);
       } else {

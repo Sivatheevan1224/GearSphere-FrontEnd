@@ -76,7 +76,8 @@ const Signup = ({ signupClose, loginClose, setShowTechnicianInstruction }) => {
     try {
       const res = await axios.post(
         "http://localhost/gearsphere_api/GearSphere-BackEnd/emailValidationOTP.php",
-        { email }
+        { email },
+        { withCredentials: true }
       );
       if (res.data.success) {
         setSentOtp(res.data.otp);
@@ -129,6 +130,7 @@ const Signup = ({ signupClose, loginClose, setShowTechnicianInstruction }) => {
         formData,
         {
           headers: { "Content-Type": "multipart/form-data" },
+          withCredentials: true,
         }
       );
       if (res.data.status === "success") {
@@ -174,6 +176,7 @@ const Signup = ({ signupClose, loginClose, setShowTechnicianInstruction }) => {
         formData,
         {
           headers: { "Content-Type": "multipart/form-data" },
+          withCredentials: true,
         }
       );
       if (response.data.status === "success") {

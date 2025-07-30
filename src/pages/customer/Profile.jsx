@@ -18,15 +18,20 @@ const CustomerProfile = () => {
   useEffect(() => {
     const fetchCustomerData = async () => {
       try {
-        const userId = sessionStorage.getItem("user_id");
-        if (!userId) return toast.error("Session expired. Please log in.");
+        // Get user session from backend
+        const sessionResponse = await axios.get(
+          "http://localhost/gearsphere_api/GearSphere-BackEnd/getSession.php",
+          { withCredentials: true }
+        );
 
-        const token = localStorage.getItem("token");
+        if (!sessionResponse.data.success) {
+          return toast.error("Session expired. Please log in.");
+        }
+
+        const userId = sessionResponse.data.user_id;
         const response = await axios.get(
           `http://localhost/gearsphere_api/GearSphere-Backend/getCustomer.php?user_id=${userId}`,
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
+          { withCredentials: true }
         );
         const data = response.data;
 
@@ -43,7 +48,7 @@ const CustomerProfile = () => {
             profilePic: profilePicUrl,
           });
 
-          sessionStorage.setItem("customer_profile_pic", profilePicUrl);
+          // Store in sessionStorage for navbar updates (can be replaced with context/state management)
           window.dispatchEvent(new Event("profilePicUpdated"));
         }
       } catch (err) {
@@ -71,25 +76,32 @@ const CustomerProfile = () => {
   const handleProfileUpdate = async (e) => {
     e.preventDefault();
 
-    const userId = sessionStorage.getItem("user_id");
-    if (!userId) return toast.error("Session expired. Please log in.");
-
-    const payload = new FormData();
-    payload.append("user_id", userId);
-    payload.append("name", formData.name);
-    payload.append("contact_number", formData.contact_number);
-    payload.append("address", formData.address);
-
-    if (profilePicFile) {
-      payload.append("profile_image", profilePicFile);
-    }
-
     try {
-      const token = localStorage.getItem("token");
+      // Get user session from backend
+      const sessionResponse = await axios.get(
+        "http://localhost/gearsphere_api/GearSphere-BackEnd/getSession.php",
+        { withCredentials: true }
+      );
+
+      if (!sessionResponse.data.success) {
+        return toast.error("Session expired. Please log in.");
+      }
+
+      const userId = sessionResponse.data.user_id;
+      const payload = new FormData();
+      payload.append("user_id", userId);
+      payload.append("name", formData.name);
+      payload.append("contact_number", formData.contact_number);
+      payload.append("address", formData.address);
+
+      if (profilePicFile) {
+        payload.append("profile_image", profilePicFile);
+      }
+
       const response = await axios.post(
         "http://localhost/gearsphere_api/GearSphere-BackEnd/updateCustomerProfile.php",
         payload,
-        { headers: { Authorization: `Bearer ${token}` } }
+        { withCredentials: true }
       );
 
       if (response.data.success) {
@@ -97,7 +109,7 @@ const CustomerProfile = () => {
 
         const profileRes = await axios.get(
           `http://localhost/gearsphere_api/GearSphere-Backend/getCustomer.php?user_id=${userId}`,
-          { headers: { Authorization: `Bearer ${token}` } }
+          { withCredentials: true }
         );
         const data = profileRes.data;
         const profilePicUrl = data.profile_image
@@ -108,7 +120,6 @@ const CustomerProfile = () => {
           ...prev,
           profilePic: profilePicUrl,
         }));
-        sessionStorage.setItem("customer_profile_pic", profilePicUrl);
         window.dispatchEvent(new Event("profilePicUpdated"));
         setProfilePicFile(null);
         setProfilePicPreview(null);
