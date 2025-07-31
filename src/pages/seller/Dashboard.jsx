@@ -1,12 +1,3 @@
-
-import React, { useState, useEffect } from 'react';
-import { Container, Row, Col, Card, Button } from 'react-bootstrap';
-import { Envelope, Telephone, GeoAlt } from 'react-bootstrap-icons';
-import { Shop, Box, CashStack, Star, People, ArrowUp } from 'react-bootstrap-icons';
-import pcGif from '../../images/pc_video1.gif';
-import logo from '../../images/logo.PNG';
-import pcpic2 from '../../images/pcpic2.jpeg';
-
 import React, { useState, useEffect } from "react";
 import {
   Container,
@@ -14,32 +5,24 @@ import {
   Col,
   Card,
   Button,
-  Form,
-  InputGroup,
-  Accordion,
 } from "react-bootstrap";
-import { Envelope, Telephone, GeoAlt } from "react-bootstrap-icons";
 import {
   Shop,
   Box,
   CashStack,
   Star,
-  People,
   ArrowUp,
 } from "react-bootstrap-icons";
-import pcGif from "../../images/pc_video1.gif";
-import logo from "../../images/logo.PNG";
 import pcpic2 from "../../images/pcpic2.jpeg";
 import LoadingScreen from "../../components/loading/LoadingScreen";
-
 
 function SellerDashboard() {
   const [productCount, setProductCount] = useState(0);
   const [topProducts, setTopProducts] = useState([]);
-
   const [recentOrders, setRecentOrders] = useState([]);
   const [loading, setLoading] = useState(true);
-  const formatLKR = (amount) => 'LKR ' + Number(amount).toLocaleString('en-LK');
+  
+  const formatLKR = (amount) => "LKR " + Number(amount).toLocaleString("en-LK");
 
   useEffect(() => {
     const fetchDashboardData = async () => {
@@ -54,22 +37,6 @@ function SellerDashboard() {
           setProductCount(productsData.products.length);
           // Sort by price descending and take top 3
           const sorted = [...productsData.products].sort((a, b) => Number(b.price) - Number(a.price));
-
-  const [isLoading, setIsLoading] = useState(true);
-  const formatLKR = (amount) => "LKR " + Number(amount).toLocaleString("en-LK");
-
-  useEffect(() => {
-    setIsLoading(true);
-    fetch("http://localhost/gearsphere_api/GearSphere-BackEnd/getProducts.php")
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.success && Array.isArray(data.products)) {
-          setProductCount(data.products.length);
-          // Sort by price descending and take top 3
-          const sorted = [...data.products].sort(
-            (a, b) => Number(b.price) - Number(a.price)
-          );
-
           setTopProducts(sorted.slice(0, 3));
         } else {
           setProductCount(0);
@@ -93,7 +60,6 @@ function SellerDashboard() {
         console.error('Failed to fetch dashboard data:', error);
         setProductCount(0);
         setTopProducts([]);
-
         setRecentOrders([]);
       } finally {
         setLoading(false);
@@ -113,14 +79,9 @@ function SellerDashboard() {
     };
     return <span className={`badge ${statusClasses[status] || 'bg-secondary'}`}>{status}</span>;
   };
-      })
-      .finally(() => {
-        setIsLoading(false);
-      });
-  }, []);
 
   // Show loading screen while data is being fetched
-  if (isLoading) {
+  if (loading) {
     return (
       <LoadingScreen
         message="Loading Seller Dashboard"
@@ -193,7 +154,8 @@ function SellerDashboard() {
           </Row>
         </Container>
       </section>
-      {/* Existing Dashboard Content */}
+      
+      {/* Dashboard Content */}
       <Container className="py-5">
         <h1 className="mb-4">Seller Dashboard</h1>
 
@@ -237,7 +199,7 @@ function SellerDashboard() {
           </Col>
         </Row>
 
-        {/* Recent Orders */}
+        {/* Recent Orders and Top Products */}
         <Row>
           <Col md={8}>
             <Card className="mb-4">
@@ -246,13 +208,7 @@ function SellerDashboard() {
                   <h4 className="mb-0">Recent Orders</h4>
                   <Button variant="outline-primary" size="sm" href="/seller/orders">View All</Button>
                 </div>
-                {loading ? (
-                  <div className="text-center py-4">
-                    <div className="spinner-border text-primary" role="status">
-                      <span className="visually-hidden">Loading...</span>
-                    </div>
-                  </div>
-                ) : recentOrders.length === 0 ? (
+                {recentOrders.length === 0 ? (
                   <div className="text-center text-muted py-4">
                     No recent orders found.
                   </div>
@@ -266,32 +222,6 @@ function SellerDashboard() {
                           <th>Items</th>
                           <th>Amount</th>
                           <th>Status</th>
-
-                  <Button variant="outline-primary" size="sm">
-                    View All
-                  </Button>
-                </div>
-                <div className="table-responsive">
-                  <table className="table">
-                    <thead>
-                      <tr>
-                        <th>Order ID</th>
-                        <th>Customer</th>
-                        <th>Products</th>
-                        <th>Amount</th>
-                        <th>Status</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {[1, 2, 3].map((item) => (
-                        <tr key={item}>
-                          <td>#ORD{item.toString().padStart(6, "0")}</td>
-                          <td>John Doe</td>
-                          <td>{item} items</td>
-                          <td>{formatLKR(item * 50)}</td>
-                          <td>
-                            <span className="badge bg-success">Delivered</span>
-                          </td>
                         </tr>
                       </thead>
                       <tbody>
@@ -361,8 +291,6 @@ function SellerDashboard() {
                 )}
               </Card.Body>
             </Card>
-
-
           </Col>
         </Row>
       </Container>

@@ -1,21 +1,3 @@
-
-import React, { useState, useEffect } from 'react';
-import { Container, Row, Col, Card, Button, Form, InputGroup, Accordion, Alert, Nav, Badge, Table } from 'react-bootstrap';
-import { Link } from 'react-router-dom';
-import { 
-  Calendar, 
-  CurrencyDollar, 
-  Star, 
-  Tools, 
-  People, 
-  Clock 
-} from 'react-bootstrap-icons';
-import { Envelope, Telephone, GeoAlt } from 'react-bootstrap-icons';
-import logo from '../../images/logo.PNG';
-import pcpic2 from '../../images/pcpic2.jpeg';
-import { toast } from 'react-toastify';
-import axios from 'axios';
-
 import React, { useState, useEffect } from "react";
 import {
   Container,
@@ -26,6 +8,10 @@ import {
   Form,
   InputGroup,
   Accordion,
+  Alert,
+  Nav,
+  Badge,
+  Table,
 } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import {
@@ -35,14 +21,15 @@ import {
   Tools,
   People,
   Clock,
+  Envelope,
+  Telephone,
+  GeoAlt,
 } from "react-bootstrap-icons";
-import { Envelope, Telephone, GeoAlt } from "react-bootstrap-icons";
 import logo from "../../images/logo.PNG";
 import pcpic2 from "../../images/pcpic2.jpeg";
 import { toast } from "react-toastify";
 import axios from "axios";
 import LoadingScreen from "../../components/loading/LoadingScreen";
-
 
 function TechnicianDashboard() {
   const [stats, setStats] = useState({
@@ -57,18 +44,18 @@ function TechnicianDashboard() {
   const [buildStats, setBuildStats] = useState({
     total_requests: 0,
     pending_requests: 0,
-    accepted_requests: 0
+    accepted_requests: 0,
   });
   const [recentPendingRequests, setRecentPendingRequests] = useState([]);
-  const [technicianName, setTechnicianName] = useState('');
+  const [technicianName, setTechnicianName] = useState("");
   const [systemReviews, setSystemReviews] = useState([]);
   const [loading, setLoading] = useState(true);
   const [buildStatsLoading, setBuildStatsLoading] = useState(true);
-  const [contactFirstName, setContactFirstName] = useState('');
-  const [contactLastName, setContactLastName] = useState('');
-  const [contactEmail, setContactEmail] = useState('');
-  const [contactSubject, setContactSubject] = useState('');
-  const [contactMessage, setContactMessage] = useState('');
+  const [contactFirstName, setContactFirstName] = useState("");
+  const [contactLastName, setContactLastName] = useState("");
+  const [contactEmail, setContactEmail] = useState("");
+  const [contactSubject, setContactSubject] = useState("");
+  const [contactMessage, setContactMessage] = useState("");
   const [isLoading, setIsLoading] = useState(true);
 
   // Mock data - Replace with actual API call
@@ -89,11 +76,6 @@ function TechnicianDashboard() {
   }, []);
 
   // Contact form state
-  const [contactFirstName, setContactFirstName] = useState("");
-  const [contactLastName, setContactLastName] = useState("");
-  const [contactEmail, setContactEmail] = useState("");
-  const [contactSubject, setContactSubject] = useState("");
-  const [contactMessage, setContactMessage] = useState("");
   const [contactLoading, setContactLoading] = useState(false);
 
   useEffect(() => {
@@ -120,7 +102,7 @@ function TechnicianDashboard() {
         );
 
         if (technicianResponse.data.success) {
-          setTechnicianName(technicianResponse.data.technician.name || '');
+          setTechnicianName(technicianResponse.data.technician.name || "");
         }
 
         // Fetch build request statistics
@@ -134,39 +116,45 @@ function TechnicianDashboard() {
           setRecentPendingRequests(buildStatsResponse.data.recent_pending);
         }
         setBuildStatsLoading(false);
-        
+
         // Fetch all technicians to get their user IDs
         const techniciansResponse = await axios.get(
           "http://localhost/gearsphere_api/GearSphere-BackEnd/getAllTechnicians.php?action=getAll"
         );
-        
+
         let technicianUserIds = [];
-        if (techniciansResponse.data && Array.isArray(techniciansResponse.data)) {
-          technicianUserIds = techniciansResponse.data.map(tech => tech.user_id || tech.id);
+        if (
+          techniciansResponse.data &&
+          Array.isArray(techniciansResponse.data)
+        ) {
+          technicianUserIds = techniciansResponse.data.map(
+            (tech) => tech.user_id || tech.id
+          );
         }
-        
+
         // Fetch system reviews and filter to show only reviews BY technicians about the system
         const systemReviewsResponse = await fetch(
           `http://localhost/gearsphere_api/GearSphere-BackEnd/getReviews.php?target_type=system&status=approved`
         );
         const systemReviewsData = await systemReviewsResponse.json();
-        
+
         // Filter to show only system reviews written BY technicians
-        const technicianSystemReviews = Array.isArray(systemReviewsData) 
-          ? systemReviewsData.filter(review => technicianUserIds.includes(review.user_id))
+        const technicianSystemReviews = Array.isArray(systemReviewsData)
+          ? systemReviewsData.filter((review) =>
+              technicianUserIds.includes(review.user_id)
+            )
           : [];
-        
+
         setSystemReviews(technicianSystemReviews);
-        
+
         setStats({
           pendingAppointments: 5,
           completedAppointments: 28,
           totalEarnings: 125000,
           averageRating: 4.8,
           activeServices: 3,
-          totalCustomers: 15
+          totalCustomers: 15,
         });
-
       } catch (error) {
         console.error("Error fetching dashboard data:", error);
         toast.error("Failed to load dashboard data");
@@ -194,16 +182,17 @@ function TechnicianDashboard() {
     </Card>
   );
 
-
   const renderStars = (rating) => {
-    return Array(5).fill(0).map((_, i) => (
-      <Star
-        key={i}
-        className={`me-1 ${i < rating ? "text-warning" : "text-muted"}`}
-        fill={i < rating ? "currentColor" : "none"}
-        size={16}
-      />
-    ));
+    return Array(5)
+      .fill(0)
+      .map((_, i) => (
+        <Star
+          key={i}
+          className={`me-1 ${i < rating ? "text-warning" : "text-muted"}`}
+          fill={i < rating ? "currentColor" : "none"}
+          size={16}
+        />
+      ));
   };
 
   const renderReviewCard = (review) => (
@@ -212,9 +201,10 @@ function TechnicianDashboard() {
         <Card.Body className="d-flex flex-column">
           <div className="d-flex align-items-center mb-3">
             <img
-              src={review.profile_image 
-                ? `http://localhost/gearsphere_api/GearSphere-BackEnd/profile_images/${review.profile_image}`
-                : "/profile_images/user_image.jpg"
+              src={
+                review.profile_image
+                  ? `http://localhost/gearsphere_api/GearSphere-BackEnd/profile_images/${review.profile_image}`
+                  : "/profile_images/user_image.jpg"
               }
               alt={review.username}
               className="rounded-circle me-3"
@@ -293,9 +283,14 @@ function TechnicianDashboard() {
         <Container className="py-0 position-relative" style={{ zIndex: 2 }}>
           <Row className="align-items-center">
             <Col lg={6} className="mb-5 mb-lg-0">
-
-              <h1 className="display-3 fw-bold mb-4 rise-up" style={{ animationDelay: '0s' }}>
-                Welcome to Your Dashboard, <span className="text-primary">{technicianName || 'GearSphere Technician'}</span>
+              <h1
+                className="display-3 fw-bold mb-4 rise-up"
+                style={{ animationDelay: "0s" }}
+              >
+                Welcome to Your Dashboard,{" "}
+                <span className="text-primary">
+                  {technicianName || "GearSphere Technician"}
+                </span>
               </h1>
               <p
                 className="lead mb-5 rise-up"
@@ -413,7 +408,10 @@ function TechnicianDashboard() {
                     </tbody>
                   </Table>
                   <div className="text-center mt-3">
-                    <Link to="/technician/build-requests" className="btn btn-primary">
+                    <Link
+                      to="/technician/build-requests"
+                      className="btn btn-primary"
+                    >
                       View All Build Requests
                     </Link>
                   </div>
@@ -437,7 +435,7 @@ function TechnicianDashboard() {
               </div>
             ) : systemReviews.length > 0 ? (
               <Row className="g-4">
-                {systemReviews.map(review => renderReviewCard(review))}
+                {systemReviews.map((review) => renderReviewCard(review))}
               </Row>
             ) : (
               <Alert variant="info">No technicians reviews yet.</Alert>
