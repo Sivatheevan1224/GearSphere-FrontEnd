@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -239,8 +239,10 @@ const Signup = ({ signupClose, loginClose, setShowTechnicianInstruction }) => {
       toast.error("First name and last name should only contain letters.");
       return;
     }
-    if (!email.includes("@gmail.com")) {
-      toast.error("Please enter valid email..");
+    // Updated email validation to accept all valid email formats including university emails
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      toast.error("Please enter a valid email address.");
       return;
     }
     if (password !== confirmPassword) {
@@ -279,8 +281,10 @@ const Signup = ({ signupClose, loginClose, setShowTechnicianInstruction }) => {
       toast.error("First name and last name should only contain letters.");
       return;
     }
-    if (!email.includes("@gmail.com")) {
-      toast.error("Please enter valid email..");
+    // Updated email validation to accept all valid email formats including university emails
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      toast.error("Please enter a valid email address.");
       return;
     }
     if (password !== confirmPassword) {
@@ -297,6 +301,20 @@ const Signup = ({ signupClose, loginClose, setShowTechnicianInstruction }) => {
     }
     await sendOTP(email);
   };
+
+  // Prevent background scroll when any modal is open
+  useEffect(() => {
+    const body = document.body;
+    const isAnyModalOpen = !openInstruct && !showTechDetailsForm; // Main signup modal is open
+
+    if (isAnyModalOpen || openInstruct || showTechDetailsForm || otpModalVisible) {
+      const originalStyle = body.style.overflow;
+      body.style.overflow = "hidden";
+      return () => {
+        body.style.overflow = originalStyle;
+      };
+    }
+  }, [openInstruct, showTechDetailsForm, otpModalVisible]);
 
   return (
     <>

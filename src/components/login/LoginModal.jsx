@@ -39,8 +39,10 @@ function LoginModal({ show, onHide, switchToRegister }) {
   //Handle login
   const handleLogin = async (e) => {
     e.preventDefault();
-    if (!email.includes("@gmail.com")) {
-      toast.error("Please enter valid email..");
+    // Updated email validation to accept all valid email formats including university emails
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      toast.error("Please enter a valid email address.");
       return;
     }
     try {
@@ -99,8 +101,10 @@ function LoginModal({ show, onHide, switchToRegister }) {
 
   // Handle forgot password
   const handleForgotPassword = async () => {
-    if (!forgotPasswordEmail.includes("@gmail.com")) {
-      toast.error("Please enter valid email..");
+    // Updated email validation to accept all valid email formats including university emails
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(forgotPasswordEmail)) {
+      toast.error("Please enter a valid email address.");
       return;
     }
     try {

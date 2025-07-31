@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Navbar, Container, Nav, Button, Modal } from "react-bootstrap";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { Bell } from "react-bootstrap-icons";
 import axios from "axios";
+import AdminNotification from "../admin/notification/AdminNotification";
 
 function AdminNavbar({ fixed = "top" }) {
   const navigate = useNavigate();
@@ -13,6 +14,9 @@ function AdminNavbar({ fixed = "top" }) {
     name: "",
     profile_image: "/src/images/profile/default_admin.png",
   });
+  const [showNotif, setShowNotif] = useState(false);
+  const [notifCount, setNotifCount] = useState(0);
+  const bellRef = useRef(null);
 
   useEffect(() => {
     const fetchAdminData = async () => {
@@ -52,6 +56,23 @@ function AdminNavbar({ fixed = "top" }) {
       window.removeEventListener("profilePicUpdated", handleProfileUpdate);
   }, []);
 
+  useEffect(() => {
+    const fetchNotifCount = async () => {
+      try {
+        const res = await axios.get(
+          `http://localhost/gearsphere_api/GearSphere-BackEnd/getAdminNotification.php?count=1`,
+          { withCredentials: true }
+        );
+        setNotifCount(res.data.count || 0);
+      } catch (err) {
+        setNotifCount(0);
+      }
+    };
+    fetchNotifCount();
+    const interval = setInterval(fetchNotifCount, 10000); // Poll every 10 seconds
+    return () => clearInterval(interval);
+  }, []);
+
   const handleLogout = async () => {
     try {
       await axios.post(
@@ -65,6 +86,22 @@ function AdminNavbar({ fixed = "top" }) {
     navigate("/", { replace: true });
   };
 
+  const handleNotificationDeleted = () => {
+    // Refresh notification count after deletion
+    const fetchNotifCount = async () => {
+      try {
+        const res = await axios.get(
+          `http://localhost/gearsphere_api/GearSphere-BackEnd/getAdminNotification.php?count=1`,
+          { withCredentials: true }
+        );
+        setNotifCount(res.data.count || 0);
+      } catch (err) {
+        setNotifCount(0);
+      }
+    };
+    fetchNotifCount();
+  };
+
   return (
     <>
       <Navbar
@@ -74,6 +111,7 @@ function AdminNavbar({ fixed = "top" }) {
         fixed={fixed}
         expanded={expanded}
         onToggle={setExpanded}
+        style={{ borderBottom: "none" }}
       >
         <Container>
           <Navbar.Brand
@@ -137,18 +175,6 @@ function AdminNavbar({ fixed = "top" }) {
               >
                 Analytics
               </Nav.Link>
-              {/* <Nav.Link
-                as={Link}
-                to="/admin/reports"
-                onClick={() => setExpanded(false)}
-                className={
-                  location.pathname === "/admin/reports"
-                    ? "text-primary fw-bold"
-                    : ""
-                }
-              >
-                Reports
-              </Nav.Link> */}
               <Nav.Link
                 as={Link}
                 to="/admin/messages"
@@ -187,10 +213,38 @@ function AdminNavbar({ fixed = "top" }) {
               </Nav.Link>
             </Nav>
             <div className="d-flex align-items-center">
-              <Bell
-                size={22}
-                className="me-3 cursor-pointer text-secondary"
-                style={{ verticalAlign: "middle" }}
+              <div style={{ position: "relative", display: "inline-block" }}>
+                <Bell
+                  ref={bellRef}
+                  size={22}
+                  className="me-3 cursor-pointer text-secondary"
+                  style={{ verticalAlign: "middle" }}
+                  onClick={() => setShowNotif((prev) => !prev)}
+                />
+                {notifCount > 0 && (
+                  <span
+                    style={{
+                      position: "absolute",
+                      top: -4,
+                      right: 2,
+                      background: "red",
+                      color: "white",
+                      borderRadius: "50%",
+                      padding: "2px 7px",
+                      fontSize: 12,
+                      fontWeight: 700,
+                      zIndex: 2,
+                    }}
+                  >
+                    {notifCount}
+                  </span>
+                )}
+              </div>
+              <AdminNotification
+                show={showNotif}
+                target={bellRef.current}
+                onHide={() => setShowNotif(false)}
+                onDeleted={handleNotificationDeleted}
               />
               <Nav.Link
                 as={Link}

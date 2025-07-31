@@ -28,12 +28,14 @@ export default function TechnicianFeedback({ technicianId }) {
 
         if (sessionResponse.data.success && sessionResponse.data.user_id) {
           const sessionUserId = sessionResponse.data.user_id;
+          const sessionTechnicianId = sessionResponse.data.technician_id;
           setUserId(sessionUserId);
 
           setLoading(true);
           // Fetch reviews where this technician is the target
+          // Use technician_id as target_id, not user_id
           const reviewsResponse = await fetch(
-            `http://localhost/gearsphere_api/GearSphere-BackEnd/getReviews.php?target_type=technician&target_id=${sessionUserId}&status=approved`
+            `http://localhost/gearsphere_api/GearSphere-BackEnd/getReviews.php?target_type=technician&target_id=${sessionTechnicianId}&status=approved`
           );
           const reviewsData = await reviewsResponse.json();
 

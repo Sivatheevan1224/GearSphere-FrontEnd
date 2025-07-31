@@ -10,7 +10,7 @@ import {
 import { Trash } from "react-bootstrap-icons";
 import axios from "axios";
 
-const TechnicianNotification = ({ show, target, onHide, onDeleted }) => {
+const AdminNotification = ({ show, target, onHide, onDeleted }) => {
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -26,27 +26,12 @@ const TechnicianNotification = ({ show, target, onHide, onDeleted }) => {
     setLoading(true);
     setError(null);
     try {
-      // Get session data from backend
-      const sessionResponse = await axios.get(
-        "http://localhost/gearsphere_api/GearSphere-BackEnd/getSession.php",
-        { withCredentials: true }
-      );
-
-      if (!sessionResponse.data.success || !sessionResponse.data.user_id) {
-        setError("Session expired. Please log in.");
-        return;
-      }
-
-      const userId = sessionResponse.data.user_id;
       const response = await axios.get(
-        `http://localhost/gearsphere_api/GearSphere-BackEnd/getSellerNotification.php?user_id=${userId}`,
+        "http://localhost/gearsphere_api/GearSphere-BackEnd/getAdminNotification.php",
         { withCredentials: true }
       );
-
-      console.log("Notification response:", response.data); // Debug log
       setNotifications(response.data.notifications || []);
     } catch (err) {
-      console.error("Fetch notifications error:", err);
       setError("Failed to fetch notifications.");
     } finally {
       setLoading(false);
@@ -55,22 +40,10 @@ const TechnicianNotification = ({ show, target, onHide, onDeleted }) => {
 
   const handleDelete = async (notification_id) => {
     try {
-      // Get session data from backend
-      const sessionResponse = await axios.get(
-        "http://localhost/gearsphere_api/GearSphere-BackEnd/getSession.php",
-        { withCredentials: true }
-      );
-
-      if (!sessionResponse.data.success || !sessionResponse.data.user_id) {
-        alert("Session expired. Please log in.");
-        return;
-      }
-
-      const userId = sessionResponse.data.user_id;
       await axios.delete(
-        "http://localhost/gearsphere_api/GearSphere-BackEnd/getSellerNotification.php",
+        "http://localhost/gearsphere_api/GearSphere-BackEnd/getAdminNotification.php",
         {
-          data: { notification_id, user_id: userId },
+          data: { notification_id },
           withCredentials: true,
         }
       );
@@ -79,7 +52,6 @@ const TechnicianNotification = ({ show, target, onHide, onDeleted }) => {
       );
       if (onDeleted) onDeleted();
     } catch (err) {
-      console.error("Delete notification error:", err);
       alert("Failed to delete notification.");
     }
   };
@@ -215,4 +187,4 @@ const TechnicianNotification = ({ show, target, onHide, onDeleted }) => {
   );
 };
 
-export default TechnicianNotification;
+export default AdminNotification;

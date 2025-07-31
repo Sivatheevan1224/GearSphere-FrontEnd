@@ -92,16 +92,19 @@ function Footer() {
             <h5 className="mb-3 fw-bold">Contact Info</h5>
             <ul className="list-unstyled">
               <li className="mb-2 text-white-50">
-                <strong>Address:</strong> 123 Tech Street, Digital City, 12345
+                <strong>Address:</strong> Pasara Road, Badulla City, 90 000
               </li>
               <li className="mb-2 text-white-50">
-                <strong>Phone:</strong> (555) 123-4567
+                <strong>Phone:</strong> +94 (76) 375 3730
+              </li>
+              <li className="mb-2 text-white-50">
+                <strong>Phone:</strong> +94 (70) 407 9547
               </li>
               <li className="mb-2 text-white-50">
                 <strong>Email:</strong> info@gearsphere.com
               </li>
               <li className="text-white-50">
-                <strong>Hours:</strong> Mon-Fri: 9AM - 6PM
+                <strong>Email:</strong> support@gearsphere.com
               </li>
             </ul>
           </Col>

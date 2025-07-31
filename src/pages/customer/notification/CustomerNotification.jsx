@@ -159,15 +159,6 @@ const CustomerNotification = ({ show, target, onHide, onDeleted }) => {
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div
                       style={{
-                        fontSize: 12,
-                        color: "#888",
-                        fontStyle: "italic",
-                      }}
-                    >
-                      ID: {notif.notification_id} | User: {notif.user_id}
-                    </div>
-                    <div
-                      style={{
                         whiteSpace: "pre-line",
                         fontSize: 16,
                         color: "#222",
