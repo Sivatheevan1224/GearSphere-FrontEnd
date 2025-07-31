@@ -11,6 +11,7 @@ import {
 } from "react-bootstrap";
 import { Display, ArrowLeft } from "react-bootstrap-icons";
 import CustomerNavbar from "../../pageNavbars/CustomerNavbar";
+import LoadingScreen from "../../../components/loading/LoadingScreen";
 import { toast } from "react-toastify";
 
 const compareGpuHeadingStyle = `
@@ -163,16 +164,10 @@ export default function CompareGPUPage() {
 
   if (loading) {
     return (
-      <>
-        <CustomerNavbar />
-        <Container className="py-5">
-          <div className="text-center">
-            <div className="spinner-border" role="status">
-              <span className="visually-hidden">Loading...</span>
-            </div>
-          </div>
-        </Container>
-      </>
+      <LoadingScreen
+        message="Loading GPU Comparison"
+        subMessage="Fetching graphics card comparison data"
+      />
     );
   }
 

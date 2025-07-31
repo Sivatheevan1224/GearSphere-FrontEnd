@@ -17,6 +17,7 @@ import {
 } from "react-bootstrap-icons";
 import axios from "axios";
 import styles from "./AdminDashboard.module.css";
+import LoadingScreen from "../../components/loading/LoadingScreen";
 
 function AdminDashboard() {
   const [dashboard, setDashboard] = useState({
@@ -75,9 +76,10 @@ function AdminDashboard() {
 
   if (loading)
     return (
-      <div className="text-center my-5">
-        <Spinner animation="border" />
-      </div>
+      <LoadingScreen
+        message="Loading Admin Dashboard"
+        subMessage="Fetching system analytics and data"
+      />
     );
   if (error)
     return (

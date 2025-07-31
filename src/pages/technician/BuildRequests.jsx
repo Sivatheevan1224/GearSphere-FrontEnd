@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import LoadingScreen from "../../components/loading/LoadingScreen";
 
 const tableStyle = {
   width: "100%",
@@ -371,16 +372,22 @@ const BuildRequests = () => {
     );
   };
 
+  // Show loading screen while data is being fetched
+  if (loading) {
+    return (
+      <LoadingScreen
+        message="Loading Build Requests"
+        subMessage="Fetching pending assignments"
+      />
+    );
+  }
+
   return (
     <div style={{ padding: 24, maxWidth: 1100, margin: "0 auto" }}>
       <h2 className="mb-4" style={{ fontWeight: 700, color: "#000" }}>
         Build Requests
       </h2>
-      {loading ? (
-        <div style={{ textAlign: "center", marginTop: 60 }}>
-          <span className="spinner-border text-primary" role="status" />
-        </div>
-      ) : error ? (
+      {error ? (
         <div style={{ color: "red", textAlign: "center", marginTop: 40 }}>
           {error}
         </div>

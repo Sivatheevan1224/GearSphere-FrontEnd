@@ -11,6 +11,7 @@ import {
   Spinner,
 } from "react-bootstrap";
 import { People } from "react-bootstrap-icons";
+import LoadingScreen from "../../components/loading/LoadingScreen";
 import axios from "axios";
 import { toast } from "react-toastify";
 
@@ -94,13 +95,10 @@ function CustomerManagement() {
 
   if (loading) {
     return (
-      <div
-        className="d-flex flex-column align-items-center justify-content-center"
-        style={{ minHeight: "60vh" }}
-      >
-        <Spinner animation="border" variant="primary" />
-        <h4 className="mt-3">Loading......</h4>
-      </div>
+      <LoadingScreen
+        message="Loading Customers"
+        subMessage="Fetching customer management data"
+      />
     );
   }
 

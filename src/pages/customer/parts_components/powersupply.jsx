@@ -12,6 +12,7 @@ import {
 import { Power } from "react-bootstrap-icons";
 import { toast } from "react-toastify";
 import CustomerNavbar from "../../pageNavbars/CustomerNavbar";
+import LoadingScreen from "../../../components/loading/LoadingScreen";
 import axios from "axios";
 
 function useBreakpoint() {
@@ -155,6 +156,12 @@ export default function PowerSupplyPage() {
 
   return (
     <>
+      {loading && (
+        <LoadingScreen
+          message="Loading Power Supplies"
+          subMessage="Fetching available PSU units"
+        />
+      )}
       <CustomerNavbar />
       <Container className="py-5">
         <style>{selectPSUHeadingStyle}</style>

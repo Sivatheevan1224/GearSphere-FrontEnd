@@ -20,6 +20,7 @@ import {
   Truck,
 } from "react-bootstrap-icons";
 import axios from "axios";
+import LoadingScreen from "../../components/loading/LoadingScreen";
 
 const SellerOrders = () => {
   const [currentPage, setCurrentPage] = useState(1);
@@ -32,11 +33,13 @@ const SellerOrders = () => {
   const ordersPerPage = 10;
   const [orders, setOrders] = useState([]);
   const [updateStatus, setUpdateStatus] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
 
   // Fetch orders from backend
   useEffect(() => {
     const fetchOrders = async () => {
       try {
+        setIsLoading(true);
         const res = await fetch(
           `http://localhost/gearsphere_api/GearSphere-BackEnd/getSellerOrders.php`,
           {
@@ -77,6 +80,8 @@ const SellerOrders = () => {
         }
       } catch (err) {
         console.error("Failed to fetch seller orders:", err);
+      } finally {
+        setIsLoading(false);
       }
     };
     fetchOrders();
@@ -156,6 +161,16 @@ const SellerOrders = () => {
   const totalPages = Math.ceil(filteredOrders.length / ordersPerPage);
 
   const formatLKR = (amount) => "LKR " + Number(amount).toLocaleString("en-LK");
+
+  // Show loading screen while data is being fetched
+  if (isLoading) {
+    return (
+      <LoadingScreen
+        message="Loading Orders"
+        subMessage="Fetching your order management data"
+      />
+    );
+  }
 
   return (
     <Container className="py-5">

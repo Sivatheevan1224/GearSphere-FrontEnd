@@ -24,6 +24,7 @@ import logo from "../../images/logo.PNG";
 import pcpic2 from "../../images/pcpic2.jpeg";
 import { toast } from "react-toastify";
 import axios from "axios";
+import LoadingScreen from "../../components/loading/LoadingScreen";
 
 function CustomerDashboard() {
   const [stats, setStats] = useState({
@@ -151,6 +152,16 @@ function CustomerDashboard() {
       </Card.Body>
     </Card>
   );
+
+  // Show loading screen while data is being fetched
+  if (loading || reviewsLoading) {
+    return (
+      <LoadingScreen
+        message="Loading Dashboard"
+        subMessage="Fetching your latest data"
+      />
+    );
+  }
 
   return (
     <>

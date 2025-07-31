@@ -2,6 +2,7 @@ import React from "react";
 import TechnicianNavbar from "../pageNavbars/TechnicianNavbar";
 import { Outlet, useNavigate } from "react-router-dom";
 import DashboardFooter from "../pagefooter/DashboardFooter";
+import LoadingScreen from "../../components/loading/LoadingScreen";
 import useLayoutSessionValidation from "../../hooks/useLayoutSessionValidation";
 
 function TechnicianLayout() {
@@ -10,7 +11,12 @@ function TechnicianLayout() {
     useLayoutSessionValidation("technician");
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return (
+      <LoadingScreen
+        message="Authenticating"
+        subMessage="Verifying your technician access"
+      />
+    );
   }
 
   if (!isAuthenticated) {

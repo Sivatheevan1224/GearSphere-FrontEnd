@@ -13,6 +13,7 @@ import {
 import { PcDisplay } from "react-bootstrap-icons";
 import { toast } from "react-toastify";
 import CustomerNavbar from "../../pageNavbars/CustomerNavbar";
+import LoadingScreen from "../../../components/loading/LoadingScreen";
 import axios from "axios";
 
 function useBreakpoint() {
@@ -160,6 +161,12 @@ export default function CasePage() {
 
   return (
     <>
+      {loading && (
+        <LoadingScreen
+          message="Loading PC Cases"
+          subMessage="Fetching available computer cases"
+        />
+      )}
       <CustomerNavbar />
       <Container className="py-5">
         <style>{selectCaseHeadingStyle}</style>
@@ -188,84 +195,76 @@ export default function CasePage() {
         </div>
         <style>{caseTableResponsiveStyle}</style>
         {error && <Alert variant="danger">{error}</Alert>}
-        {loading ? (
-          <div className="text-center my-5">
-            <div className="spinner-border" role="status">
-              <span className="visually-hidden">Loading...</span>
-            </div>
-          </div>
-        ) : (
-          <Table striped bordered hover responsive className="case-table-sm">
-            <thead>
+        <Table striped bordered hover responsive className="case-table-sm">
+          <thead>
+            <tr>
+              <th></th>
+              <th>Image</th>
+              <th>Name</th>
+              <th>Type</th>
+              <th>Color</th>
+              <th>Side Panel</th>
+              <th>Max GPU Length</th>
+              <th>Volume</th>
+              <th>Dimensions</th>
+              <th>Price</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            {sortedCases.length === 0 ? (
               <tr>
-                <th></th>
-                <th>Image</th>
-                <th>Name</th>
-                <th>Type</th>
-                <th>Color</th>
-                <th>Side Panel</th>
-                <th>Max GPU Length</th>
-                <th>Volume</th>
-                <th>Dimensions</th>
-                <th>Price</th>
-                <th></th>
+                <td colSpan="11" className="text-center text-muted">
+                  No PC Cases available.
+                </td>
               </tr>
-            </thead>
-            <tbody>
-              {sortedCases.length === 0 ? (
-                <tr>
-                  <td colSpan="11" className="text-center text-muted">
-                    No PC Cases available.
+            ) : (
+              sortedCases.map((pcCase) => (
+                <tr key={pcCase.product_id}>
+                  <td>
+                    <Form.Check
+                      type="checkbox"
+                      checked={compareSelection.some(
+                        (item) => item.product_id === pcCase.product_id
+                      )}
+                      onChange={() => handleToggleCompare(pcCase)}
+                    />
+                  </td>
+                  <td className="text-center align-middle">
+                    <img
+                      src={
+                        pcCase.image_url
+                          ? `http://localhost/gearsphere_api/GearSphere-BackEnd/${pcCase.image_url}`
+                          : "/profile_images/user_image.jpg"
+                      }
+                      alt={pcCase.name}
+                      className="case-img"
+                    />
+                  </td>
+                  <td className="align-middle">
+                    <strong className="case-name">{pcCase.name}</strong>
+                  </td>
+                  <td>{pcCase.type || "—"}</td>
+                  <td>{pcCase.color || "—"}</td>
+                  <td>{pcCase.side_panel || "—"}</td>
+                  <td>{pcCase.max_gpu_length || "—"}</td>
+                  <td>{pcCase.volume || "—"}</td>
+                  <td>{pcCase.dimensions || "—"}</td>
+                  <td>LKR {pcCase.price?.toLocaleString() || "N/A"}</td>
+                  <td>
+                    <Button
+                      className="btn-darkblue"
+                      size="sm"
+                      onClick={() => handleSelectCase(pcCase)}
+                    >
+                      Add
+                    </Button>
                   </td>
                 </tr>
-              ) : (
-                sortedCases.map((pcCase) => (
-                  <tr key={pcCase.product_id}>
-                    <td>
-                      <Form.Check
-                        type="checkbox"
-                        checked={compareSelection.some(
-                          (item) => item.product_id === pcCase.product_id
-                        )}
-                        onChange={() => handleToggleCompare(pcCase)}
-                      />
-                    </td>
-                    <td className="text-center align-middle">
-                      <img
-                        src={
-                          pcCase.image_url
-                            ? `http://localhost/gearsphere_api/GearSphere-BackEnd/${pcCase.image_url}`
-                            : "/profile_images/user_image.jpg"
-                        }
-                        alt={pcCase.name}
-                        className="case-img"
-                      />
-                    </td>
-                    <td className="align-middle">
-                      <strong className="case-name">{pcCase.name}</strong>
-                    </td>
-                    <td>{pcCase.type || "—"}</td>
-                    <td>{pcCase.color || "—"}</td>
-                    <td>{pcCase.side_panel || "—"}</td>
-                    <td>{pcCase.max_gpu_length || "—"}</td>
-                    <td>{pcCase.volume || "—"}</td>
-                    <td>{pcCase.dimensions || "—"}</td>
-                    <td>LKR {pcCase.price?.toLocaleString() || "N/A"}</td>
-                    <td>
-                      <Button
-                        className="btn-darkblue"
-                        size="sm"
-                        onClick={() => handleSelectCase(pcCase)}
-                      >
-                        Add
-                      </Button>
-                    </td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </Table>
-        )}
+              ))
+            )}
+          </tbody>
+        </Table>
       </Container>
     </>
   );
