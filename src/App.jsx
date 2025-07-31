@@ -9,6 +9,7 @@ import { AuthProvider } from "./context/AuthContext";
 import { CartProvider } from "./pages/customer/CartContext";
 import { OrdersProvider } from "./pages/customer/OrdersContext";
 import SessionProvider from "./components/SessionProvider";
+import AuthGuard from "./components/auth/AuthGuard";
 import MainNavbar from "./components/navbar/MainNavbar";
 import HomePage from "./pages/HomePage";
 import Signup from "./components/signup/Signup";
@@ -88,9 +89,23 @@ function AppContent() {
     <>
       {shouldShowMainNavbar && <MainNavbar />}
       <Routes>
-        {/* Public Routes */}
-        <Route path="/" element={<HomePage />} />
-        <Route path="/register" element={<Signup />} />
+        {/* Public Routes with AuthGuard protection */}
+        <Route
+          path="/"
+          element={
+            <AuthGuard>
+              <HomePage />
+            </AuthGuard>
+          }
+        />
+        <Route
+          path="/register"
+          element={
+            <AuthGuard>
+              <Signup />
+            </AuthGuard>
+          }
+        />
 
         {/* Customer Layout for all customer pages */}
         <Route element={<CustomerLayout />}>

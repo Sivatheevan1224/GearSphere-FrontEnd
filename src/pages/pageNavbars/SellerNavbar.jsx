@@ -5,6 +5,10 @@ import { Bell } from "react-bootstrap-icons";
 import axios from "axios";
 import Notification from "../seller/notification/Notification";
 import { useRef } from "react";
+import {
+  performLogoutSessionClear,
+  logSessionStorageDetails,
+} from "../../utils/sessionUtils";
 
 function SellerNavbar({ fixed = "top" }) {
   const navigate = useNavigate();
@@ -92,6 +96,9 @@ function SellerNavbar({ fixed = "top" }) {
 
   const handleLogout = async () => {
     try {
+      // Log session storage before clearing using utility
+      logSessionStorageDetails("Before Logout");
+
       await axios.post(
         "http://localhost/gearsphere_api/GearSphere-BackEnd/logout.php",
         {},
@@ -101,9 +108,20 @@ function SellerNavbar({ fixed = "top" }) {
       );
     } catch (error) {
       console.error("Logout error:", error);
+    } finally {
+      // Use comprehensive session clearing utility
+      const clearResult = performLogoutSessionClear();
+
+      if (!clearResult.success) {
+        console.error("❌ Session clearing incomplete!", clearResult);
+      } else {
+        console.log("✅ Session successfully cleared!");
+      }
+
+      // Navigate to home and reload to ensure clean state
+      navigate("/", { replace: true });
+      window.location.reload();
     }
-    navigate("/", { replace: true });
-    window.location.reload();
   };
 
   return (
