@@ -1,11 +1,3 @@
-
-import React, { useState, useEffect } from 'react';
-import { Container, Row, Col, Card, Table, Button, Form, Modal, Badge, Pagination, Alert, Spinner } from 'react-bootstrap';
-import { toast, ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-import ImagePreview from '../../components/ImagePreview';
-import axios from 'axios';
-
 import React, { useState, useEffect } from "react";
 import {
   Container,
@@ -25,7 +17,7 @@ import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import LoadingScreen from "../../components/loading/LoadingScreen";
 import ImagePreview from "../../components/ImagePreview";
-
+import axios from "axios";
 
 const Inventory = () => {
   const [currentPage, setCurrentPage] = useState(1);
