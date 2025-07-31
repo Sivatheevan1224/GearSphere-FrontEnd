@@ -65,6 +65,12 @@ function LoginModal({ show, onHide, switchToRegister }) {
         // Close modal immediately
         onHide();
 
+        // Store user type in session storage for navigation control
+        sessionStorage.setItem("user_type", user_type);
+        sessionStorage.setItem("just_logged_in", "true");
+        sessionStorage.removeItem("just_logged_out");
+        sessionStorage.removeItem("logout_timestamp");
+
         // Navigate based on user type - backend session handles authentication
         console.log("Navigating for user_type:", user_type.toLowerCase());
         if (user_type.toLowerCase() === "admin") {
@@ -82,6 +88,39 @@ function LoginModal({ show, onHide, switchToRegister }) {
         } else {
           console.log("Unknown user type:", user_type);
         }
+
+        // Prevent back navigation to home/login pages after login
+        setTimeout(() => {
+          // Clear the just_logged_in flag after navigation is complete
+          sessionStorage.removeItem("just_logged_in");
+
+          window.history.replaceState(null, null, window.location.href);
+
+          // Additional protection against back navigation
+          const preventBack = (event) => {
+            const userType = sessionStorage.getItem("user_type");
+            if (userType && window.location.pathname === "/") {
+              event.preventDefault();
+              const dashboardMap = {
+                admin: "/admin",
+                customer: "/customer/dashboard",
+                seller: "/seller",
+                technician: "/technician/dashboard",
+              };
+              const dashboardPath = dashboardMap[userType.toLowerCase()];
+              if (dashboardPath) {
+                navigate(dashboardPath, { replace: true });
+              }
+            }
+          };
+
+          window.addEventListener("popstate", preventBack);
+
+          // Clean up after 30 seconds to avoid memory leaks
+          setTimeout(() => {
+            window.removeEventListener("popstate", preventBack);
+          }, 30000);
+        }, 500);
       } else if (response.data.message) {
         toast.error(response.data.message);
       } else {

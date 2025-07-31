@@ -305,16 +305,116 @@ function HomePage() {
   const [productsLoading, setProductsLoading] = useState(true);
 
   useEffect(() => {
-    const userType = sessionStorage.getItem("user_type");
-    if (userType) {
-      const type = userType.toLowerCase();
-      if (type === "admin") navigate("/admin", { replace: true });
-      else if (type === "customer")
-        navigate("/customer/dashboard", { replace: true });
-      else if (type === "seller") navigate("/seller", { replace: true });
-      else if (type === "technician")
-        navigate("/technician/dashboard", { replace: true });
-    }
+    // Enhanced session checking with immediate redirect for authenticated users
+    const checkSessionAndRedirect = async () => {
+      const userType = sessionStorage.getItem("user_type");
+      const justLoggedOut = sessionStorage.getItem("just_logged_out");
+      const justLoggedIn = sessionStorage.getItem("just_logged_in");
+
+      // Don't redirect if user just logged out (allow them to stay on home)
+      if (justLoggedOut) {
+        // Clear the flag after a short delay
+        setTimeout(() => {
+          sessionStorage.removeItem("just_logged_out");
+          sessionStorage.removeItem("logout_timestamp");
+        }, 2000);
+        return;
+      }
+
+      // If user has active session, immediately redirect them (regardless of justLoggedIn flag)
+      if (userType) {
+        try {
+          // Verify session with backend
+          const response = await fetch(
+            "http://localhost/gearsphere_api/GearSphere-BackEnd/getSession.php",
+            {
+              method: "GET",
+              credentials: "include",
+            }
+          );
+
+          if (response.ok) {
+            const sessionData = await response.json();
+            if (sessionData.success) {
+              const type = userType.toLowerCase();
+              console.log(
+                "🔒 Authenticated user detected on home page. Redirecting to dashboard for:",
+                type
+              );
+
+              // Use replace: true to prevent going back to home page
+              if (type === "admin") {
+                navigate("/admin", { replace: true });
+              } else if (type === "customer") {
+                navigate("/customer/dashboard", { replace: true });
+              } else if (type === "seller") {
+                navigate("/seller", { replace: true });
+              } else if (type === "technician") {
+                navigate("/technician/dashboard", { replace: true });
+              }
+
+              // Additional history manipulation to ensure they can't go back
+              window.history.replaceState(null, null, window.location.href);
+            } else {
+              // Session invalid, clear storage
+              sessionStorage.removeItem("user_type");
+              console.log("❌ Invalid session, cleared user_type");
+            }
+          } else {
+            // Session check failed, clear storage
+            sessionStorage.removeItem("user_type");
+            console.log("❌ Session check failed, cleared user_type");
+          }
+        } catch (error) {
+          console.error("Session verification failed:", error);
+          // On error, clear potentially stale session data
+          sessionStorage.removeItem("user_type");
+        }
+      }
+
+      // Clear just_logged_in flag after processing
+      if (justLoggedIn) {
+        sessionStorage.removeItem("just_logged_in");
+      }
+    };
+
+    // Run immediately on component mount
+    checkSessionAndRedirect();
+  }, [navigate]);
+
+  // Additional effect to handle browser back button navigation to home page
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      // When page becomes visible, check if user is authenticated
+      if (!document.hidden) {
+        const userType = sessionStorage.getItem("user_type");
+        const justLoggedOut = sessionStorage.getItem("just_logged_out");
+
+        if (userType && !justLoggedOut) {
+          console.log(
+            "🔄 Page focus detected with active session, redirecting..."
+          );
+          const type = userType.toLowerCase();
+
+          if (type === "admin") {
+            navigate("/admin", { replace: true });
+          } else if (type === "customer") {
+            navigate("/customer/dashboard", { replace: true });
+          } else if (type === "seller") {
+            navigate("/seller", { replace: true });
+          } else if (type === "technician") {
+            navigate("/technician/dashboard", { replace: true });
+          }
+        }
+      }
+    };
+
+    // Listen for page visibility changes (handles tab switching and back navigation)
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
+    return () => {
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
   }, [navigate]);
 
   // Fetch products from backend API
@@ -1184,21 +1284,34 @@ function HomePage() {
             >
               <Container>
                 <h1 className="text-center mb-5">Contact Us</h1>
-                <Row className="align-items-stretch" style={{ minHeight: "600px" }}>
+                <Row
+                  className="align-items-stretch"
+                  style={{ minHeight: "600px" }}
+                >
                   {/* Left Panel - Contact Form with Blue Background */}
                   <Col lg={6} className="d-flex align-items-center">
                     <div className="w-100 p-4">
                       <div
                         style={{
-                          background: "linear-gradient(135deg, #2c3e50 0%, #3b5998 50%, #4a90e2 100%)",
+                          background:
+                            "linear-gradient(135deg, #2c3e50 0%, #3b5998 50%, #4a90e2 100%)",
                           borderRadius: "2rem",
                           padding: "3rem 2.5rem",
-                          boxShadow: "0 12px 40px rgba(0,0,0,0.15)"
+                          boxShadow: "0 12px 40px rgba(0,0,0,0.15)",
                         }}
                       >
-                        <h2 className="text-white mb-2 fw-bold" style={{ fontSize: "2.5rem" }}>Contact Us</h2>
-                        <p className="text-white mb-5" style={{ opacity: 0.9, fontSize: "1.1rem" }}>
-                          Have questions about our products or services? Fill out the form and our team will get back to you.
+                        <h2
+                          className="text-white mb-2 fw-bold"
+                          style={{ fontSize: "2.5rem" }}
+                        >
+                          Contact Us
+                        </h2>
+                        <p
+                          className="text-white mb-5"
+                          style={{ opacity: 0.9, fontSize: "1.1rem" }}
+                        >
+                          Have questions about our products or services? Fill
+                          out the form and our team will get back to you.
                         </p>
                         <Form
                           onSubmit={async (e) => {
@@ -1218,7 +1331,8 @@ function HomePage() {
                               const res = await axios.post(
                                 "http://localhost/gearsphere_api/GearSphere-BackEnd/addMessage.php",
                                 {
-                                  name: contactFirstName + " " + contactLastName,
+                                  name:
+                                    contactFirstName + " " + contactLastName,
                                   email: contactEmail,
                                   subject: contactSubject,
                                   message: contactMessage,
@@ -1249,15 +1363,18 @@ function HomePage() {
                                   type="text"
                                   placeholder="First Name"
                                   value={contactFirstName}
-                                  onChange={(e) => setContactFirstName(e.target.value)}
+                                  onChange={(e) =>
+                                    setContactFirstName(e.target.value)
+                                  }
                                   style={{
                                     backgroundColor: "transparent",
                                     border: "none",
-                                    borderBottom: "2px solid rgba(255,255,255,0.5)",
+                                    borderBottom:
+                                      "2px solid rgba(255,255,255,0.5)",
                                     borderRadius: "0",
                                     color: "white",
                                     padding: "15px 5px",
-                                    fontSize: "1.1rem"
+                                    fontSize: "1.1rem",
                                   }}
                                   className="contact-input-underline"
                                 />
@@ -1269,15 +1386,18 @@ function HomePage() {
                                   type="text"
                                   placeholder="Last Name"
                                   value={contactLastName}
-                                  onChange={(e) => setContactLastName(e.target.value)}
+                                  onChange={(e) =>
+                                    setContactLastName(e.target.value)
+                                  }
                                   style={{
                                     backgroundColor: "transparent",
                                     border: "none",
-                                    borderBottom: "2px solid rgba(255,255,255,0.5)",
+                                    borderBottom:
+                                      "2px solid rgba(255,255,255,0.5)",
                                     borderRadius: "0",
                                     color: "white",
                                     padding: "15px 5px",
-                                    fontSize: "1.1rem"
+                                    fontSize: "1.1rem",
                                   }}
                                   className="contact-input-underline"
                                 />
@@ -1298,7 +1418,7 @@ function HomePage() {
                                 borderRadius: "0",
                                 color: "white",
                                 padding: "15px 5px",
-                                fontSize: "1.1rem"
+                                fontSize: "1.1rem",
                               }}
                               className="contact-input-underline"
                             />
@@ -1307,7 +1427,9 @@ function HomePage() {
                           <Form.Group className="mb-4">
                             <Form.Select
                               value={contactSubject}
-                              onChange={(e) => setContactSubject(e.target.value)}
+                              onChange={(e) =>
+                                setContactSubject(e.target.value)
+                              }
                               style={{
                                 backgroundColor: "transparent",
                                 border: "none",
@@ -1315,15 +1437,25 @@ function HomePage() {
                                 borderRadius: "0",
                                 color: "white",
                                 padding: "15px 5px",
-                                fontSize: "1.1rem"
+                                fontSize: "1.1rem",
                               }}
                               className="contact-input-underline"
                             >
-                              <option value="" style={{ color: "#333" }}>Subject</option>
-                              <option style={{ color: "#333" }}>Product Inquiry</option>
-                              <option style={{ color: "#333" }}>Technical Support</option>
-                              <option style={{ color: "#333" }}>Order Status</option>
-                              <option style={{ color: "#333" }}>Returns & Warranty</option>
+                              <option value="" style={{ color: "#333" }}>
+                                Subject
+                              </option>
+                              <option style={{ color: "#333" }}>
+                                Product Inquiry
+                              </option>
+                              <option style={{ color: "#333" }}>
+                                Technical Support
+                              </option>
+                              <option style={{ color: "#333" }}>
+                                Order Status
+                              </option>
+                              <option style={{ color: "#333" }}>
+                                Returns & Warranty
+                              </option>
                               <option style={{ color: "#333" }}>Other</option>
                             </Form.Select>
                           </Form.Group>
@@ -1334,7 +1466,9 @@ function HomePage() {
                               rows={4}
                               placeholder="Enter your message..."
                               value={contactMessage}
-                              onChange={(e) => setContactMessage(e.target.value)}
+                              onChange={(e) =>
+                                setContactMessage(e.target.value)
+                              }
                               style={{
                                 backgroundColor: "transparent",
                                 border: "none",
@@ -1343,7 +1477,7 @@ function HomePage() {
                                 color: "white",
                                 padding: "15px 5px",
                                 fontSize: "1.1rem",
-                                resize: "none"
+                                resize: "none",
                               }}
                               className="contact-input-underline"
                             />
@@ -1365,15 +1499,17 @@ function HomePage() {
                               boxShadow: "0 6px 20px rgba(0,0,0,0.2)",
                               transition: "all 0.3s ease",
                               textTransform: "uppercase",
-                              letterSpacing: "1px"
+                              letterSpacing: "1px",
                             }}
                             onMouseEnter={(e) => {
                               e.target.style.transform = "translateY(-3px)";
-                              e.target.style.boxShadow = "0 8px 25px rgba(0,0,0,0.3)";
+                              e.target.style.boxShadow =
+                                "0 8px 25px rgba(0,0,0,0.3)";
                             }}
                             onMouseLeave={(e) => {
                               e.target.style.transform = "translateY(0)";
-                              e.target.style.boxShadow = "0 6px 20px rgba(0,0,0,0.2)";
+                              e.target.style.boxShadow =
+                                "0 6px 20px rgba(0,0,0,0.2)";
                             }}
                           >
                             {contactLoading ? "Sending..." : "Send Message"}
@@ -1385,7 +1521,7 @@ function HomePage() {
 
                   {/* Right Panel - Contact Information with Enhanced Transitions */}
                   <Col lg={6} className="d-flex align-items-center">
-                    <div 
+                    <div
                       className="w-100 h-100 d-flex align-items-center justify-content-center contact-info-box"
                       style={{
                         backgroundColor: "white",
@@ -1395,29 +1531,29 @@ function HomePage() {
                         boxShadow: "0 15px 50px rgba(0,0,0,0.1)",
                         transition: "all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1)",
                         cursor: "pointer",
-                        border: "1px solid rgba(0,0,0,0.05)"
+                        border: "1px solid rgba(0,0,0,0.05)",
                       }}
                     >
                       <div className="text-center p-5">
                         <div className="mb-5">
-                          <h2 
-                            className="fw-bold mb-3" 
-                            style={{ 
-                              color: "#2c3e50", 
+                          <h2
+                            className="fw-bold mb-3"
+                            style={{
+                              color: "#2c3e50",
                               fontSize: "2.2rem",
-                              textTransform: "lowercase" 
+                              textTransform: "lowercase",
                             }}
                           >
                             contact us
                           </h2>
-                          <h3 
-                            className="fw-bold" 
-                            style={{ 
-                              color: "#333", 
-                              fontSize: "1.3rem", 
+                          <h3
+                            className="fw-bold"
+                            style={{
+                              color: "#333",
+                              fontSize: "1.3rem",
                               marginBottom: "3rem",
                               textTransform: "uppercase",
-                              letterSpacing: "2px"
+                              letterSpacing: "2px",
                             }}
                           >
                             PLEASE GET IN TOUCH
@@ -1425,7 +1561,7 @@ function HomePage() {
                         </div>
 
                         <div className="contact-info-item mb-4 d-flex align-items-center justify-content-start">
-                          <div 
+                          <div
                             className="contact-icon me-4"
                             style={{
                               backgroundColor: "#f8f9fa",
@@ -1437,21 +1573,39 @@ function HomePage() {
                               justifyContent: "center",
                               flexShrink: 0,
                               transition: "all 0.3s ease",
-                              border: "2px solid #e9ecef"
+                              border: "2px solid #e9ecef",
                             }}
                           >
-                            <GeoAlt size={26} style={{ color: "#6c757d", transition: "color 0.3s ease" }} />
+                            <GeoAlt
+                              size={26}
+                              style={{
+                                color: "#6c757d",
+                                transition: "color 0.3s ease",
+                              }}
+                            />
                           </div>
                           <div className="text-start">
-                            <p className="mb-1 fw-bold" style={{ color: "#333", fontSize: "1.2rem" }}>Address:</p>
-                            <p className="mb-0" style={{ color: "#6c757d", fontSize: "1rem", lineHeight: "1.5" }}>
+                            <p
+                              className="mb-1 fw-bold"
+                              style={{ color: "#333", fontSize: "1.2rem" }}
+                            >
+                              Address:
+                            </p>
+                            <p
+                              className="mb-0"
+                              style={{
+                                color: "#6c757d",
+                                fontSize: "1rem",
+                                lineHeight: "1.5",
+                              }}
+                            >
                               Pasara Road, Badulla City, 90 000
                             </p>
                           </div>
                         </div>
 
                         <div className="contact-info-item mb-4 d-flex align-items-center justify-content-start">
-                          <div 
+                          <div
                             className="contact-icon me-4"
                             style={{
                               backgroundColor: "#f8f9fa",
@@ -1463,24 +1617,49 @@ function HomePage() {
                               justifyContent: "center",
                               flexShrink: 0,
                               transition: "all 0.3s ease",
-                              border: "2px solid #e9ecef"
+                              border: "2px solid #e9ecef",
                             }}
                           >
-                            <Telephone size={26} style={{ color: "#6c757d", transition: "color 0.3s ease" }} />
+                            <Telephone
+                              size={26}
+                              style={{
+                                color: "#6c757d",
+                                transition: "color 0.3s ease",
+                              }}
+                            />
                           </div>
                           <div className="text-start">
-                            <p className="mb-1 fw-bold" style={{ color: "#333", fontSize: "1.2rem" }}>Phone:</p>
-                            <p className="mb-0" style={{ color: "#6c757d", fontSize: "1rem", lineHeight: "1.5" }}>
+                            <p
+                              className="mb-1 fw-bold"
+                              style={{ color: "#333", fontSize: "1.2rem" }}
+                            >
+                              Phone:
+                            </p>
+                            <p
+                              className="mb-0"
+                              style={{
+                                color: "#6c757d",
+                                fontSize: "1rem",
+                                lineHeight: "1.5",
+                              }}
+                            >
                               +94 (76) 375 3730
                             </p>
-                            <p className="mb-0" style={{ color: "#6c757d", fontSize: "1rem", lineHeight: "1.5" }}>
+                            <p
+                              className="mb-0"
+                              style={{
+                                color: "#6c757d",
+                                fontSize: "1rem",
+                                lineHeight: "1.5",
+                              }}
+                            >
                               +94 (70) 407 9547
                             </p>
                           </div>
                         </div>
 
                         <div className="contact-info-item mb-4 d-flex align-items-center justify-content-start">
-                          <div 
+                          <div
                             className="contact-icon me-4"
                             style={{
                               backgroundColor: "#f8f9fa",
@@ -1492,17 +1671,42 @@ function HomePage() {
                               justifyContent: "center",
                               flexShrink: 0,
                               transition: "all 0.3s ease",
-                              border: "2px solid #e9ecef"
+                              border: "2px solid #e9ecef",
                             }}
                           >
-                            <Envelope size={26} style={{ color: "#6c757d", transition: "color 0.3s ease" }} />
+                            <Envelope
+                              size={26}
+                              style={{
+                                color: "#6c757d",
+                                transition: "color 0.3s ease",
+                              }}
+                            />
                           </div>
                           <div className="text-start">
-                            <p className="mb-1 fw-bold" style={{ color: "#333", fontSize: "1.2rem" }}>Email:</p>
-                            <p className="mb-0" style={{ color: "#6c757d", fontSize: "1rem", lineHeight: "1.5" }}>
+                            <p
+                              className="mb-1 fw-bold"
+                              style={{ color: "#333", fontSize: "1.2rem" }}
+                            >
+                              Email:
+                            </p>
+                            <p
+                              className="mb-0"
+                              style={{
+                                color: "#6c757d",
+                                fontSize: "1rem",
+                                lineHeight: "1.5",
+                              }}
+                            >
                               info@gearsphere.com
                             </p>
-                            <p className="mb-0" style={{ color: "#6c757d", fontSize: "1rem", lineHeight: "1.5" }}>
+                            <p
+                              className="mb-0"
+                              style={{
+                                color: "#6c757d",
+                                fontSize: "1rem",
+                                lineHeight: "1.5",
+                              }}
+                            >
                               support@gearsphere.com
                             </p>
                           </div>

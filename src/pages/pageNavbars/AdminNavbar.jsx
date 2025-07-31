@@ -75,6 +75,18 @@ function AdminNavbar({ fixed = "top" }) {
 
   const handleLogout = async () => {
     try {
+      // Log session storage before clearing
+      console.log("Session storage before logout:", {
+        user_type: sessionStorage.getItem("user_type"),
+        pcbuilder_components: sessionStorage.getItem(
+          "pcbuilder_selected_components"
+        ),
+        selected_cpu: sessionStorage.getItem("selected_cpu"),
+        monitoring_mode: sessionStorage.getItem("monitoring_mode"),
+        totalItems: sessionStorage.length,
+      });
+
+      // Call backend logout endpoint
       await axios.post(
         "http://localhost/gearsphere_api/GearSphere-BackEnd/logout.php",
         {},
@@ -82,8 +94,68 @@ function AdminNavbar({ fixed = "top" }) {
       );
     } catch (error) {
       console.error("Logout error:", error);
+    } finally {
+      // Clear frontend session storage
+      sessionStorage.removeItem("user_type");
+      sessionStorage.removeItem("just_logged_in");
+      sessionStorage.setItem("just_logged_out", "true");
+      sessionStorage.setItem("logout_timestamp", Date.now().toString());
+
+      // Clear any monitoring mode flags
+      sessionStorage.removeItem("monitoring_mode");
+      sessionStorage.removeItem("original_user_type");
+      sessionStorage.removeItem("original_user_id");
+
+      // Clear PC Builder related session storage
+      sessionStorage.removeItem("pcbuilder_selected_components");
+      sessionStorage.removeItem("selected_cpu");
+      sessionStorage.removeItem("selected_gpu");
+      sessionStorage.removeItem("selected_motherboard");
+      sessionStorage.removeItem("selected_memory");
+      sessionStorage.removeItem("selected_storage");
+      sessionStorage.removeItem("selected_powersupply");
+      sessionStorage.removeItem("selected_case");
+      sessionStorage.removeItem("selected_cpucooler");
+      sessionStorage.removeItem("selected_monitor");
+      sessionStorage.removeItem("selected_operatingsystem");
+
+      // Clear comparison selection storage
+      sessionStorage.removeItem("cpu_compareSelection");
+      sessionStorage.removeItem("gpu_compareSelection");
+      sessionStorage.removeItem("motherboard_compareSelection");
+      sessionStorage.removeItem("memory_compareSelection");
+      sessionStorage.removeItem("storage_compareSelection");
+      sessionStorage.removeItem("powersupply_compareSelection");
+      sessionStorage.removeItem("case_compareSelection");
+      sessionStorage.removeItem("cpucooler_compareSelection");
+      sessionStorage.removeItem("monitor_compareSelection");
+      sessionStorage.removeItem("operatingsystem_compareSelection");
+
+      // Verify session storage is cleared
+      console.log("Session storage after clearing:", {
+        user_type: sessionStorage.getItem("user_type"),
+        pcbuilder_components: sessionStorage.getItem(
+          "pcbuilder_selected_components"
+        ),
+        selected_cpu: sessionStorage.getItem("selected_cpu"),
+        monitoring_mode: sessionStorage.getItem("monitoring_mode"),
+        just_logged_out: sessionStorage.getItem("just_logged_out"),
+        totalItems: sessionStorage.length,
+        allKeys: Object.keys(sessionStorage),
+      });
+
+      // Additional verification - list all remaining items
+      const remainingItems = {};
+      for (let i = 0; i < sessionStorage.length; i++) {
+        const key = sessionStorage.key(i);
+        remainingItems[key] = sessionStorage.getItem(key);
+      }
+      console.log("All remaining session storage items:", remainingItems);
+
+      // Navigate to home and reload to ensure clean state
+      navigate("/", { replace: true });
+      window.location.reload();
     }
-    navigate("/", { replace: true });
   };
 
   const handleNotificationDeleted = () => {
