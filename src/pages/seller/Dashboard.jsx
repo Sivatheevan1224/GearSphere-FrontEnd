@@ -1,3 +1,12 @@
+
+import React, { useState, useEffect } from 'react';
+import { Container, Row, Col, Card, Button } from 'react-bootstrap';
+import { Envelope, Telephone, GeoAlt } from 'react-bootstrap-icons';
+import { Shop, Box, CashStack, Star, People, ArrowUp } from 'react-bootstrap-icons';
+import pcGif from '../../images/pc_video1.gif';
+import logo from '../../images/logo.PNG';
+import pcpic2 from '../../images/pcpic2.jpeg';
+
 import React, { useState, useEffect } from "react";
 import {
   Container,
@@ -23,9 +32,29 @@ import logo from "../../images/logo.PNG";
 import pcpic2 from "../../images/pcpic2.jpeg";
 import LoadingScreen from "../../components/loading/LoadingScreen";
 
+
 function SellerDashboard() {
   const [productCount, setProductCount] = useState(0);
   const [topProducts, setTopProducts] = useState([]);
+
+  const [recentOrders, setRecentOrders] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const formatLKR = (amount) => 'LKR ' + Number(amount).toLocaleString('en-LK');
+
+  useEffect(() => {
+    const fetchDashboardData = async () => {
+      try {
+        setLoading(true);
+        
+        // Fetch products
+        const productsResponse = await fetch('http://localhost/gearsphere_api/GearSphere-BackEnd/getProducts.php');
+        const productsData = await productsResponse.json();
+        
+        if (productsData.success && Array.isArray(productsData.products)) {
+          setProductCount(productsData.products.length);
+          // Sort by price descending and take top 3
+          const sorted = [...productsData.products].sort((a, b) => Number(b.price) - Number(a.price));
+
   const [isLoading, setIsLoading] = useState(true);
   const formatLKR = (amount) => "LKR " + Number(amount).toLocaleString("en-LK");
 
@@ -40,15 +69,50 @@ function SellerDashboard() {
           const sorted = [...data.products].sort(
             (a, b) => Number(b.price) - Number(a.price)
           );
+
           setTopProducts(sorted.slice(0, 3));
         } else {
           setProductCount(0);
           setTopProducts([]);
         }
-      })
-      .catch(() => {
+
+        // Fetch recent orders
+        const ordersResponse = await fetch('http://localhost/gearsphere_api/GearSphere-BackEnd/getSellerOrders.php', {
+          method: 'GET',
+          credentials: 'include',
+        });
+        const ordersData = await ordersResponse.json();
+        
+        if (ordersData.success && Array.isArray(ordersData.orders)) {
+          // Take only the first 5 recent orders
+          setRecentOrders(ordersData.orders.slice(0, 5));
+        } else {
+          setRecentOrders([]);
+        }
+      } catch (error) {
+        console.error('Failed to fetch dashboard data:', error);
         setProductCount(0);
         setTopProducts([]);
+
+        setRecentOrders([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDashboardData();
+  }, []);
+
+  const getStatusBadge = (status) => {
+    const statusClasses = {
+      'Pending': 'bg-warning',
+      'Processing': 'bg-info',
+      'Shipped': 'bg-primary',
+      'Delivered': 'bg-success',
+      'Cancelled': 'bg-danger'
+    };
+    return <span className={`badge ${statusClasses[status] || 'bg-secondary'}`}>{status}</span>;
+  };
       })
       .finally(() => {
         setIsLoading(false);
@@ -148,8 +212,8 @@ function SellerDashboard() {
             <Card className="text-center">
               <Card.Body>
                 <Box size={24} className="mb-3 text-success" />
-                <h3>89</h3>
-                <p className="text-muted mb-0">Orders This Month</p>
+                <h3>{recentOrders.length}</h3>
+                <p className="text-muted mb-0">Total Orders</p>
               </Card.Body>
             </Card>
           </Col>
@@ -157,8 +221,8 @@ function SellerDashboard() {
             <Card className="text-center">
               <Card.Body>
                 <CashStack size={24} className="mb-3 text-warning" />
-                <h3>{formatLKR(12450)}</h3>
-                <p className="text-muted mb-0">Revenue This Month</p>
+                <h3>{formatLKR(recentOrders.reduce((sum, order) => sum + Number(order.total), 0))}</h3>
+                <p className="text-muted mb-0">Total Revenue</p>
               </Card.Body>
             </Card>
           </Col>
@@ -180,6 +244,29 @@ function SellerDashboard() {
               <Card.Body>
                 <div className="d-flex justify-content-between align-items-center mb-4">
                   <h4 className="mb-0">Recent Orders</h4>
+                  <Button variant="outline-primary" size="sm" href="/seller/orders">View All</Button>
+                </div>
+                {loading ? (
+                  <div className="text-center py-4">
+                    <div className="spinner-border text-primary" role="status">
+                      <span className="visually-hidden">Loading...</span>
+                    </div>
+                  </div>
+                ) : recentOrders.length === 0 ? (
+                  <div className="text-center text-muted py-4">
+                    No recent orders found.
+                  </div>
+                ) : (
+                  <div className="table-responsive">
+                    <table className="table">
+                      <thead>
+                        <tr>
+                          <th>Order ID</th>
+                          <th>Customer</th>
+                          <th>Items</th>
+                          <th>Amount</th>
+                          <th>Status</th>
+
                   <Button variant="outline-primary" size="sm">
                     View All
                   </Button>
@@ -206,10 +293,21 @@ function SellerDashboard() {
                             <span className="badge bg-success">Delivered</span>
                           </td>
                         </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
+                      </thead>
+                      <tbody>
+                        {recentOrders.map((order) => (
+                          <tr key={order.order_id}>
+                            <td>#{order.order_id}</td>
+                            <td>{order.customer.name}</td>
+                            <td>{order.items.length} item{order.items.length !== 1 ? 's' : ''}</td>
+                            <td>{formatLKR(order.total)}</td>
+                            <td>{getStatusBadge(order.status)}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
               </Card.Body>
             </Card>
           </Col>
@@ -255,7 +353,7 @@ function SellerDashboard() {
                         </div>
                         <div className="text-end">
                           <h6 className="mb-0">{formatLKR(product.price)}</h6>
-                          <small className="text-muted">N/A sales</small>
+                          <small className="text-muted">Stock: {product.stock}</small>
                         </div>
                       </div>
                     </div>
@@ -264,34 +362,7 @@ function SellerDashboard() {
               </Card.Body>
             </Card>
 
-            <Card>
-              <Card.Body>
-                <h4 className="mb-4">Recent Reviews</h4>
-                {[1, 2, 3].map((item) => (
-                  <div key={item} className="mb-3 pb-3 border-bottom">
-                    <div className="d-flex align-items-center mb-2">
-                      <img
-                        src="/placeholder.svg?height=40&width=40"
-                        alt="User"
-                        className="rounded-circle me-2"
-                        width="40"
-                        height="40"
-                      />
-                      <div>
-                        <h6 className="mb-0">John Doe</h6>
-                        <div className="d-flex align-items-center">
-                          <Star className="text-warning me-1" size={14} />
-                          <span>5.0</span>
-                        </div>
-                      </div>
-                    </div>
-                    <p className="mb-0">
-                      Great product! Exactly what I was looking for.
-                    </p>
-                  </div>
-                ))}
-              </Card.Body>
-            </Card>
+
           </Col>
         </Row>
       </Container>

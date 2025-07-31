@@ -313,3 +313,70 @@ font-size: 12px;
   margin-left: 5px;
   text-decoration: underline;
 }
+
+/* Phone landscape mode - make signup popup scrollable */
+@media screen and (max-height: 500px) and (orientation: landscape) {
+  .signup-container {
+    height: 90vh !important;
+    max-height: 450px !important;
+    overflow-y: auto !important;
+    margin: 20px auto !important;
+  }
+  
+  .form-section {
+    overflow-y: auto !important;
+    max-height: 380px !important;
+    padding-right: 10px !important;
+  }
+  
+  .form-section::-webkit-scrollbar {
+    width: 6px;
+  }
+  
+  .form-section::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+  }
+  
+  .form-section::-webkit-scrollbar-thumb {
+    background: #4361ee;
+    border-radius: 10px;
+  }
+  
+  .form-section::-webkit-scrollbar-thumb:hover {
+    background: #3a0ca3;
+  }
+  
+  /* Reduce spacing in landscape mode */
+  .form-section .input_box {
+    margin-top: 15px !important;
+  }
+  
+  .form-section .input_box input,
+  .form-section .input_box select {
+    margin: 8px 0 !important;
+    padding: 8px 35px !important;
+  }
+  
+  .button-div {
+    margin-top: 15px !important;
+  }
+  
+  .signup-container .login_signup {
+    margin-top: 10px !important;
+  }
+}
+
+/* Additional mobile landscape optimizations */
+@media screen and (max-height: 600px) and (max-width: 900px) and (orientation: landscape) {
+  .signup-container {
+    width: 95vw !important;
+    height: 85vh !important;
+    padding: 20px !important;
+  }
+  
+  .form .form-section h2 {
+    margin-bottom: 10px !important;
+    font-size: 1.5rem !important;
+  }
+}

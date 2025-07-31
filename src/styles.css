@@ -673,3 +673,117 @@ section.Toastify:empty {
 #about {
   scroll-margin-top: 180px !important;
 }
+
+/* Phone landscape mode - optimize navbar for limited height */
+@media screen and (max-height: 500px) and (orientation: landscape) {
+  /* Main navbar adjustments */
+  .navbar-custom {
+    height: 60px !important;
+    padding: 0.25rem 0 !important;
+  }
+  
+  .navbar-custom .navbar-brand {
+    font-size: 1.1rem !important;
+  }
+  
+  .navbar-custom .navbar-brand img {
+    height: 50px !important;
+    width: 60px !important;
+  }
+  
+  /* All dashboard navbars */
+  .navbar {
+    min-height: 60px !important;
+    padding: 0.25rem 1rem !important;
+  }
+  
+  .navbar .navbar-brand {
+    font-size: 1.1rem !important;
+    margin-right: 0.5rem !important;
+  }
+  
+  .navbar .navbar-brand img {
+    height: 50px !important;
+    width: 60px !important;
+    margin-right: 4px !important;
+  }
+  
+  .navbar .navbar-brand span {
+    font-size: 1.1rem !important;
+  }
+  
+  /* Navigation links spacing */
+  .navbar .nav-link {
+    padding: 0.25rem 0.75rem !important;
+    font-size: 0.9rem !important;
+  }
+  
+  /* Buttons in navbar */
+  .navbar .btn {
+    padding: 0.25rem 0.75rem !important;
+    font-size: 0.85rem !important;
+  }
+  
+  /* Profile images in navbar */
+  .navbar img.rounded-circle {
+    width: 32px !important;
+    height: 32px !important;
+  }
+  
+  /* Bell notifications */
+  .navbar .bell-icon,
+  .navbar svg[data-testid*="bell"] {
+    font-size: 18px !important;
+  }
+  
+  /* Cart icon */
+  .navbar .cart-icon,
+  .navbar svg[data-testid*="cart"] {
+    font-size: 18px !important;
+  }
+  
+  /* Navbar collapse content */
+  .navbar-collapse {
+    padding: 0.5rem 1rem !important;
+    margin: 0 !important;
+    border-radius: 0 0 0.5rem 0.5rem !important;
+  }
+  
+  /* Navigation pills/links in collapsed mode */
+  .navbar-collapse .nav-link {
+    padding: 0.5rem 1rem !important;
+    margin: 0.1rem 0 !important;
+  }
+  
+  /* Adjust monitoring mode alerts */
+  .alert.py-1 {
+    padding: 0.25rem 0.5rem !important;
+    font-size: 0.75rem !important;
+  }
+}
+
+/* Additional landscape mobile optimizations for very small heights */
+@media screen and (max-height: 450px) and (orientation: landscape) {
+  .navbar-custom {
+    height: 50px !important;
+  }
+  
+  .navbar {
+    min-height: 50px !important;
+    padding: 0.1rem 1rem !important;
+  }
+  
+  .navbar .navbar-brand img {
+    height: 40px !important;
+    width: 50px !important;
+  }
+  
+  .navbar .navbar-brand {
+    font-size: 1rem !important;
+  }
+  
+  .navbar img.rounded-circle {
+    width: 28px !important;
+    height: 28px !important;
+  }
+}

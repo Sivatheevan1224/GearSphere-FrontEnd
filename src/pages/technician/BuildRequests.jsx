@@ -7,33 +7,42 @@ const tableStyle = {
   borderCollapse: "collapse",
   marginTop: 16,
   background: "#fff",
-  boxShadow: "0 2px 8px rgba(0,0,0,0.07)",
-  borderRadius: 8,
+  boxShadow: "0 4px 20px rgba(0,0,0,0.08)",
+  borderRadius: 12,
   overflow: "hidden",
+  border: "1px solid #e0e0e0",
 };
 const thStyle = {
-  background: "#1976d2",
+  background: "linear-gradient(135deg, #2c2c2c 0%, #1a1a1a 100%)",
   color: "#fff",
-  padding: "12px 8px",
+  padding: "16px 12px",
   textAlign: "left",
   fontWeight: 600,
-  borderBottom: "2px solid #1565c0",
+  fontSize: "14px",
+  letterSpacing: "0.5px",
+  textTransform: "uppercase",
+  borderBottom: "3px solid #000",
 };
 const tdStyle = {
-  padding: "10px 8px",
-  borderBottom: "1px solid #eee",
-  color: "#222",
+  padding: "14px 12px",
+  borderBottom: "1px solid #f0f0f0",
+  color: "#333",
+  fontSize: "14px",
+  verticalAlign: "middle",
 };
 const trHover = {
-  background: "#f5faff",
+  background: "linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)",
+  transform: "scale(1.001)",
+  transition: "all 0.2s ease",
 };
 const imgStyle = {
-  width: 48,
-  height: 48,
+  width: 50,
+  height: 50,
   borderRadius: "50%",
   objectFit: "cover",
-  border: "1px solid #ddd",
-  background: "#f0f0f0",
+  border: "2px solid #e0e0e0",
+  background: "#f8f9fa",
+  boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
 };
 const modalOverlay = {
   position: "fixed",
@@ -41,69 +50,96 @@ const modalOverlay = {
   left: 0,
   width: "100vw",
   height: "100vh",
-  background: "rgba(0,0,0,0.3)",
+  background: "rgba(0,0,0,0.5)",
   display: "flex",
   alignItems: "center",
   justifyContent: "center",
   zIndex: 9999,
+  backdropFilter: "blur(4px)",
 };
 const modalContent = {
   background: "#fff",
-  borderRadius: 10,
+  borderRadius: 16,
   padding: 32,
-  minWidth: 320,
-  maxWidth: 400,
-  boxShadow: "0 4px 24px rgba(0,0,0,0.15)",
+  minWidth: 380,
+  maxWidth: 450,
+  boxShadow: "0 20px 40px rgba(0,0,0,0.15)",
   position: "relative",
+  border: "1px solid #e0e0e0",
 };
 const closeBtn = {
   position: "absolute",
-  top: 12,
-  right: 16,
+  top: 16,
+  right: 20,
   background: "none",
   border: "none",
-  fontSize: 22,
+  fontSize: 24,
   cursor: "pointer",
-  color: "#888",
+  color: "#666",
+  width: 32,
+  height: 32,
+  borderRadius: "50%",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  transition: "all 0.2s ease",
 };
 const actionBtn = {
-  padding: "8px 18px",
+  padding: "10px 20px",
   margin: "0 8px",
   border: "none",
-  borderRadius: 5,
-  fontWeight: 500,
-  fontSize: 15,
+  borderRadius: 8,
+  fontWeight: 600,
+  fontSize: 14,
   cursor: "pointer",
+  transition: "all 0.2s ease",
+  textTransform: "uppercase",
+  letterSpacing: "0.5px",
 };
 const confirmModalContent = {
   background: "#fff",
-  borderRadius: 10,
-  padding: 28,
-  minWidth: 300,
-  maxWidth: 350,
-  boxShadow: "0 4px 24px rgba(0,0,0,0.18)",
+  borderRadius: 16,
+  padding: 32,
+  minWidth: 320,
+  maxWidth: 380,
+  boxShadow: "0 20px 40px rgba(0,0,0,0.2)",
   textAlign: "center",
   position: "relative",
+  border: "1px solid #e0e0e0",
 };
 const confirmBtn = {
   ...actionBtn,
-  minWidth: 80,
-  margin: "0 12px",
+  minWidth: 90,
+  margin: "0 8px",
 };
 const statusBadge = {
   display: "inline-block",
-  minWidth: 80,
-  padding: "4px 12px",
-  borderRadius: 16,
+  minWidth: 85,
+  padding: "6px 14px",
+  borderRadius: 20,
   fontWeight: 600,
-  fontSize: 14,
+  fontSize: 12,
   textAlign: "center",
-  textTransform: "capitalize",
+  textTransform: "uppercase",
+  letterSpacing: "0.5px",
+  boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
 };
 const statusColors = {
-  pending: { background: "#1976d2", color: "#fff" },
-  accepted: { background: "#43a047", color: "#fff" },
-  rejected: { background: "#e53935", color: "#fff" },
+  pending: {
+    background:
+      "linear-gradient(135deg, #ffc107 0%, #ff8f00 100%)",
+    color: "#fff",
+  },
+  accepted: {
+    background:
+      "linear-gradient(135deg, #28a745 0%, #20c997 100%)",
+    color: "#fff",
+  },
+  rejected: {
+    background:
+      "linear-gradient(135deg, #dc3545 0%, #e91e63 100%)",
+    color: "#fff",
+  },
 };
 
 const BuildRequests = () => {
@@ -348,7 +384,7 @@ const BuildRequests = () => {
 
   return (
     <div style={{ padding: 24, maxWidth: 1100, margin: "0 auto" }}>
-      <h2 className="mb-4" style={{ fontWeight: 700, color: "#1976d2" }}>
+      <h2 className="mb-4" style={{ fontWeight: 700, color: "#000" }}>
         Build Requests
       </h2>
       {error ? (

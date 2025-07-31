@@ -42,12 +42,14 @@ const DashboardFooter = () => (
       <div style={{ flex: 1, minWidth: 180, textAlign: 'right', color: '#adb5bd', fontSize: '0.95rem' }}>
         <div style={{ fontWeight: 600, marginBottom: 4 }}>Contact</div>
         <div>
+          Email: info@gearsphere.com<br />
           Email: support@gearsphere.com<br />
-          Hotline: 011-1234567
+          Phone: +94 (76) 375 3730<br />
+          Phone: +94 (70) 407 9547
         </div>
       </div>
     </div>
   </footer>
 );
 
-export default DashboardFooter; 
+export default DashboardFooter;

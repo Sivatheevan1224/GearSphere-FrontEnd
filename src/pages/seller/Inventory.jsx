@@ -1,3 +1,11 @@
+
+import React, { useState, useEffect } from 'react';
+import { Container, Row, Col, Card, Table, Button, Form, Modal, Badge, Pagination, Alert, Spinner } from 'react-bootstrap';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import ImagePreview from '../../components/ImagePreview';
+import axios from 'axios';
+
 import React, { useState, useEffect } from "react";
 import {
   Container,
@@ -18,6 +26,7 @@ import "react-toastify/dist/ReactToastify.css";
 import LoadingScreen from "../../components/loading/LoadingScreen";
 import ImagePreview from "../../components/ImagePreview";
 
+
 const Inventory = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [showStockModal, setShowStockModal] = useState(false);
@@ -36,6 +45,9 @@ const Inventory = () => {
     status: "",
     lastRestockDate: "",
   });
+  
+  // State to track if notifications have been sent for current session
+  const [notificationsSent, setNotificationsSent] = useState(false);
 
   // Backend API URL
   const API_BASE_URL = "http://localhost/gearsphere_api/GearSphere-Backend";
@@ -172,10 +184,69 @@ const Inventory = () => {
     }
   };
 
+  // Function to create low stock notifications
+  const createLowStockNotifications = async (lowStockItems) => {
+    if (lowStockItems.length === 0) return;
+    
+    try {
+      // Get session to verify user is logged in as seller
+      const sessionResponse = await axios.get(
+        'http://localhost/gearsphere_api/GearSphere-BackEnd/getSession.php',
+        { withCredentials: true }
+      );
+
+      if (!sessionResponse.data.success || sessionResponse.data.user_type !== 'seller') {
+        return; // Only sellers can receive inventory notifications
+      }
+
+      const sellerId = sessionResponse.data.user_id;
+      
+      // Create a comprehensive low stock notification message
+      let message = `Low Stock Alert!\nYou have ${lowStockItems.length} items that need attention:\n\n`;
+      
+      lowStockItems.slice(0, 10).forEach(item => { // Limit to 10 items to avoid overly long messages
+        message += `${item.name} - Current Stock: ${item.currentStock} (Min: ${item.minStock})\n`;
+      });
+      
+      if (lowStockItems.length > 10) {
+        message += `\n... and ${lowStockItems.length - 10} more items`;
+      }
+
+      // Send notification to backend
+      await axios.post(
+        'http://localhost/gearsphere_api/GearSphere-BackEnd/addNotification.php',
+        {
+          user_id: sellerId,
+          message: message
+        },
+        { withCredentials: true }
+      );
+      
+      console.log('Low stock notification sent successfully');
+    } catch (error) {
+      console.error('Failed to send low stock notification:', error);
+    }
+  };
+
   // Load inventory on component mount
   useEffect(() => {
     fetchInventory();
   }, []);
+
+  // Create notifications when inventory changes and low stock items are detected
+  useEffect(() => {
+    if (inventory.length > 0) {
+      const currentLowStockItems = inventory.filter(item => 
+        item.status === 'Low Stock' || item.status === 'Out of Stock'
+      );
+      
+      // Only create notifications if there are actually low stock items
+      if (currentLowStockItems.length > 0 && !notificationsSent) {
+        createLowStockNotifications(currentLowStockItems);
+        setNotificationsSent(true); // Mark notifications as sent
+      }
+    }
+  }, [inventory]); // Run when inventory changes
 
   const getStatusBadge = (status) => {
     const variants = {

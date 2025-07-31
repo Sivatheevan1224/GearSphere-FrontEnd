@@ -10,6 +10,12 @@ import {
   Badge,
   Alert,
 } from "react-bootstrap";
+import {
+  CreditCard2Front,
+  CreditCard2Back,
+  Shield,
+  CheckCircle,
+} from "react-bootstrap-icons";
 import { CartContext } from "./CartContext";
 import { OrdersContext } from "./OrdersContext";
 import { useNavigate } from "react-router-dom";
@@ -71,27 +77,123 @@ const Checkout = ({
 
   const formatLKR = (amount) => "LKR " + Number(amount).toLocaleString("en-LK");
 
-  const formatCardNumber = (value) => {
-    const v = value.replace(/\s+/g, "").replace(/[^0-9]/gi, "");
-    const matches = v.match(/\d{4,16}/g);
-    const match = (matches && matches[0]) || "";
-    const parts = [];
-    for (let i = 0, len = match.length; i < len; i += 4) {
-      parts.push(match.substring(i, i + 4));
+  // Enhanced cardholder name validation
+  const validateCardholderName = (name) => {
+    const trimmedName = name.trim();
+
+    // Check minimum length
+    if (trimmedName.length < 2) {
+      return "Cardholder name must be at least 2 characters long";
     }
-    if (parts.length) {
-      return parts.join(" ");
-    } else {
-      return v;
+
+    // Check maximum length
+    if (trimmedName.length > 50) {
+      return "Cardholder name cannot exceed 50 characters";
     }
+
+    // Check for valid characters (letters, spaces, hyphens, apostrophes)
+    const nameRegex = /^[a-zA-Z\s\-'\.]+$/;
+    if (!nameRegex.test(trimmedName)) {
+      return "Cardholder name can only contain letters, spaces, hyphens, and apostrophes";
+    }
+
+    // Check for at least one letter
+    if (!/[a-zA-Z]/.test(trimmedName)) {
+      return "Cardholder name must contain at least one letter";
+    }
+
+    // Check for consecutive spaces
+    if (/\s{2,}/.test(trimmedName)) {
+      return "Cardholder name cannot contain consecutive spaces";
+    }
+
+    // Check for leading/trailing special characters
+    if (/^[\s\-'\.]+|[\s\-'\.]+$/.test(trimmedName)) {
+      return "Cardholder name cannot start or end with special characters";
+    }
+
+    return null; // Valid name
   };
 
-  const formatExpiryDate = (value) => {
-    const v = value.replace(/\s+/g, "").replace(/[^0-9]/gi, "");
-    if (v.length >= 2) {
-      return v.substring(0, 2) + "/" + v.substring(2, 4);
+  // Enhanced CVV validation with card type specific rules
+  const validateCVV = (cvvValue, cardType) => {
+    if (!cvvValue) {
+      return "CVV is required";
     }
-    return v;
+
+    // Remove any non-digit characters
+    const cleanCVV = cvvValue.replace(/\D/g, "");
+
+    if (cardType === "amex") {
+      // American Express uses 4-digit CVV
+      if (cleanCVV.length !== 4) {
+        return "American Express CVV must be 4 digits";
+      }
+    } else {
+      // Visa, Mastercard, and most others use 3-digit CVV
+      if (cleanCVV.length !== 3) {
+        return "CVV must be 3 digits";
+      }
+    }
+
+    // Check if all digits are the same (security check)
+    if (/^(.)\1+$/.test(cleanCVV)) {
+      return "CVV cannot be all the same digit";
+    }
+
+    return null; // Valid CVV
+  };
+
+  // Enhanced card number validation with Luhn algorithm
+  const validateCardNumber = (cardNum) => {
+    const cleanNumber = cardNum.replace(/\s/g, "");
+
+    if (cleanNumber.length !== 16) {
+      return "Card number must be 16 digits";
+    }
+
+    // Luhn algorithm for card validation
+    const luhnCheck = (num) => {
+      let sum = 0;
+      let alternate = false;
+
+      for (let i = num.length - 1; i >= 0; i--) {
+        let n = parseInt(num.charAt(i), 10);
+
+        if (alternate) {
+          n *= 2;
+          if (n > 9) {
+            n = (n % 10) + 1;
+          }
+        }
+
+        sum += n;
+        alternate = !alternate;
+      }
+
+      return sum % 10 === 0;
+    };
+
+    if (!luhnCheck(cleanNumber)) {
+      return "Please enter a valid card number";
+    }
+
+    // Check card type matches selected payment method
+    const firstDigit = cleanNumber.charAt(0);
+    const firstTwo = cleanNumber.substring(0, 2);
+
+    if (paymentMethod === "visa" && firstDigit !== "4") {
+      return "Visa cards must start with 4";
+    }
+
+    if (paymentMethod === "mastercard") {
+      const firstTwoNum = parseInt(firstTwo);
+      if (firstDigit !== "5" && !(firstTwoNum >= 22 && firstTwoNum <= 27)) {
+        return "Mastercard must start with 5 or 22-27";
+      }
+    }
+
+    return null; // Valid card number
   };
 
   const validateExpiryDate = (dateString) => {
@@ -126,12 +228,14 @@ const Checkout = ({
   const validateForm = () => {
     const newErrors = {};
 
-    if (!cardNumber.replace(/\s/g, "").match(/^\d{16}$/)) {
-      newErrors.cardNumber = "Please enter a valid 16-digit card number";
+    const cardNumberError = validateCardNumber(cardNumber);
+    if (cardNumberError) {
+      newErrors.cardNumber = cardNumberError;
     }
 
-    if (!cardHolder.trim()) {
-      newErrors.cardHolder = "Please enter cardholder name";
+    const cardHolderError = validateCardholderName(cardHolder);
+    if (cardHolderError) {
+      newErrors.cardHolder = cardHolderError;
     }
 
     const expiryError = validateExpiryDate(expiryDate);
@@ -139,8 +243,9 @@ const Checkout = ({
       newErrors.expiryDate = expiryError;
     }
 
-    if (!cvv.match(/^\d{3,4}$/)) {
-      newErrors.cvv = "Please enter a valid CVV";
+    const cvvError = validateCVV(cvv, paymentMethod);
+    if (cvvError) {
+      newErrors.cvv = cvvError;
     }
 
     setErrors(newErrors);
@@ -233,18 +338,138 @@ const Checkout = ({
     }, 1500); // Simulating network delay
   };
 
-  const getCardIcon = () => {
-    return paymentMethod === "visa" ? "💳" : "💳";
+  // Get card icons with proper Bootstrap icons and styling
+  const getCardIcon = (type) => {
+    switch (type) {
+      case "visa":
+        return (
+          <div
+            className="d-flex align-items-center justify-content-center"
+            style={{
+              background: "linear-gradient(135deg, #1a1f71, #0f4c75)",
+              color: "white",
+              width: "40px",
+              height: "24px",
+              borderRadius: "4px",
+              fontSize: "10px",
+              fontWeight: "bold",
+            }}
+          >
+            VISA
+          </div>
+        );
+      case "mastercard":
+        return (
+          <div
+            className="d-flex align-items-center justify-content-center"
+            style={{
+              background: "linear-gradient(135deg, #eb001b, #f79e1b)",
+              color: "white",
+              width: "40px",
+              height: "24px",
+              borderRadius: "4px",
+              fontSize: "8px",
+              fontWeight: "bold",
+            }}
+          >
+            <div style={{ display: "flex", alignItems: "center" }}>
+              <div
+                style={{
+                  width: "8px",
+                  height: "8px",
+                  borderRadius: "50%",
+                  backgroundColor: "#eb001b",
+                  marginRight: "1px",
+                }}
+              ></div>
+              <div
+                style={{
+                  width: "8px",
+                  height: "8px",
+                  borderRadius: "50%",
+                  backgroundColor: "#f79e1b",
+                  marginLeft: "-3px",
+                }}
+              ></div>
+            </div>
+          </div>
+        );
+      default:
+        return <CreditCard2Front size={20} />;
+    }
   };
 
   const getCardPrefix = () => {
     return paymentMethod === "visa" ? "4" : "5";
   };
 
+  const formatCardNumber = (value) => {
+    const v = value.replace(/\s+/g, "").replace(/[^0-9]/gi, "");
+    const matches = v.match(/\d{4,16}/g);
+    const match = (matches && matches[0]) || "";
+    const parts = [];
+    for (let i = 0, len = match.length; i < len; i += 4) {
+      parts.push(match.substring(i, i + 4));
+    }
+    if (parts.length) {
+      return parts.join(" ");
+    } else {
+      return v;
+    }
+  };
+
+  const formatExpiryDate = (value) => {
+    const v = value.replace(/\s+/g, "").replace(/[^0-9]/gi, "");
+    if (v.length >= 2) {
+      return v.substring(0, 2) + "/" + v.substring(2, 4);
+    }
+    return v;
+  };
+
   const handleCardNumberChange = (e) => {
     const value = e.target.value;
     const formatted = formatCardNumber(value);
     setCardNumber(formatted);
+
+    // Real-time validation
+    if (formatted.replace(/\s/g, "").length === 16) {
+      const error = validateCardNumber(formatted);
+      setErrors((prev) => ({
+        ...prev,
+        cardNumber: error,
+      }));
+    }
+  };
+
+  const handleCardHolderChange = (e) => {
+    const value = e.target.value;
+    // Allow only valid characters during typing
+    const sanitizedValue = value.replace(/[^a-zA-Z\s\-'\.]/g, "");
+    setCardHolder(sanitizedValue);
+
+    // Real-time validation for complete names
+    if (sanitizedValue.trim().length >= 2) {
+      const error = validateCardholderName(sanitizedValue);
+      setErrors((prev) => ({
+        ...prev,
+        cardHolder: error,
+      }));
+    }
+  };
+
+  const handleCvvChange = (e) => {
+    const value = e.target.value.replace(/\D/g, "");
+    const maxLength = paymentMethod === "amex" ? 4 : 3;
+    setCvv(value.substring(0, maxLength));
+
+    // Real-time validation
+    if (value.length === maxLength) {
+      const error = validateCVV(value, paymentMethod);
+      setErrors((prev) => ({
+        ...prev,
+        cvv: error,
+      }));
+    }
   };
 
   const handleExpiryChange = (e) => {
@@ -275,7 +500,7 @@ const Checkout = ({
         <Modal.Body className="text-center py-5">
           <div className="mb-4">
             <div className="text-success" style={{ fontSize: "4rem" }}>
-              ✅
+              <CheckCircle size={64} />
             </div>
           </div>
           <h4 className="text-success mb-3">Payment Successful!</h4>
@@ -321,22 +546,26 @@ const Checkout = ({
 
           {/* Payment Form */}
           <Col md={7}>
-            <h5 className="mb-3">Payment Details</h5>
+            <h5 className="mb-3 d-flex align-items-center">
+              <CreditCard2Front className="me-2" size={20} />
+              Payment Details
+            </h5>
 
-            {/* Card Type Selection */}
-            <div className="mb-3">
-              <Form.Label>Card Type</Form.Label>
-              <div className="d-flex gap-2">
+            {/* Enhanced Card Type Selection */}
+            <div className="mb-4">
+              <Form.Label className="fw-bold">Select Card Type</Form.Label>
+              <div className="d-flex gap-3">
                 <Button
                   variant={
                     paymentMethod === "visa" ? "primary" : "outline-primary"
                   }
                   onClick={() => setPaymentMethod("visa")}
-                  className="flex-fill"
+                  className="flex-fill d-flex align-items-center justify-content-center py-3"
+                  style={{ minHeight: "60px" }}
                 >
-                  <div className="d-flex align-items-center justify-content-center">
-                    <span className="me-2">💳</span>
-                    Visa
+                  <div className="d-flex flex-column align-items-center">
+                    {getCardIcon("visa")}
+                    <small className="mt-1">Visa</small>
                   </div>
                 </Button>
                 <Button
@@ -346,11 +575,12 @@ const Checkout = ({
                       : "outline-primary"
                   }
                   onClick={() => setPaymentMethod("mastercard")}
-                  className="flex-fill"
+                  className="flex-fill d-flex align-items-center justify-content-center py-3"
+                  style={{ minHeight: "60px" }}
                 >
-                  <div className="d-flex align-items-center justify-content-center">
-                    <span className="me-2">💳</span>
-                    Mastercard
+                  <div className="d-flex flex-column align-items-center">
+                    {getCardIcon("mastercard")}
+                    <small className="mt-1">Mastercard</small>
                   </div>
                 </Button>
               </div>
@@ -358,38 +588,64 @@ const Checkout = ({
 
             <Form onSubmit={handleSubmit}>
               <Form.Group className="mb-3">
-                <Form.Label>Card Number</Form.Label>
-                <Form.Control
-                  type="text"
-                  placeholder={`${getCardPrefix()}000 0000 0000 0000`}
-                  value={cardNumber}
-                  onChange={handleCardNumberChange}
-                  maxLength="19"
-                  isInvalid={!!errors.cardNumber}
-                />
+                <Form.Label className="fw-bold">
+                  Card Number
+                  <span className="text-danger">*</span>
+                </Form.Label>
+                <div className="position-relative">
+                  <Form.Control
+                    type="text"
+                    placeholder={`${getCardPrefix()}000 0000 0000 0000`}
+                    value={cardNumber}
+                    onChange={handleCardNumberChange}
+                    maxLength="19"
+                    isInvalid={!!errors.cardNumber}
+                    style={{ paddingRight: "50px" }}
+                  />
+                  <div
+                    className="position-absolute"
+                    style={{
+                      right: "10px",
+                      top: "50%",
+                      transform: "translateY(-50%)",
+                    }}
+                  >
+                    {getCardIcon(paymentMethod)}
+                  </div>
+                </div>
                 <Form.Control.Feedback type="invalid">
                   {errors.cardNumber}
                 </Form.Control.Feedback>
               </Form.Group>
 
               <Form.Group className="mb-3">
-                <Form.Label>Cardholder Name</Form.Label>
+                <Form.Label className="fw-bold">
+                  Cardholder Name
+                  <span className="text-danger">*</span>
+                </Form.Label>
                 <Form.Control
                   type="text"
-                  placeholder="Enter cardholder name"
+                  placeholder="Enter full name as shown on card"
                   value={cardHolder}
-                  onChange={(e) => setCardHolder(e.target.value)}
+                  onChange={handleCardHolderChange}
+                  maxLength="50"
                   isInvalid={!!errors.cardHolder}
                 />
                 <Form.Control.Feedback type="invalid">
                   {errors.cardHolder}
                 </Form.Control.Feedback>
+                <Form.Text className="text-muted">
+                  Enter your name exactly as it appears on your card
+                </Form.Text>
               </Form.Group>
 
               <Row>
                 <Col md={6}>
                   <Form.Group className="mb-3">
-                    <Form.Label>Expiry Date</Form.Label>
+                    <Form.Label className="fw-bold">
+                      Expiry Date
+                      <span className="text-danger">*</span>
+                    </Form.Label>
                     <Form.Control
                       type="text"
                       placeholder="MM/YY"
@@ -405,38 +661,57 @@ const Checkout = ({
                 </Col>
                 <Col md={6}>
                   <Form.Group className="mb-3">
-                    <Form.Label>CVV</Form.Label>
-                    <Form.Control
-                      type="text"
-                      placeholder="123"
-                      value={cvv}
-                      onChange={(e) =>
-                        setCvv(e.target.value.replace(/\D/g, ""))
-                      }
-                      maxLength="4"
-                      isInvalid={!!errors.cvv}
-                    />
+                    <Form.Label className="fw-bold">
+                      CVV
+                      <span className="text-danger">*</span>
+                    </Form.Label>
+                    <div className="position-relative">
+                      <Form.Control
+                        type="text"
+                        placeholder={paymentMethod === "amex" ? "1234" : "123"}
+                        value={cvv}
+                        onChange={handleCvvChange}
+                        maxLength={paymentMethod === "amex" ? "4" : "3"}
+                        isInvalid={!!errors.cvv}
+                        style={{ paddingRight: "35px" }}
+                      />
+                      <CreditCard2Back
+                        className="position-absolute text-muted"
+                        style={{
+                          right: "10px",
+                          top: "50%",
+                          transform: "translateY(-50%)",
+                        }}
+                        size={18}
+                      />
+                    </div>
                     <Form.Control.Feedback type="invalid">
                       {errors.cvv}
                     </Form.Control.Feedback>
+                    <Form.Text className="text-muted">
+                      {paymentMethod === "amex"
+                        ? "4 digits on front"
+                        : "3 digits on back"}
+                    </Form.Text>
                   </Form.Group>
                 </Col>
               </Row>
 
-              <Alert variant="info" className="mb-3">
+              <Alert variant="success" className="mb-3 d-flex align-items-center">
+                <CheckCircle className="me-2 flex-shrink-0" size={20} />
                 <small>
-                  <strong>Secure Payment:</strong> Your payment information is
-                  encrypted and secure. We use industry-standard SSL encryption
-                  to protect your data.
+                  <strong>256-bit SSL Encryption:</strong> Your payment information is
+                  encrypted and secure. We never store your card details.
                 </small>
               </Alert>
 
               <div className="d-grid gap-2">
                 <Button
                   type="submit"
-                  variant="primary"
+                  variant="success"
                   size="lg"
                   disabled={isProcessing}
+                  className="d-flex align-items-center justify-content-center"
                 >
                   {isProcessing ? (
                     <>
@@ -448,7 +723,10 @@ const Checkout = ({
                       Processing Payment...
                     </>
                   ) : (
-                    `Pay ${formatLKR(orderTotal)}`
+                    <>
+                      <Shield className="me-2" size={18} />
+                      Pay {formatLKR(orderTotal)}
+                    </>
                   )}
                 </Button>
                 <Button variant="outline-secondary" onClick={handleClose}>
