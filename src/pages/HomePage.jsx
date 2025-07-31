@@ -237,6 +237,41 @@ const loadingAnimationStyle = `
 }
 `;
 
+const contactSectionStyles = `
+.contact-input-underline::placeholder {
+  color: rgba(255, 255, 255, 0.7) !important;
+}
+.contact-input-underline:focus {
+  background-color: transparent !important;
+  border-bottom: 2px solid white !important;
+  box-shadow: none !important;
+  color: white !important;
+  outline: none !important;
+}
+.contact-input-underline option {
+  background-color: white !important;
+  color: #333 !important;
+}
+.contact-info-box:hover {
+  transform: translateY(-12px) scale(1.03);
+  box-shadow: 0 25px 60px rgba(0,0,0,0.15);
+}
+.contact-info-item {
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+.contact-info-item:hover {
+  transform: translateX(15px);
+}
+.contact-info-item:hover .contact-icon {
+  background-color: #e3f2fd !important;
+  transform: scale(1.15) rotate(5deg);
+  border-color: #4a90e2 !important;
+}
+.contact-info-item:hover .contact-icon svg {
+  color: #4a90e2 !important;
+}
+`;
+
 function HomePage() {
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [showSignupModal, setShowSignupModal] = useState(false);
@@ -485,6 +520,7 @@ function HomePage() {
             <style>{serviceCardBorderStyle}</style>
             <style>{productSliderStyle}</style>
             <style>{loadingAnimationStyle}</style>
+            <style>{contactSectionStyles}</style>
             <style>{`
               .customer-review-card {
                 transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
@@ -1680,41 +1716,6 @@ function HomePage() {
                   </Col>
                 </Row>
               </Container>
-
-              <style>{`
-                .contact-input-underline::placeholder {
-                  color: rgba(255, 255, 255, 0.7) !important;
-                }
-                .contact-input-underline:focus {
-                  background-color: transparent !important;
-                  border-bottom: 2px solid white !important;
-                  box-shadow: none !important;
-                  color: white !important;
-                  outline: none !important;
-                }
-                .contact-input-underline option {
-                  background-color: white !important;
-                  color: #333 !important;
-                }
-                .contact-info-box:hover {
-                  transform: translateY(-12px) scale(1.03);
-                  box-shadow: 0 25px 60px rgba(0,0,0,0.15);
-                }
-                .contact-info-item {
-                  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-                }
-                .contact-info-item:hover {
-                  transform: translateX(15px);
-                }
-                .contact-info-item:hover .contact-icon {
-                  background-color: #e3f2fd !important;
-                  transform: scale(1.15) rotate(5deg);
-                  border-color: #4a90e2 !important;
-                }
-                .contact-info-item:hover .contact-icon svg {
-                  color: #4a90e2 !important;
-                }
-              `}</style>
             </section>
           </main>
           <Footer />
