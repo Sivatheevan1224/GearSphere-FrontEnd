@@ -22,6 +22,7 @@ function TechnicianManagement() {
   const [loading, setLoading] = useState(true);
   const [isDisabled, setIsDisabled] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isApproving, setIsApproving] = useState(false);
 
   useEffect(() => {
     fetchTechnicians();
@@ -49,6 +50,7 @@ function TechnicianManagement() {
         chargePerDay: tech.charge_per_day,
         specialization: tech.specialization,
         experience: tech.experience,
+        approveStatus: tech.approve_status || "not approved",
       }));
       setTechnicians(transformedData);
     } catch (error) {
@@ -90,6 +92,79 @@ function TechnicianManagement() {
       toast.error("There was an error updating the user status!");
     }
     setIsLoading(false);
+  };
+
+  const handleApprove = async (technicianId, currentStatus) => {
+    const newStatus =
+      currentStatus === "approved" ? "not approved" : "approved";
+    setIsApproving(technicianId);
+
+    // Optimistic update
+    setTechnicians((prev) =>
+      prev.map((tech) =>
+        tech.id === technicianId ? { ...tech, approveStatus: newStatus } : tech
+      )
+    );
+
+    try {
+      const response = await fetch(
+        "http://localhost/gearsphere_api/GearSphere-BackEnd/updateTechnicianApproval.php",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+          body: JSON.stringify({
+            technician_id: technicianId,
+            approve_status: newStatus,
+          }),
+        }
+      );
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.message || "Failed to update approval status");
+      }
+
+      // Success notification
+      toast.success(
+        `Technician ${
+          newStatus === "approved" ? "approved" : "disapproved"
+        } successfully!`,
+        {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+        }
+      );
+    } catch (error) {
+      console.error("Error updating approval status:", error);
+
+      // Rollback optimistic update
+      setTechnicians((prev) =>
+        prev.map((tech) =>
+          tech.id === technicianId
+            ? { ...tech, approveStatus: currentStatus }
+            : tech
+        )
+      );
+
+      toast.error(`Failed to update approval status: ${error.message}`, {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
+    } finally {
+      setIsApproving(null);
+    }
   };
 
   const handleCloseDetailsModal = () => {
@@ -135,6 +210,7 @@ function TechnicianManagement() {
                 <th>Phone</th>
                 <th>District</th>
                 <th>Status</th>
+                <th>Approval</th>
                 <th>Join Date</th>
                 <th>Actions</th>
               </tr>
@@ -166,6 +242,47 @@ function TechnicianManagement() {
                     <Badge bg={tech.status === "active" ? "success" : "danger"}>
                       {tech.status}
                     </Badge>
+                  </td>
+                  <td>
+                    <div className="d-flex align-items-center gap-2">
+                      <Badge
+                        bg={
+                          tech.approveStatus === "approved"
+                            ? "success"
+                            : "warning"
+                        }
+                        className="me-2"
+                      >
+                        {tech.approveStatus}
+                      </Badge>
+                      <Button
+                        variant={
+                          tech.approveStatus === "approved"
+                            ? "outline-warning"
+                            : "outline-success"
+                        }
+                        size="sm"
+                        onClick={() =>
+                          handleApprove(tech.id, tech.approveStatus)
+                        }
+                        disabled={isApproving === tech.id}
+                      >
+                        {isApproving === tech.id ? (
+                          <span>
+                            <span
+                              className="spinner-border spinner-border-sm me-1"
+                              role="status"
+                              aria-hidden="true"
+                            ></span>
+                            Loading...
+                          </span>
+                        ) : tech.approveStatus === "approved" ? (
+                          "Disapprove"
+                        ) : (
+                          "Approve"
+                        )}
+                      </Button>
+                    </div>
                   </td>
                   <td>{tech.joinDate}</td>
                   <td>
@@ -234,6 +351,20 @@ function TechnicianManagement() {
               {selectedUser.status && (
                 <p>
                   <strong>Status:</strong> {selectedUser.status}
+                </p>
+              )}
+              {selectedUser.approveStatus && (
+                <p>
+                  <strong>Approval Status:</strong>{" "}
+                  <Badge
+                    bg={
+                      selectedUser.approveStatus === "approved"
+                        ? "success"
+                        : "warning"
+                    }
+                  >
+                    {selectedUser.approveStatus}
+                  </Badge>
                 </p>
               )}
               {selectedUser.joinDate && (
