@@ -67,15 +67,38 @@ const Analytics = () => {
       return { salesTrendData: null, categoryData: null };
     }
 
-    // Generate specific months from February 2025 to July 2025 (6 months total)
-    function getSpecificMonths() {
-      return ["2025-02", "2025-03", "2025-04", "2025-05", "2025-06", "2025-07"];
+    // Generate months dynamically based on backend data
+    function getMonthsFromBackendData() {
+      // Use the periods directly from the backend data
+      const backendPeriods = (analyticsData.salesTrend || []).map(
+        (item) => item.period
+      );
+      console.log("Backend periods:", backendPeriods); // Debug log
+
+      // If we have backend data, use those periods
+      if (backendPeriods.length > 0) {
+        return backendPeriods.sort(); // Sort to ensure chronological order
+      }
+
+      // Fallback: generate last 6 months including current
+      const months = [];
+      const currentDate = new Date();
+      for (let i = 5; i >= 0; i--) {
+        const date = new Date(
+          currentDate.getFullYear(),
+          currentDate.getMonth() - i,
+          1
+        );
+        const monthString = date.toISOString().slice(0, 7);
+        months.push(monthString);
+      }
+      return months;
     }
 
     // Always use current month as the latest month to ensure it's included
-    const currentMonth = new Date().toISOString().slice(0, 7); // Should be "2025-07"
+    const currentMonth = new Date().toISOString().slice(0, 7); // Should be "2025-08"
     console.log("Current month:", currentMonth); // Debug log
-    const lastNMonths = getSpecificMonths(); // Use specific months instead
+    const lastNMonths = getMonthsFromBackendData(); // Use dynamic months from backend
     console.log("Generated months:", lastNMonths); // Debug log
     const salesTrendMap = {};
     (analyticsData.salesTrend || []).forEach((item) => {
@@ -88,8 +111,17 @@ const Analytics = () => {
     }));
     console.log("Normalized sales trend:", normalizedSalesTrend); // Debug log
 
+    // Format month labels for better readability (e.g., "Aug 2025" instead of "2025-08")
+    const formatMonthLabel = (monthString) => {
+      const date = new Date(monthString + "-01");
+      return date.toLocaleDateString("en-US", {
+        month: "short",
+        year: "numeric",
+      });
+    };
+
     const salesTrendData = {
-      labels: normalizedSalesTrend.map((item) => item.period),
+      labels: normalizedSalesTrend.map((item) => formatMonthLabel(item.period)),
       datasets: [
         {
           label: metricType === "revenue" ? "Revenue" : "Orders",
