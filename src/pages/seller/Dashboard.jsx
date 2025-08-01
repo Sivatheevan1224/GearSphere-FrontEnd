@@ -1,17 +1,13 @@
 import React, { useState, useEffect } from "react";
-import {
-  Container,
-  Row,
-  Col,
-  Card,
-  Button,
-} from "react-bootstrap";
+import { Container, Row, Col, Card, Button } from "react-bootstrap";
 import {
   Shop,
   Box,
   CashStack,
   Star,
   ArrowUp,
+  ClockHistory,
+  CheckCircle,
 } from "react-bootstrap-icons";
 import pcpic2 from "../../images/pcpic2.jpeg";
 import LoadingScreen from "../../components/loading/LoadingScreen";
@@ -20,23 +16,31 @@ function SellerDashboard() {
   const [productCount, setProductCount] = useState(0);
   const [topProducts, setTopProducts] = useState([]);
   const [recentOrders, setRecentOrders] = useState([]);
+  const [totalOrdersCount, setTotalOrdersCount] = useState(0);
+  const [pendingOrdersCount, setPendingOrdersCount] = useState(0);
+  const [deliveredOrdersCount, setDeliveredOrdersCount] = useState(0);
+  const [pendingOrders, setPendingOrders] = useState([]);
   const [loading, setLoading] = useState(true);
-  
+
   const formatLKR = (amount) => "LKR " + Number(amount).toLocaleString("en-LK");
 
   useEffect(() => {
     const fetchDashboardData = async () => {
       try {
         setLoading(true);
-        
+
         // Fetch products
-        const productsResponse = await fetch('http://localhost/gearsphere_api/GearSphere-BackEnd/getProducts.php');
+        const productsResponse = await fetch(
+          "http://localhost/gearsphere_api/GearSphere-BackEnd/getProducts.php"
+        );
         const productsData = await productsResponse.json();
-        
+
         if (productsData.success && Array.isArray(productsData.products)) {
           setProductCount(productsData.products.length);
           // Sort by price descending and take top 3
-          const sorted = [...productsData.products].sort((a, b) => Number(b.price) - Number(a.price));
+          const sorted = [...productsData.products].sort(
+            (a, b) => Number(b.price) - Number(a.price)
+          );
           setTopProducts(sorted.slice(0, 3));
         } else {
           setProductCount(0);
@@ -44,23 +48,57 @@ function SellerDashboard() {
         }
 
         // Fetch recent orders
-        const ordersResponse = await fetch('http://localhost/gearsphere_api/GearSphere-BackEnd/getSellerOrders.php', {
-          method: 'GET',
-          credentials: 'include',
-        });
+        const ordersResponse = await fetch(
+          "http://localhost/gearsphere_api/GearSphere-BackEnd/getSellerOrders.php",
+          {
+            method: "GET",
+            credentials: "include",
+          }
+        );
         const ordersData = await ordersResponse.json();
-        
+
         if (ordersData.success && Array.isArray(ordersData.orders)) {
-          // Take only the first 5 recent orders
-          setRecentOrders(ordersData.orders.slice(0, 5));
+          const allOrders = ordersData.orders;
+
+          // Set total orders count
+          setTotalOrdersCount(allOrders.length);
+
+          // Count pending and delivered orders
+          const pendingCount = allOrders.filter(
+            (order) => order.status === "Pending" || order.status === "pending"
+          ).length;
+          const deliveredCount = allOrders.filter(
+            (order) =>
+              order.status === "Delivered" || order.status === "delivered"
+          ).length;
+
+          setPendingOrdersCount(pendingCount);
+          setDeliveredOrdersCount(deliveredCount);
+
+          // Set pending orders list
+          const pendingOrdersList = allOrders.filter(
+            (order) => order.status === "Pending" || order.status === "pending"
+          );
+          setPendingOrders(pendingOrdersList);
+
+          // Take only the first 5 recent orders for the recent orders section
+          setRecentOrders(allOrders.slice(0, 5));
         } else {
           setRecentOrders([]);
+          setTotalOrdersCount(0);
+          setPendingOrdersCount(0);
+          setDeliveredOrdersCount(0);
+          setPendingOrders([]);
         }
       } catch (error) {
-        console.error('Failed to fetch dashboard data:', error);
+        console.error("Failed to fetch dashboard data:", error);
         setProductCount(0);
         setTopProducts([]);
         setRecentOrders([]);
+        setTotalOrdersCount(0);
+        setPendingOrdersCount(0);
+        setDeliveredOrdersCount(0);
+        setPendingOrders([]);
       } finally {
         setLoading(false);
       }
@@ -71,13 +109,17 @@ function SellerDashboard() {
 
   const getStatusBadge = (status) => {
     const statusClasses = {
-      'Pending': 'bg-warning',
-      'Processing': 'bg-info',
-      'Shipped': 'bg-primary',
-      'Delivered': 'bg-success',
-      'Cancelled': 'bg-danger'
+      Pending: "bg-warning",
+      Processing: "bg-info",
+      Shipped: "bg-primary",
+      Delivered: "bg-success",
+      Cancelled: "bg-danger",
     };
-    return <span className={`badge ${statusClasses[status] || 'bg-secondary'}`}>{status}</span>;
+    return (
+      <span className={`badge ${statusClasses[status] || "bg-secondary"}`}>
+        {status}
+      </span>
+    );
   };
 
   // Show loading screen while data is being fetched
@@ -154,7 +196,7 @@ function SellerDashboard() {
           </Row>
         </Container>
       </section>
-      
+
       {/* Dashboard Content */}
       <Container className="py-5">
         <h1 className="mb-4">Seller Dashboard</h1>
@@ -174,7 +216,7 @@ function SellerDashboard() {
             <Card className="text-center">
               <Card.Body>
                 <Box size={24} className="mb-3 text-success" />
-                <h3>{recentOrders.length}</h3>
+                <h3>{totalOrdersCount}</h3>
                 <p className="text-muted mb-0">Total Orders</p>
               </Card.Body>
             </Card>
@@ -182,31 +224,37 @@ function SellerDashboard() {
           <Col md={3}>
             <Card className="text-center">
               <Card.Body>
-                <CashStack size={24} className="mb-3 text-warning" />
-                <h3>{formatLKR(recentOrders.reduce((sum, order) => sum + Number(order.total), 0))}</h3>
-                <p className="text-muted mb-0">Total Revenue</p>
+                <ClockHistory size={24} className="mb-3 text-warning" />
+                <h3>{pendingOrdersCount}</h3>
+                <p className="text-muted mb-0">Pending Orders</p>
               </Card.Body>
             </Card>
           </Col>
           <Col md={3}>
             <Card className="text-center">
               <Card.Body>
-                <Star size={24} className="mb-3 text-info" />
-                <h3>4.7</h3>
-                <p className="text-muted mb-0">Average Rating</p>
+                <CheckCircle size={24} className="mb-3 text-success" />
+                <h3>{deliveredOrdersCount}</h3>
+                <p className="text-muted mb-0">Delivered Orders</p>
               </Card.Body>
             </Card>
           </Col>
         </Row>
 
-        {/* Recent Orders and Top Products */}
+        {/* Recent Orders and Pending Orders */}
         <Row>
           <Col md={8}>
             <Card className="mb-4">
               <Card.Body>
                 <div className="d-flex justify-content-between align-items-center mb-4">
                   <h4 className="mb-0">Recent Orders</h4>
-                  <Button variant="outline-primary" size="sm" href="/seller/orders">View All</Button>
+                  <Button
+                    variant="outline-primary"
+                    size="sm"
+                    href="/seller/orders"
+                  >
+                    View All
+                  </Button>
                 </div>
                 {recentOrders.length === 0 ? (
                   <div className="text-center text-muted py-4">
@@ -229,7 +277,10 @@ function SellerDashboard() {
                           <tr key={order.order_id}>
                             <td>#{order.order_id}</td>
                             <td>{order.customer.name}</td>
-                            <td>{order.items.length} item{order.items.length !== 1 ? 's' : ''}</td>
+                            <td>
+                              {order.items.length} item
+                              {order.items.length !== 1 ? "s" : ""}
+                            </td>
                             <td>{formatLKR(order.total)}</td>
                             <td>{getStatusBadge(order.status)}</td>
                           </tr>
@@ -245,49 +296,53 @@ function SellerDashboard() {
           <Col md={4}>
             <Card className="mb-4">
               <Card.Body>
-                <h4 className="mb-4">Top Products</h4>
-                {topProducts.length === 0 ? (
+                <div className="d-flex justify-content-between align-items-center mb-4">
+                  <h4 className="mb-0">Pending Orders</h4>
+                  <Button
+                    variant="outline-warning"
+                    size="sm"
+                    href="/seller/orders"
+                  >
+                    View All
+                  </Button>
+                </div>
+                {pendingOrders.length === 0 ? (
                   <div className="text-center text-muted">
-                    No products found.
+                    No pending orders found.
                   </div>
                 ) : (
-                  topProducts.map((product, idx) => (
-                    <div
-                      key={product.product_id || idx}
-                      className={`mb-3 pb-3${
-                        idx < topProducts.length - 1 ? " border-bottom" : ""
-                      }`}
-                    >
-                      <div className="d-flex align-items-center">
-                        <img
-                          src={
-                            product.image_url
-                              ? `http://localhost/gearsphere_api/GearSphere-BackEnd/${product.image_url}`
-                              : "/placeholder.svg?height=40&width=40"
-                          }
-                          alt={product.name}
-                          className="rounded me-2"
-                          width="40"
-                          height="40"
-                        />
-                        <div className="flex-grow-1">
-                          <h6 className="mb-0">{product.name}</h6>
-                          <div className="d-flex align-items-center">
-                            <Star className="text-warning me-1" size={14} />
-                            <span>4.8</span>
-                            <span className="ms-2 text-success">
-                              <ArrowUp size={14} />
-                              +12%
-                            </span>
+                  <div
+                    className="pending-orders-list"
+                    style={{ maxHeight: "400px", overflowY: "auto" }}
+                  >
+                    {pendingOrders.map((order, idx) => (
+                      <div
+                        key={order.order_id || idx}
+                        className={`mb-3 pb-3${
+                          idx < pendingOrders.length - 1 ? " border-bottom" : ""
+                        }`}
+                      >
+                        <div className="d-flex justify-content-between align-items-start">
+                          <div className="flex-grow-1">
+                            <h6 className="mb-1">Order #{order.order_id}</h6>
+                            <p className="text-muted mb-1 small">
+                              {order.customer.name}
+                            </p>
+                            <p className="text-muted mb-2 small">
+                              {order.items.length} item
+                              {order.items.length !== 1 ? "s" : ""}
+                            </p>
+                            <div className="d-flex align-items-center justify-content-between">
+                              <span className="fw-bold">
+                                {formatLKR(order.total)}
+                              </span>
+                              <span className="badge bg-warning">Pending</span>
+                            </div>
                           </div>
                         </div>
-                        <div className="text-end">
-                          <h6 className="mb-0">{formatLKR(product.price)}</h6>
-                          <small className="text-muted">Stock: {product.stock}</small>
-                        </div>
                       </div>
-                    </div>
-                  ))
+                    ))}
+                  </div>
                 )}
               </Card.Body>
             </Card>
