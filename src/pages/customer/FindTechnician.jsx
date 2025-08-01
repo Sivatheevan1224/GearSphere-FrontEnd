@@ -35,7 +35,10 @@ function FindTechnician() {
     setLoading(true);
     axios
       .get(
-        "http://localhost/gearsphere_api/GearSphere-BackEnd/getAllTechnicians.php?action=getAll"
+        "http://localhost/gearsphere_api/GearSphere-BackEnd/getAllTechnicians.php?action=getAll",
+        {
+          withCredentials: true,
+        }
       )
       .then((res) => {
         setTechnicians(res.data);
@@ -56,7 +59,8 @@ function FindTechnician() {
         {
           order_id,
           assignment_id,
-        }
+        },
+        { withCredentials: true }
       );
       // You can add a success message here if you want
     } catch (error) {
@@ -102,8 +106,11 @@ function FindTechnician() {
     "General PC Building",
   ];
 
-  // Filter technicians based on selected district and specialization
+  // Filter technicians based on selected district, specialization, and approval status
   const filteredTechnicians = technicians.filter((tech) => {
+    // Only show approved technicians
+    const isApproved = tech.approve_status === "approved";
+
     const matchesDistrict =
       !selectedDistrict ||
       (tech.address && tech.address.includes(selectedDistrict));
@@ -112,7 +119,8 @@ function FindTechnician() {
       (Array.isArray(tech.specialization)
         ? tech.specialization.includes(selectedService)
         : tech.specialization && tech.specialization === selectedService);
-    return matchesDistrict && matchesSpecialization;
+
+    return isApproved && matchesDistrict && matchesSpecialization;
   });
 
   const handleAssignTechnician = async () => {
@@ -278,154 +286,182 @@ function FindTechnician() {
 
       {/* Technician List */}
       <Row>
-        {filteredTechnicians.map((tech) => (
-          <Col
-            key={tech.technician_id || tech.id || tech.user_id}
-            lg={4}
-            md={4}
-            sm={6}
-            xs={12}
-            className="mb-4"
-          >
-            <div
-              style={cardStyle}
-              className="h-100 technician-card-anim"
-              onMouseEnter={(e) => {
-                Object.assign(e.currentTarget.style, cardHoverStyle);
-              }}
-              onMouseLeave={(e) => {
-                Object.assign(e.currentTarget.style, cardStyle);
-              }}
+        {filteredTechnicians.length === 0 ? (
+          <Col xs={12}>
+            <Card className="text-center py-5">
+              <Card.Body>
+                <div className="mb-3">
+                  <i
+                    className="bi bi-person-x"
+                    style={{ fontSize: "3rem", color: "#6c757d" }}
+                  ></i>
+                </div>
+                <h4 className="text-muted mb-3">
+                  No Approved Technicians Available
+                </h4>
+                <p className="text-muted">
+                  {selectedDistrict || selectedService
+                    ? "No approved technicians match your current filters. Try adjusting your search criteria."
+                    : "There are currently no approved technicians available. Please check back later."}
+                </p>
+                {(selectedDistrict || selectedService) && (
+                  <Button
+                    variant="outline-primary"
+                    onClick={() => {
+                      setSelectedDistrict("");
+                      setSelectedService("");
+                    }}
+                  >
+                    Clear Filters
+                  </Button>
+                )}
+              </Card.Body>
+            </Card>
+          </Col>
+        ) : (
+          filteredTechnicians.map((tech) => (
+            <Col
+              key={tech.technician_id || tech.id || tech.user_id}
+              lg={4}
+              md={4}
+              sm={6}
+              xs={12}
+              className="mb-4"
             >
-              <Card.Body className="p-3">
-                <div className="d-flex flex-column align-items-center text-center h-100">
-                  <div style={imageBorderStyle} className="mb-2">
-                    <img
-                      src={
-                        tech.profile_image
-                          ? `http://localhost/gearsphere_api/GearSphere-BackEnd/profile_images/${tech.profile_image}`
-                          : "/profile_images/user_image.jpg"
-                      }
-                      alt={tech.name}
-                      className="rounded-2 border border-2 "
-                      width="100"
-                      height="100"
-                      style={{ objectFit: "cover", background: "#fff" }}
-                    />
-                  </div>
-                  <h5 className="mb-1 fw-bold">{tech.name}</h5>
-                  <div className="mb-2">
-                    <span
-                      className={`badge ${
-                        tech.status === "available"
-                          ? "bg-success"
-                          : "bg-secondary"
-                      }`}
-                      style={{ fontSize: "0.9em", borderRadius: 8 }}
-                    >
-                      {tech.status === "available"
-                        ? "Available"
-                        : "Unavailable"}
-                    </span>
-                  </div>
-                  <div className="mb-2">
-                    {Array.isArray(tech.specialization) ? (
-                      tech.specialization.map((service, index) => (
+              <div
+                style={cardStyle}
+                className="h-100 technician-card-anim"
+                onMouseEnter={(e) => {
+                  Object.assign(e.currentTarget.style, cardHoverStyle);
+                }}
+                onMouseLeave={(e) => {
+                  Object.assign(e.currentTarget.style, cardStyle);
+                }}
+              >
+                <Card.Body className="p-3">
+                  <div className="d-flex flex-column align-items-center text-center h-100">
+                    <div style={imageBorderStyle} className="mb-2">
+                      <img
+                        src={
+                          tech.profile_image
+                            ? `http://localhost/gearsphere_api/GearSphere-BackEnd/profile_images/${tech.profile_image}`
+                            : "/profile_images/user_image.jpg"
+                        }
+                        alt={tech.name}
+                        className="rounded-2 border border-2 "
+                        width="100"
+                        height="100"
+                        style={{ objectFit: "cover", background: "#fff" }}
+                      />
+                    </div>
+                    <h5 className="mb-1 fw-bold">{tech.name}</h5>
+                    <div className="mb-2">
+                      <span
+                        className={`badge ${
+                          tech.status === "available"
+                            ? "bg-success"
+                            : "bg-secondary"
+                        }`}
+                        style={{ fontSize: "0.9em", borderRadius: 8 }}
+                      >
+                        {tech.status === "available"
+                          ? "Available"
+                          : "Unavailable"}
+                      </span>
+                    </div>
+                    <div className="mb-2">
+                      {Array.isArray(tech.specialization) ? (
+                        tech.specialization.map((service, index) => (
+                          <span
+                            key={service + "_" + index}
+                            className="badge bg-primary bg-opacity-75 me-1 mb-1"
+                            style={{ fontSize: "0.85em", borderRadius: 8 }}
+                          >
+                            {service}
+                          </span>
+                        ))
+                      ) : tech.specialization ? (
                         <span
-                          key={service + "_" + index}
                           className="badge bg-primary bg-opacity-75 me-1 mb-1"
                           style={{ fontSize: "0.85em", borderRadius: 8 }}
                         >
-                          {service}
-                        </span>
-                      ))
-                    ) : tech.specialization ? (
-                      <span
-                        className="badge bg-primary bg-opacity-75 me-1 mb-1"
-                        style={{ fontSize: "0.85em", borderRadius: 8 }}
-                      >
-                        {tech.specialization}
-                      </span>
-                    ) : (
-                      <span className="text-muted">No specialization</span>
-                    )}
-                  </div>
-                  <div className="text-muted small mb-1">
-                    <GeoAlt className="me-1" size={14} /> {tech.address}{" "}
-                    District
-                  </div>
-                  <div className="d-flex flex-column flex-sm-row flex-wrap gap-1 gap-sm-2 mb-1 justify-content-center align-items-center">
-                    <span className="text-muted small">
-                      <strong>Phone:</strong>{" "}
-                      {tech.contact_number || (
-                        <span className="text-muted">N/A</span>
-                      )}
-                    </span>
-                    <span className="text-muted small">
-                      <strong>Charge:</strong>{" "}
-                      {tech.charge_per_day !== undefined ? (
-                        <span>
-                          Rs. {Number(tech.charge_per_day).toLocaleString()} /
-                          day
+                          {tech.specialization}
                         </span>
                       ) : (
-                        <span className="text-muted">N/A</span>
+                        <span className="text-muted">No specialization</span>
                       )}
-                    </span>
-                    <span className="text-muted small">
-                      <strong>Experience:</strong> {tech.experience} year
-                      {tech.experience === 1 ? "" : "s"}
-                    </span>
+                    </div>
+                    <div className="text-muted small mb-1">
+                      <GeoAlt className="me-1" size={14} /> {tech.address}{" "}
+                      District
+                    </div>
+                    <div className="d-flex flex-column flex-sm-row flex-wrap gap-1 gap-sm-2 mb-1 justify-content-center align-items-center">
+                      <span className="text-muted small">
+                        <strong>Phone:</strong>{" "}
+                        {tech.contact_number || (
+                          <span className="text-muted">N/A</span>
+                        )}
+                      </span>
+                      <span className="text-muted small">
+                        <strong>Charge:</strong>{" "}
+                        {tech.charge_per_day !== undefined ? (
+                          <span>
+                            Rs. {Number(tech.charge_per_day).toLocaleString()} /
+                            day
+                          </span>
+                        ) : (
+                          <span className="text-muted">N/A</span>
+                        )}
+                      </span>
+                      <span className="text-muted small">
+                        <strong>Experience:</strong> {tech.experience} year
+                        {tech.experience === 1 ? "" : "s"}
+                      </span>
+                    </div>
+                    <button
+                      style={
+                        tech.status === "available"
+                          ? assignBtnStyle
+                          : {
+                              ...assignBtnStyle,
+                              background:
+                                "linear-gradient(90deg, #9ca3af 0%, #6b7280 100%)",
+                              cursor: "not-allowed",
+                              opacity: 0.6,
+                            }
+                      }
+                      className="btn btn-sm mt-2"
+                      disabled={tech.status !== "available"}
+                      onMouseEnter={(e) => {
+                        if (tech.status === "available") {
+                          Object.assign(
+                            e.currentTarget.style,
+                            assignBtnHoverStyle
+                          );
+                        }
+                      }}
+                      onMouseLeave={(e) => {
+                        if (tech.status === "available") {
+                          Object.assign(e.currentTarget.style, assignBtnStyle);
+                        }
+                      }}
+                      onClick={() => {
+                        if (tech.status !== "available") {
+                          toast.error("Technician is unavailable");
+                          return;
+                        }
+                        setSelectedTechnician(tech);
+                        setShowTechnicianModal(true);
+                      }}
+                    >
+                      {tech.status === "available" ? "Assign" : "Unavailable"}
+                    </button>
                   </div>
-                  {/* <div className="d-flex align-items-center gap-2 justify-content-center mb-2">
-                    {renderStars(tech.rating)}
-                    <span className="text-muted small ms-1">
-                      {tech.rating} ({tech.reviews} reviews)
-                    </span>
-                  </div> */}
-                  <button
-                    style={
-                      tech.status === "available"
-                        ? assignBtnStyle
-                        : {
-                            ...assignBtnStyle,
-                            background:
-                              "linear-gradient(90deg, #9ca3af 0%, #6b7280 100%)",
-                            cursor: "not-allowed",
-                            opacity: 0.6,
-                          }
-                    }
-                    className="btn btn-sm mt-2"
-                    disabled={tech.status !== "available"}
-                    onMouseEnter={(e) => {
-                      if (tech.status === "available") {
-                        Object.assign(
-                          e.currentTarget.style,
-                          assignBtnHoverStyle
-                        );
-                      }
-                    }}
-                    onMouseLeave={(e) => {
-                      if (tech.status === "available") {
-                        Object.assign(e.currentTarget.style, assignBtnStyle);
-                      }
-                    }}
-                    onClick={() => {
-                      if (tech.status !== "available") {
-                        toast.error("Technician is unavailable");
-                        return;
-                      }
-                      setSelectedTechnician(tech);
-                      setShowTechnicianModal(true);
-                    }}
-                  >
-                    {tech.status === "available" ? "Assign" : "Unavailable"}
-                  </button>
-                </div>
-              </Card.Body>
-            </div>
-          </Col>
-        ))}
+                </Card.Body>
+              </div>
+            </Col>
+          ))
+        )}
       </Row>
 
       {/* Technician Details Modal */}
