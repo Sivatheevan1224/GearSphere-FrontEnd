@@ -58,7 +58,6 @@ export default function MonitorPage() {
         }
       } catch (err) {
         setError("Error fetching monitors: " + err.message);
-        console.error("Error fetching monitors:", err);
       } finally {
         setLoading(false);
       }

@@ -58,7 +58,6 @@ export default function CPUCoolerPage() {
         }
       } catch (err) {
         setError("Error fetching CPU coolers: " + err.message);
-        console.error("Error fetching CPU coolers:", err);
       } finally {
         setLoading(false);
       }
