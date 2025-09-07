@@ -60,7 +60,7 @@ import TechnicianProfile from "./pages/technician/Profile";
 import CustomerManagement from "./pages/admin/CustomerManagement";
 import Analytics from "./pages/admin/Analytics";
 import AdminMain from "./pages/admin/AdminMain";
-import Reports from "./pages/admin/Reports";
+// import Reports from "./pages/admin/Reports";
 import AdminProfile from "./pages/admin/Profile";
 import AdminMessages from "./pages/admin/AdminMessages";
 import AdminMonitoring from "./pages/admin/AdminMonitoring";
@@ -178,7 +178,7 @@ function AppContent() {
           <Route path="/admin/customers" element={<CustomerManagement />} />
           <Route path="/admin/technicians" element={<TechnicianManagement />} />
           <Route path="/admin/analytics" element={<Analytics />} />
-          <Route path="/admin/reports" element={<Reports />} />
+          {/* <Route path="/admin/reports" element={<Reports />} /> */}
           <Route path="/admin/profile" element={<AdminProfile />} />
           <Route path="/admin/messages" element={<AdminMessages />} />
           <Route path="/admin/reviews" element={<AdminModerateReviews />} />
