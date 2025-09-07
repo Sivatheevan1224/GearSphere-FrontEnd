@@ -55,7 +55,6 @@ export default function OperatingSystemPage() {
           toast.error("Failed to load operating systems");
         }
       } catch (error) {
-        console.error("Error fetching operating systems:", error);
         toast.error("Error loading operating systems");
       } finally {
         setLoading(false);
