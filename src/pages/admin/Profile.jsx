@@ -49,17 +49,12 @@ const AdminProfile = () => {
           let addressPart = "";
           
           if (data.address) {
-            console.log("Admin address:", data.address);
             const addressParts = data.address.split(', ');
-            console.log("Address parts:", addressParts);
             if (addressParts.length >= 2) {
               district = addressParts[addressParts.length - 1]; // Last part is district
               addressPart = addressParts.slice(0, -1).join(', '); // Everything except last part
-              console.log("Parsed district:", district);
-              console.log("Parsed address part:", addressPart);
             } else {
               addressPart = data.address; // If no comma, treat as address without district
-              console.log("No comma found, treating as address without district");
             }
           }
 
@@ -77,7 +72,6 @@ const AdminProfile = () => {
           window.dispatchEvent(new Event("profilePicUpdated"));
         }
       } catch (err) {
-        console.error("Fetch failed:", err);
         toast.error("Failed to fetch profile");
       } finally {
         setIsLoading(false);
@@ -168,7 +162,6 @@ const AdminProfile = () => {
         );
       }
     } catch (err) {
-      console.error("Update error:", err);
       toast.error("An error occurred during update");
     }
   };
