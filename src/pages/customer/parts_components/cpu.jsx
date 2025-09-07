@@ -150,17 +150,20 @@ export default function CPUPage() {
         return prev.filter((item) => item.product_id !== option.product_id);
       } else {
         if (prev.length >= maxCompare) {
-          toast.warning(
-            `You can only compare up to ${maxCompare} CPUs at a time on this device.`,
-            {
-              position: "top-right",
-              autoClose: 3000,
-              hideProgressBar: false,
-              closeOnClick: true,
-              pauseOnHover: true,
-              draggable: true,
-            }
-          );
+          // Don't call toast inside setState - move it outside
+          setTimeout(() => {
+            toast.warning(
+              `You can only compare up to ${maxCompare} CPUs at a time on this device.`,
+              {
+                position: "top-right",
+                autoClose: 3000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+              }
+            );
+          }, 0);
           return prev;
         }
         return [...prev, option];
