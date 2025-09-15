@@ -49,6 +49,7 @@ import CompareOperatingSystem from "./pages/customer/parts_components/compare_op
 import CustomerReviews from "./pages/customer/CustomerReviews";
 import TechnicianFeedback from "./pages/technician/TechnicianFeedback";
 import AdminModerateReviews from "./pages/admin/AdminModerateReviews";
+import ProductDetails from "./pages/customer/parts_pages/ProductDetails";
 
 // Technician Pages
 import TechnicianDashboard from "./pages/technician/Dashboard";
@@ -112,6 +113,7 @@ function AppContent() {
           <Route path="/customer" element={<CustomerDashboard />} />
           <Route path="/customer/dashboard" element={<CustomerDashboard />} />
           <Route path="/marketplace" element={<Marketplace />} />
+          <Route path="/product/:productId" element={<ProductDetails />} />
           <Route path="/pc-builder" element={<PCBuilder />} />
           <Route path="/cpu" element={<CPUPage />} />
           <Route path="/compare-cpu" element={<CompareCPU />} />
