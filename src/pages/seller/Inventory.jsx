@@ -73,44 +73,15 @@ const Inventory = () => {
     try {
       setLoading(true);
 
-      console.log(
-        "Fetching inventory from:",
-        `${API_BASE_URL}/getProducts.php`
-      );
-
       const response = await fetch(`${API_BASE_URL}/getProducts.php`);
-      console.log("Response status:", response.status);
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
       const data = await response.json();
-      console.log("API response:", data);
-
-      // Extra debug: log all product statuses from backend
-      if (data.products) {
-        data.products.forEach((p) =>
-          console.log(
-            `Product: ${p.name}, Stock: ${p.stock}, Status: ${p.status}`
-          )
-        );
-      }
 
       if (data.success) {
-        // Debug: Log raw data from backend
-        console.log(
-          "Raw products data from backend:",
-          data.products.map((p) => ({
-            id: p.product_id,
-            name: p.name,
-            stock: p.stock,
-            price: p.price,
-            raw_stock: typeof p.stock,
-            raw_price: typeof p.price,
-          }))
-        );
-
         // Transform the data to match inventory expectations
         const transformedInventory = data.products.map((product) => ({
           id: product.product_id,
@@ -132,32 +103,6 @@ const Inventory = () => {
           manufacturer: product.manufacturer,
         }));
 
-        console.log("Transformed inventory:", transformedInventory);
-
-        // Debug: Log total value calculation
-        const totalValue = transformedInventory.reduce(
-          (sum, item) => sum + item.value,
-          0
-        );
-        console.log("Total inventory value calculation:", {
-          totalProducts: transformedInventory.length,
-          totalValue: totalValue,
-          valueBreakdown: transformedInventory.map((item) => ({
-            name: item.name,
-            stock: item.currentStock,
-            price: item.price,
-            value: item.value,
-            calculation: `${item.currentStock} × LKR ${item.price} = LKR ${item.value}`,
-          })),
-        });
-
-        // Extra debug: log transformed inventory statuses
-        transformedInventory.forEach((item) =>
-          console.log(
-            `Transformed: ${item.name}, Stock: ${item.currentStock}, Status: ${item.status}`
-          )
-        );
-
         setInventory(transformedInventory);
       } else {
         toast.error(data.message || "Failed to fetch inventory", {
@@ -166,7 +111,6 @@ const Inventory = () => {
         });
       }
     } catch (err) {
-      console.error("Error fetching inventory:", err);
       toast.error("Error connecting to server: " + err.message, {
         autoClose: 2000,
         hideProgressBar: false,
@@ -214,9 +158,8 @@ const Inventory = () => {
         { withCredentials: true }
       );
       
-      console.log('Low stock notification sent successfully');
     } catch (error) {
-      console.error('Failed to send low stock notification:', error);
+      // Failed to send low stock notification
     }
   };
 
@@ -280,8 +223,6 @@ const Inventory = () => {
         return;
       }
 
-      console.log("Updating stock for product:", productId, stockValue);
-
       // Create FormData for the stock update
       const formData = new FormData();
       formData.append("product_id", productId.toString());
@@ -297,19 +238,11 @@ const Inventory = () => {
         body: formData,
       });
 
-      console.log("Update stock response status:", response.status);
-
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
       const result = await response.json();
-      console.log("Update stock result:", result);
-
-      // Extra debug: log new status from backend
-      if (result.data) {
-        console.log(`Backend new_status: ${result.data.new_status}`);
-      }
 
       if (result.success) {
         // Refresh inventory list
@@ -354,7 +287,6 @@ const Inventory = () => {
         });
       }
     } catch (err) {
-      console.error("Error updating stock:", err);
       toast.error("Error updating stock and status: " + err.message, {
         autoClose: 2000,
         hideProgressBar: false,
